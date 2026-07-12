@@ -1,0 +1,58 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: BigChange
+providerId: bigchange
+created: '2026-07-12'
+modified: '2026-07-12'
+reconciled: false
+tags:
+- Field Service Management
+- Job Management
+- Rate Limiting
+- Quotas
+description: >-
+  BigChange does not publish fixed numeric per-minute rate limits for the REST API
+  on its public pages. API access is offered on a free "Essentials" tier that
+  BigChange states covers over 90% of typical customer usage, which implies a usage
+  allowance above which higher tiers apply, but the specific thresholds are not
+  published. List endpoints are paginated (pageNumber / pageSize parameters
+  confirmed in the published spec), which is the primary throughput control for
+  reads. Numeric limits below are NOT reconciled.
+notes: >-
+  Confirm current per-endpoint / per-account request limits, the Essentials-tier
+  usage allowance, and any 429 throttling headers directly with BigChange during
+  reconciliation. Standard practice is to paginate reads, prefer webhooks over
+  polling for change notification, and implement exponential backoff on 429/5xx.
+sources:
+- https://www.bigchange.com/rest-api
+- https://www.bigchange.com/blog/bigchange-rest-api-integration
+- https://api.bigchange.com/swagger/v1/swagger.json
+responseCodes:
+  throttled: 429
+limits:
+- name: REST API Requests
+  scope: account
+  metric: requests
+  limit: not published
+  notes: No fixed numeric request-rate limit is published for the REST API.
+- name: Essentials Tier Usage Allowance
+  scope: account
+  metric: requests
+  limit: per tier (not published)
+  notes: Free Essentials tier stated to cover ~90% of typical usage; higher usage on paid/enterprise terms.
+- name: List Pagination
+  scope: request
+  metric: records
+  limit: configurable via pageSize
+  notes: List endpoints return paged results controlled by pageNumber and pageSize (confirmed in the published spec).
+policies:
+- name: Pagination
+  description: Use pageNumber and pageSize on list endpoints to bound response size and throughput.
+- name: Prefer Webhooks
+  description: Subscribe to webhooks (/webhooks/v1) for change notification instead of aggressive polling.
+- name: Backoff Strategy
+  description: Implement exponential backoff with jitter and honor Retry-After on 429 responses.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

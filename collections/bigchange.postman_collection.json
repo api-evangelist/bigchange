@@ -1,0 +1,1437 @@
+{
+  "info": {
+    "name": "BigChange DX REST API",
+    "description": "BigChange DX REST API - the modern REST interface to the BigChange / JobWatch field service and job management platform. Base URL: https://api.bigchange.com. All requests require a Bearer JWT access token (Authorization: Bearer {{accessToken}}) and a required Customer-Id header. Endpoints and methods are grounded in BigChange's published swagger.json; request bodies here are illustrative placeholders.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.bigchange.com",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Get a list of jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs"
+              ]
+            },
+            "description": "Returns a paged list of jobs. Filter by type, contact, resource, order number, and created-at range."
+          }
+        },
+        {
+          "name": "Create a job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs"
+              ]
+            },
+            "description": "Creates a new job.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Retrieves a single job by id."
+          }
+        },
+        {
+          "name": "Update a job",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Updates an existing job.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Schedule or unschedule a job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId",
+                "schedule"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Assigns a job to a resource and time slot, or unschedules it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Set a job to started",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId",
+                "start"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Marks a job as started."
+          }
+        },
+        {
+          "name": "Set a job's result",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId/result",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId",
+                "result"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Records the result/outcome of a job.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Cancel a job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobs/:jobId/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobs",
+                ":jobId",
+                "cancel"
+              ],
+              "variable": [
+                {
+                  "key": "jobId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Cancels a job."
+          }
+        },
+        {
+          "name": "Get a list of job groups",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobGroups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobGroups"
+              ]
+            },
+            "description": "Returns a paged list of job groups."
+          }
+        },
+        {
+          "name": "Get a list of job types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/jobTypes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "jobTypes"
+              ]
+            },
+            "description": "Returns available job types (reference data)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contacts and Persons",
+      "item": [
+        {
+          "name": "Get a list of contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/contacts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "contacts"
+              ]
+            },
+            "description": "Returns a paged list of contacts."
+          }
+        },
+        {
+          "name": "Create a contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/contacts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "contacts"
+              ]
+            },
+            "description": "Creates a new contact.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/contacts/:contactId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "contacts",
+                ":contactId"
+              ],
+              "variable": [
+                {
+                  "key": "contactId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Retrieves a single contact."
+          }
+        },
+        {
+          "name": "Put a contact on stop",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/contacts/:contactId/stop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "contacts",
+                ":contactId",
+                "stop"
+              ],
+              "variable": [
+                {
+                  "key": "contactId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Places a contact on stop."
+          }
+        },
+        {
+          "name": "Get a list of contact groups",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/contactGroups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "contactGroups"
+              ]
+            },
+            "description": "Returns contact groups."
+          }
+        },
+        {
+          "name": "Get a list of persons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/persons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "persons"
+              ]
+            },
+            "description": "Returns a paged list of persons."
+          }
+        },
+        {
+          "name": "Create a person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/persons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "persons"
+              ]
+            },
+            "description": "Creates a new person.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Finance",
+      "item": [
+        {
+          "name": "Get a list of invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/invoices",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "invoices"
+              ]
+            },
+            "description": "Returns a paged list of invoices."
+          }
+        },
+        {
+          "name": "Create an invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/invoices",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "invoices"
+              ]
+            },
+            "description": "Creates a new invoice.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Mark an invoice as paid",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/invoices/:invoiceId/paid",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "invoices",
+                ":invoiceId",
+                "paid"
+              ],
+              "variable": [
+                {
+                  "key": "invoiceId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Marks an invoice as paid."
+          }
+        },
+        {
+          "name": "Mark an invoice as sent",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/invoices/:invoiceId/sent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "invoices",
+                ":invoiceId",
+                "sent"
+              ],
+              "variable": [
+                {
+                  "key": "invoiceId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Marks an invoice as sent."
+          }
+        },
+        {
+          "name": "Get a list of quotes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "quotes"
+              ]
+            },
+            "description": "Returns a paged list of quotes."
+          }
+        },
+        {
+          "name": "Create a quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "quotes"
+              ]
+            },
+            "description": "Creates a new quote.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a list of purchase orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/purchaseOrders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "purchaseOrders"
+              ]
+            },
+            "description": "Returns a paged list of purchase orders."
+          }
+        },
+        {
+          "name": "Get a list of sales opportunities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/finance/salesOpportunities",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "finance",
+                "salesOpportunities"
+              ]
+            },
+            "description": "Returns a paged list of sales opportunities."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock",
+      "item": [
+        {
+          "name": "Get a list of stock items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stockItems",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stockItems"
+              ]
+            },
+            "description": "Returns a paged list of stock items."
+          }
+        },
+        {
+          "name": "Create a stock item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stockItems",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stockItems"
+              ]
+            },
+            "description": "Creates a new stock item.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a list of stock details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stockDetails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stockDetails"
+              ]
+            },
+            "description": "Returns stock details."
+          }
+        },
+        {
+          "name": "Get a list of stock movements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stockMovement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stockMovement"
+              ]
+            },
+            "description": "Returns stock movement records."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resources, Users and Vehicles",
+      "item": [
+        {
+          "name": "Get a list of resources",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/resources",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "resources"
+              ]
+            },
+            "description": "Returns the mobile workforce resources."
+          }
+        },
+        {
+          "name": "Get a list of resource groups",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/resourceGroups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "resourceGroups"
+              ]
+            },
+            "description": "Returns resource groups."
+          }
+        },
+        {
+          "name": "Gets a list of users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Returns back-office users."
+          }
+        },
+        {
+          "name": "Get a list of vehicles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "vehicles"
+              ]
+            },
+            "description": "Returns fleet vehicles."
+          }
+        },
+        {
+          "name": "Create a vehicle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "vehicles"
+              ]
+            },
+            "description": "Creates a new vehicle.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notes and Worksheets",
+      "item": [
+        {
+          "name": "Get a list of notes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/notes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "notes"
+              ]
+            },
+            "description": "Returns a paged list of notes."
+          }
+        },
+        {
+          "name": "Create a note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/notes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "notes"
+              ]
+            },
+            "description": "Creates a new note.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a list of note types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/noteTypes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "noteTypes"
+              ]
+            },
+            "description": "Returns note types."
+          }
+        },
+        {
+          "name": "Get a list of worksheets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/worksheets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "worksheets"
+              ]
+            },
+            "description": "Returns worksheets."
+          }
+        },
+        {
+          "name": "Get a list of worksheet groups",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/worksheetGroups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "worksheetGroups"
+              ]
+            },
+            "description": "Returns worksheet groups."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reference Data",
+      "item": [
+        {
+          "name": "Get a list of VAT codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/vatCodes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "vatCodes"
+              ]
+            },
+            "description": "Returns VAT codes."
+          }
+        },
+        {
+          "name": "Get a list of nominal codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/nominalCodes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "nominalCodes"
+              ]
+            },
+            "description": "Returns nominal codes."
+          }
+        },
+        {
+          "name": "Get a list of department codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/departmentCodes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "departmentCodes"
+              ]
+            },
+            "description": "Returns department codes."
+          }
+        },
+        {
+          "name": "Get a list of product categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/productCategories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "productCategories"
+              ]
+            },
+            "description": "Returns product categories."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset Management",
+      "item": [
+        {
+          "name": "Get a list of assets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/asset-management/v1/assets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "asset-management",
+                "v1",
+                "assets"
+              ]
+            },
+            "description": "Returns customer assets."
+          }
+        },
+        {
+          "name": "Create an asset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/asset-management/v1/assets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "asset-management",
+                "v1",
+                "assets"
+              ]
+            },
+            "description": "Creates a new asset.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Search assets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/asset-management/v1/assets/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "asset-management",
+                "v1",
+                "assets",
+                "search"
+              ]
+            },
+            "description": "Searches assets by criteria.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "Get a list of service agreements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/asset-management/v1/serviceAgreements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "asset-management",
+                "v1",
+                "serviceAgreements"
+              ]
+            },
+            "description": "Returns service agreements."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Get webhook subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/v1/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "v1",
+                "subscriptions"
+              ]
+            },
+            "description": "Lists webhook subscriptions."
+          }
+        },
+        {
+          "name": "Get failed webhook deliveries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/v1/failed",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "v1",
+                "failed"
+              ]
+            },
+            "description": "Lists failed webhook deliveries."
+          }
+        },
+        {
+          "name": "Retry failed webhook deliveries",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Customer-Id",
+                "value": "{{customerId}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/v1/failed/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "v1",
+                "failed",
+                "retry"
+              ]
+            },
+            "description": "Retries failed webhook deliveries.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

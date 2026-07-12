@@ -1,0 +1,1063 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{accessToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Jobs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobs",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of jobs. Filter by type, contact, resource, order number, and created-at range."
+        },
+        {
+          "info": {
+            "name": "Create a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/jobs",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new job."
+        },
+        {
+          "info": {
+            "name": "Get a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Retrieves a single job by id."
+        },
+        {
+          "info": {
+            "name": "Update a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates an existing job."
+        },
+        {
+          "info": {
+            "name": "Schedule or unschedule a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/schedule",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assigns a job to a resource and time slot, or unschedules it."
+        },
+        {
+          "info": {
+            "name": "Set a job to started",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/start",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Marks a job as started."
+        },
+        {
+          "info": {
+            "name": "Set a job's result",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/result",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Records the result/outcome of a job."
+        },
+        {
+          "info": {
+            "name": "Cancel a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/cancel",
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Cancels a job."
+        },
+        {
+          "info": {
+            "name": "Get a list of job groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobGroups",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of job groups."
+        },
+        {
+          "info": {
+            "name": "Get a list of job types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobTypes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns available job types (reference data)."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Contacts and Persons",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/contacts",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of contacts."
+        },
+        {
+          "info": {
+            "name": "Create a contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/contacts",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new contact."
+        },
+        {
+          "info": {
+            "name": "Get a contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/contacts/:contactId",
+            "params": [
+              {
+                "name": "contactId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Retrieves a single contact."
+        },
+        {
+          "info": {
+            "name": "Put a contact on stop",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/contacts/:contactId/stop",
+            "params": [
+              {
+                "name": "contactId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Places a contact on stop."
+        },
+        {
+          "info": {
+            "name": "Get a list of contact groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/contactGroups",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns contact groups."
+        },
+        {
+          "info": {
+            "name": "Get a list of persons",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/persons",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of persons."
+        },
+        {
+          "info": {
+            "name": "Create a person",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/persons",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new person."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Finance",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of invoices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/finance/invoices",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of invoices."
+        },
+        {
+          "info": {
+            "name": "Create an invoice",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/finance/invoices",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new invoice."
+        },
+        {
+          "info": {
+            "name": "Mark an invoice as paid",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/finance/invoices/:invoiceId/paid",
+            "params": [
+              {
+                "name": "invoiceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Marks an invoice as paid."
+        },
+        {
+          "info": {
+            "name": "Mark an invoice as sent",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/finance/invoices/:invoiceId/sent",
+            "params": [
+              {
+                "name": "invoiceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Marks an invoice as sent."
+        },
+        {
+          "info": {
+            "name": "Get a list of quotes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/finance/quotes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of quotes."
+        },
+        {
+          "info": {
+            "name": "Create a quote",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/finance/quotes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new quote."
+        },
+        {
+          "info": {
+            "name": "Get a list of purchase orders",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/finance/purchaseOrders",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of purchase orders."
+        },
+        {
+          "info": {
+            "name": "Get a list of sales opportunities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/finance/salesOpportunities",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of sales opportunities."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Stock",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of stock items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/stockItems",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of stock items."
+        },
+        {
+          "info": {
+            "name": "Create a stock item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/stockItems",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new stock item."
+        },
+        {
+          "info": {
+            "name": "Get a list of stock details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/stockDetails",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns stock details."
+        },
+        {
+          "info": {
+            "name": "Get a list of stock movements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/stockMovement",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns stock movement records."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Resources, Users and Vehicles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of resources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/resources",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns the mobile workforce resources."
+        },
+        {
+          "info": {
+            "name": "Get a list of resource groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/resourceGroups",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns resource groups."
+        },
+        {
+          "info": {
+            "name": "Gets a list of users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/users",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns back-office users."
+        },
+        {
+          "info": {
+            "name": "Get a list of vehicles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/vehicles",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns fleet vehicles."
+        },
+        {
+          "info": {
+            "name": "Create a vehicle",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/vehicles",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new vehicle."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Notes and Worksheets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of notes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/notes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of notes."
+        },
+        {
+          "info": {
+            "name": "Create a note",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/notes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new note."
+        },
+        {
+          "info": {
+            "name": "Get a list of note types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/noteTypes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns note types."
+        },
+        {
+          "info": {
+            "name": "Get a list of worksheets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/worksheets",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns worksheets."
+        },
+        {
+          "info": {
+            "name": "Get a list of worksheet groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/worksheetGroups",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns worksheet groups."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Reference Data",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of VAT codes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/vatCodes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns VAT codes."
+        },
+        {
+          "info": {
+            "name": "Get a list of nominal codes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/nominalCodes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns nominal codes."
+        },
+        {
+          "info": {
+            "name": "Get a list of department codes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/departmentCodes",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns department codes."
+        },
+        {
+          "info": {
+            "name": "Get a list of product categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/productCategories",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns product categories."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Asset Management",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/asset-management/v1/assets",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns customer assets."
+        },
+        {
+          "info": {
+            "name": "Create an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/asset-management/v1/assets",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new asset."
+        },
+        {
+          "info": {
+            "name": "Search assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/asset-management/v1/assets/search",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Searches assets by criteria."
+        },
+        {
+          "info": {
+            "name": "Get a list of service agreements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/asset-management/v1/serviceAgreements",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Returns service agreements."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Webhooks",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get webhook subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/webhooks/v1/subscriptions",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Lists webhook subscriptions."
+        },
+        {
+          "info": {
+            "name": "Get failed webhook deliveries",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/webhooks/v1/failed",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ]
+          },
+          "docs": "Lists failed webhook deliveries."
+        },
+        {
+          "info": {
+            "name": "Retry failed webhook deliveries",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/webhooks/v1/failed/retry",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": "{{customerId}}"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Retries failed webhook deliveries."
+        }
+      ]
+    }
+  ]
+}

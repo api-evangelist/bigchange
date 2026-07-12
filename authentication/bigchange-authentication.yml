@@ -1,0 +1,57 @@
+generated: '2026-07-12'
+method: derived
+source: https://api.bigchange.com/swagger/v1/swagger.json
+summary:
+  types:
+  - http
+schemes:
+- name: bearer
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: >-
+    Bearer JWT access token. Confirmed from BigChange's published swagger security
+    scheme (description: "Enter the access token only"). Sent as
+    `Authorization: Bearer <access_token>`. Applies globally to the BigChange DX,
+    Asset Management, and Webhooks APIs.
+  sources:
+  - https://api.bigchange.com/swagger/v1/swagger.json
+  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json
+  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json
+requiredHeaders:
+- name: Customer-Id
+  in: header
+  required: true
+  type: integer
+  format: int64
+  description: >-
+    The customer (BigChange account) identifier. Required on every operation in the
+    published spec, in addition to the Bearer token.
+  sources:
+  - https://api.bigchange.com/swagger/v1/swagger.json
+tokenAcquisition:
+  reconciled: false
+  model: >-
+    Access tokens are obtained through BigChange's "authentication proxy" using an
+    API key issued in the developer portal under Account > Manage API Keys /
+    Integrations. The token is then presented as a Bearer JWT on API calls. The
+    exact token-exchange endpoint and grant type are documented on a
+    JavaScript-rendered portal page that did not scrape, so they are modeled here
+    rather than quoted. Live probes returned HTTP 401 (exists, auth required) for
+    https://api.bigchange.com/connect/token and https://api.bigchange.com/oauth/token,
+    and HTTP 404 for https://api.bigchange.com/auth/v1/token - the canonical token
+    URL is not asserted.
+  sources:
+  - https://developers.bigchange.com/docs/rest/auth-proxy/get-an-access-token
+  - https://developers.bigchange.com/account/integrations
+legacyApi:
+  note: >-
+    A separate legacy JobWatch web-services API (host webservice.bigchange.com) is
+    authenticated with an API key plus the BigChange account username and password
+    (per the Cyclr JobWatch connector guide). This is distinct from the modern
+    Bearer-JWT REST API above.
+  sources:
+  - https://community.cyclr.com/connector-guides/bigchange-jobwatch/bigchange-jobwatch-setup
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

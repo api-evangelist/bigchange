@@ -1,0 +1,116 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: BigChange
+providerId: bigchange
+created: '2026-07-12'
+modified: '2026-07-12'
+reconciled: false
+tags:
+- Field Service Management
+- Job Management
+- SaaS
+- Plans
+description: >-
+  BigChange is sold as a SaaS subscription to its field service / job management
+  platform, priced primarily per user (mobile workforce / office user) and per
+  tracked vehicle, typically on an annual contract with implementation and training.
+  Exact list prices are not published and vary by seat count, vehicles, modules, and
+  term - they are quoted by BigChange sales. API access itself is offered on a free
+  "Essentials" tier that BigChange states covers over 90% of typical customer API
+  usage, with higher usage available on paid/enterprise terms. All figures below are
+  MODELED from BigChange's public marketing pages and are not reconciled to a rate
+  card.
+notes: >-
+  Verify current platform subscription pricing and API tier limits directly with
+  BigChange sales during reconciliation. The API is an entitlement of a BigChange
+  platform subscription (you need a BigChange account and a Customer-Id); it is not
+  sold as a standalone metered API product.
+sources:
+- https://www.bigchange.com/rest-api
+- https://www.bigchange.com/blog/bigchange-rest-api-integration
+- https://www.bigchange.com/
+- https://developers.bigchange.com/docs/rest/api-reference
+plans:
+- id: bigchange-platform-subscription
+  name: BigChange Platform Subscription
+  type: paid
+  description: >-
+    The core JobWatch platform (CRM, scheduling, tracking, mobile app, job finance,
+    BI), licensed as a SaaS subscription. Priced per user and per tracked vehicle,
+    usually on an annual contract. Exact rates are quote-based.
+  entries:
+  - label: Per User
+    name: per_user
+    type: flat
+    metric: user
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: quote-based (per user / seat; contact BigChange sales)
+    userMultiplied: true
+  - label: Per Vehicle
+    name: per_vehicle
+    type: flat
+    metric: vehicle
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: quote-based (per tracked vehicle; contact BigChange sales)
+    userMultiplied: true
+  elements:
+  - name: Job Scheduling and Dispatch
+  - name: CRM and Contacts
+  - name: Mobile Workforce App (JobWatch)
+  - name: Live Tracking
+  - name: Job Finance (Quotes, Invoices, Purchase Orders)
+  - name: Business Intelligence
+- id: bigchange-api-essentials
+  name: API Essentials (Free Tier)
+  type: free
+  description: >-
+    Free tier of REST API access included with a BigChange subscription. BigChange
+    states it covers over 90% of typical customer API usage needs at no additional
+    cost. API keys are issued and scoped in the developer portal.
+  entries:
+  - label: API Usage (Essentials)
+    name: api_essentials_usage
+    type: usage
+    metric: requests
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: free (included with subscription; covers ~90% of typical usage per BigChange)
+    userMultiplied: false
+  elements:
+  - name: REST API Access
+  - name: Secure API Key Management
+  - name: Webhooks
+- id: bigchange-api-enterprise
+  name: API / Enterprise (Higher Usage)
+  type: enterprise
+  description: >-
+    Higher-volume or advanced API usage beyond the free Essentials tier, and
+    enterprise platform agreements (additional modules, integrations, SLAs). Terms
+    are negotiated with BigChange.
+  entries:
+  - label: Enterprise Agreement
+    name: enterprise
+    type: flat
+    metric: contract
+    limit: -1
+    timeFrame: year
+    geo: global
+    unit: 1
+    price: contact sales
+    userMultiplied: false
+  elements:
+  - name: Higher API Usage
+  - name: Additional Modules and Integrations
+  - name: SLAs and Support
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

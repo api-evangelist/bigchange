@@ -1,0 +1,125 @@
+aid: bigchange
+name: BigChange
+review:
+  question: Does BigChange expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-12'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was authored. BigChange's public API surface is
+    request/response REST over HTTPS (the BigChange DX, Asset Management, and
+    Webhooks APIs, all on https://api.bigchange.com). The only event mechanism is
+    outbound webhooks - server-to-consumer HTTP POST callbacks managed via
+    /webhooks/v1/subscriptions - which is not a server-push streaming transport
+    over a persistent socket. No WebSocket (ws:// or wss://) endpoint is documented
+    or present in any of BigChange's three published OpenAPI documents, so there is
+    no bidirectional/streaming surface to model with AsyncAPI.
+findings:
+  summary: |
+    BigChange does not publish a documented public WebSocket API. BigChange (the
+    JobWatch field service / job management platform) exposes a modern REST API -
+    "BigChange DX" - at base URL https://api.bigchange.com. This was verified
+    directly against BigChange's own publicly reachable Swagger/OpenAPI documents:
+    the DX spec (108 paths), an Asset Management spec (34 paths), and a Webhooks
+    spec (4 paths). All three declare a single server (https://api.bigchange.com),
+    an HTTP Bearer JWT security scheme, and a required Customer-Id header. The API
+    is pure request/response REST; asynchronous delivery is via outbound HTTP
+    webhooks, not WebSockets.
+  accessModel: |
+    Authentication is HTTP Bearer JWT ("Enter the access token only" per the
+    published security scheme) plus a required Customer-Id header (int64) on every
+    operation. Access tokens are obtained through BigChange's authentication proxy
+    using an API key issued in the developer portal (Account > Manage API Keys /
+    Integrations). The exact token-exchange endpoint/grant is documented on a
+    JavaScript-rendered portal page that did not scrape and is therefore modeled,
+    not quoted. A separate legacy JobWatch web-services API (host
+    webservice.bigchange.com, API key + account username/password) also exists.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.bigchange.com
+      documented: true
+      note: BigChange DX (/v1), Asset Management (/asset-management/v1), and Webhooks (/webhooks/v1) APIs. Confirmed from published swagger.json documents.
+    - protocol: Webhook
+      scheme: https
+      documented: true
+      note: Outbound HTTP POST callbacks; subscriptions and failed-delivery retries managed under /webhooks/v1. Server-to-consumer HTTP, not WebSocket.
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint appears in any of BigChange's three published OpenAPI documents as of the review date.
+  endpointsConfirmedRest:
+    - GET    https://api.bigchange.com/v1/jobs
+    - POST   https://api.bigchange.com/v1/jobs
+    - GET    https://api.bigchange.com/v1/jobs/{jobId}
+    - PATCH  https://api.bigchange.com/v1/jobs/{jobId}
+    - PUT    https://api.bigchange.com/v1/jobs/{jobId}/schedule
+    - PUT    https://api.bigchange.com/v1/jobs/{jobId}/start
+    - PUT    https://api.bigchange.com/v1/jobs/{jobId}/result
+    - PUT    https://api.bigchange.com/v1/jobs/{jobId}/cancel
+    - GET    https://api.bigchange.com/v1/jobGroups
+    - GET    https://api.bigchange.com/v1/jobTypes
+    - GET    https://api.bigchange.com/v1/contacts
+    - POST   https://api.bigchange.com/v1/contacts
+    - PUT    https://api.bigchange.com/v1/contacts/{contactId}/stop
+    - GET    https://api.bigchange.com/v1/persons
+    - POST   https://api.bigchange.com/v1/persons
+    - GET    https://api.bigchange.com/v1/finance/invoices
+    - POST   https://api.bigchange.com/v1/finance/invoices
+    - PUT    https://api.bigchange.com/v1/finance/invoices/{invoiceId}/paid
+    - GET    https://api.bigchange.com/v1/finance/quotes
+    - GET    https://api.bigchange.com/v1/finance/purchaseOrders
+    - GET    https://api.bigchange.com/v1/finance/salesOpportunities
+    - GET    https://api.bigchange.com/v1/stockItems
+    - GET    https://api.bigchange.com/v1/stockMovement
+    - GET    https://api.bigchange.com/v1/resources
+    - GET    https://api.bigchange.com/v1/users
+    - GET    https://api.bigchange.com/v1/vehicles
+    - GET    https://api.bigchange.com/v1/notes
+    - GET    https://api.bigchange.com/v1/worksheets
+    - GET    https://api.bigchange.com/v1/vatCodes
+    - GET    https://api.bigchange.com/asset-management/v1/assets
+    - POST   https://api.bigchange.com/asset-management/v1/assets/search
+    - GET    https://api.bigchange.com/asset-management/v1/serviceAgreements
+    - GET    https://api.bigchange.com/webhooks/v1/subscriptions
+    - GET    https://api.bigchange.com/webhooks/v1/failed
+    - POST   https://api.bigchange.com/webhooks/v1/failed/retry
+  endpointsModeled:
+    - note: >-
+        Request and response BODY schemas in the bundled OpenAPI are modeled as
+        generic objects rather than reproduced field-by-field; the authoritative
+        field-level models live in BigChange's published swagger.json documents.
+    - note: >-
+        The exact authentication-proxy token endpoint and grant type are modeled
+        from the developer-portal navigation (the prose page is JS-rendered and did
+        not scrape). Probes showed https://api.bigchange.com/connect/token and
+        /oauth/token returning 401 (exist, auth required) - not asserted as the
+        canonical token URL.
+sources:
+  - url: https://api.bigchange.com/swagger/v1/swagger.json
+    type: OpenAPI
+    note: BigChange DX spec - 108 paths, server https://api.bigchange.com, bearer JWT, required Customer-Id header. All REST, no WebSocket.
+  - url: https://api.bigchange.com/swagger/asset-management/v1/swagger.json
+    type: OpenAPI
+    note: Asset Management spec - 34 paths under /asset-management/v1, same host and bearer scheme.
+  - url: https://api.bigchange.com/swagger/webhooks/v1/swagger.json
+    type: OpenAPI
+    note: Webhooks spec - 4 paths under /webhooks/v1 (subscriptions + failed-delivery retry). Outbound HTTP, not WebSocket.
+  - url: https://developers.bigchange.com/docs/rest/api-reference
+    type: Documentation
+    note: Developer portal REST API reference (JavaScript SPA). Endpoint slugs enumerated via sitemap.xml.
+  - url: https://www.bigchange.com/rest-api
+    type: Documentation
+    note: BigChange REST API marketing page - free "Essentials" tier covering ~90% of typical usage, secure API key management.
+  - url: https://community.cyclr.com/connector-guides/bigchange-jobwatch/bigchange-jobwatch-setup
+    type: Documentation
+    note: Confirms the legacy JobWatch API is authenticated with API key + account username + password.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists. BigChange's public API is request/response
+    REST across three published OpenAPI documents, with outbound webhooks for
+    events. No AsyncAPI document was created because there is no server-push
+    WebSocket transport to model.

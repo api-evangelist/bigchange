@@ -1,0 +1,47 @@
+generated: '2026-07-12'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: api.bigchange.com
+  https: true
+  tls_version: TLSv1.3
+  cert_issuer: 'Amazon RSA 2048 M02'
+  cert_subject: 'CN=api.bigchange.com'
+  cert_starts: Aug 12 00:00:00 2025 GMT
+  cert_expires: Sep 10 23:59:59 2026 GMT
+  hsts: false
+  note: 'Root returns HTTP 403 (WAF/allowlisted); API paths respond. openssl handshake blocked, cert captured via curl.'
+- host: bigchange.com
+  https: true
+  tls_version: TLSv1.3
+  cert_issuer: 'Google Trust Services (WE1)'
+  cert_subject: 'CN=bigchange.com'
+  cert_starts: Jul  4 12:50:54 2026 GMT
+  cert_expires: Oct  2 13:50:44 2026 GMT
+  hsts: false
+- host: developers.bigchange.com
+  https: true
+  tls_version: TLSv1.3
+  hsts: true
+  hsts_max_age: 63072000
+  hsts_preload: true
+  note: 'Developer portal enforces HSTS with includeSubDomains and preload.'
+domains:
+- domain: bigchange.com
+  dnssec: false
+  caa: []
+  spf: true
+  spf_record: 'v=spf1 include:amazonses.com include:_spf.google.com include:spf.us.exclaimer.net include:spf.hubspotemail.net include:_spf.salesforce.com include:spf.bigchange.com ip4:167.89.0.0/17 ip4:149.72.0.0/16 ip4:159.183.0.0/16 ~all'
+  dmarc: true
+  dmarc_policy: reject
+  dmarc_pct: 100
+  dmarc_record: 'v=DMARC1; p=reject; pct=100; rua=mailto:92gbf4jq@ag.eu.dmarcian.com;'
+notes: >-
+  Live probes on 2026-07-12. Email authentication is strong on the apex domain
+  (SPF present, DMARC at p=reject/100%). No CAA records published and DNSSEC not
+  enabled (AD flag absent; NS on AWS Route 53). HSTS is enforced on the developer
+  portal but was not observed on api.bigchange.com or the apex www host at probe
+  time.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
