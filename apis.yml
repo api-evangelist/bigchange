@@ -185,6 +185,8 @@ apis:
     webhook deliveries under /webhooks/v1. Webhooks are outbound HTTP callbacks
     (server-to-consumer POST), not a WebSocket transport.
 common:
+- type: AgenticAccess
+  url: agentic-access/bigchange-agentic-access.yml
 - type: DomainSecurity
   url: security/bigchange-domain-security.yml
 - type: Authentication
