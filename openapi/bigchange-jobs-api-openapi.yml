@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: BigChange DX REST Assets Jobs API
+  version: '1.0'
+  description: "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec."
+  contact:
+    name: BigChange Developer Portal
+    url: https://developers.bigchange.com/docs/rest/api-reference
+servers:
+- url: https://api.bigchange.com
+  description: BigChange DX production API (all products share this host)
+security:
+- bearer: []
+tags:
+- name: Jobs
+paths:
+  /v1/jobs:
+    get:
+      tags:
+      - Jobs
+      summary: Get a list of jobs
+      description: Returns a paged list of jobs. Supports filtering by type, contact, resource, order number, and created-at date range, plus sorting and pagination (pageNumber, pageSize). Modeled from the published spec.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - name: typeId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paged list of jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResult'
+    post:
+      tags:
+      - Jobs
+      summary: Create a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '201':
+          description: The created job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+  /v1/jobs/{jobId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: The requested job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+    patch:
+      tags:
+      - Jobs
+      summary: Update a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '200':
+          description: The updated job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+  /v1/jobs/{jobId}/schedule:
+    put:
+      tags:
+      - Jobs
+      summary: Schedule or unschedule a job
+      description: Assign a job to a resource and time slot, or unschedule it.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '204':
+          description: The job schedule was updated.
+  /v1/jobs/{jobId}/start:
+    put:
+      tags:
+      - Jobs
+      summary: Set a job to started
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      responses:
+        '204':
+          description: The job was marked started.
+  /v1/jobs/{jobId}/result:
+    put:
+      tags:
+      - Jobs
+      summary: Set a job's result
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '204':
+          description: The job result was recorded.
+components:
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
+    JobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    PagedResult:
+      type: object
+      description: Standard paged list envelope (modeled).
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+        items:
+          $ref: '#/components/schemas/GenericArray'
+    GenericObject:
+      type: object
+      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
+      additionalProperties: true
+    GenericArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GenericObject'
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'
