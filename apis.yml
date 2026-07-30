@@ -11,7 +11,20 @@ description: BigChange is an all-in-one field service and job management platfor
   authenticated with a Bearer JWT access token (obtained through BigChange's
   authentication proxy from a developer-portal API key) and scoped with a required
   Customer-Id header.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bigchange.png
 tags:
 - Field Service Management
 - Job Management
@@ -24,166 +37,336 @@ created: '2026-07-12'
 modified: '2026-07-12'
 specificationVersion: '0.19'
 apis:
-- aid: bigchange:bigchange-jobs-api
-  name: BigChange Jobs API
-  tags:
-  - Jobs
-  - Scheduling
-  - Field Service
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+- aid: bigchange:bigchange-assets-api
+  name: BigChange Assets API
+  description: The Assets API from BigChange — 1 operation(s) for assets.
   humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
   baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/rest/api-reference
-    type: Documentation
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  - url: collections/bigchange.postman_collection.json
-    type: PostmanCollection
-  - url: collections/bigchange.opencollection.json
-    type: OpenCollection
-  description: Create, retrieve, update, schedule, start, cancel, and report on jobs
-    and job groups. Manage job line items, job stock, worksheets and answers,
-    constraints, flags, and status history for field-service work orders.
-- aid: bigchange:bigchange-contacts-persons-api
-  name: BigChange Contacts and Persons API
-  tags:
-  - Contacts
-  - CRM
-  - Persons
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  - url: collections/bigchange.postman_collection.json
-    type: PostmanCollection
-  description: Manage customer contacts and contact groups, put contacts on/off
-    stop, set site access hours, and manage persons together with their data-consent
-    history - the CRM core of the JobWatch platform.
-- aid: bigchange:bigchange-finance-api
-  name: BigChange Finance API
-  tags:
-  - Invoices
-  - Quotes
-  - Purchase Orders
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  - url: collections/bigchange.postman_collection.json
-    type: PostmanCollection
-  description: Manage invoices, quotes, purchase orders, and sales opportunities and
-    their line items - create and update documents, mark invoices paid/sent, accept
-    or reject quotes, and generate invoice PDFs under /v1/finance.
-- aid: bigchange:bigchange-stock-api
-  name: BigChange Stock and Inventory API
-  tags:
-  - Stock
-  - Inventory
-  - Parts
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: Manage stock items, stock details and suppliers, and read stock
-    movement records - the parts and inventory used to complete field-service jobs.
-- aid: bigchange:bigchange-resources-fleet-api
-  name: BigChange Resources, Users and Vehicles API
-  tags:
-  - Resources
-  - Fleet
-  - Vehicles
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: Manage the mobile workforce and fleet - resources and resource groups,
-    back-office users, and vehicles - that jobs are scheduled and dispatched against.
-- aid: bigchange:bigchange-notes-worksheets-api
-  name: BigChange Notes and Worksheets API
-  tags:
-  - Notes
-  - Worksheets
-  - Forms
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: Create and manage notes and note types with progress history, and
-    read worksheets, worksheet groups, and worksheet questions used to capture
-    structured job data on the JobWatch mobile app.
-- aid: bigchange:bigchange-reference-data-api
-  name: BigChange Reference Data API
-  tags:
-  - Reference Data
-  - Lookups
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
-  baseURL: https://api.bigchange.com
-  properties:
-  - url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
-    type: APIReference
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: Read-only lookups that back the rest of the platform - VAT codes,
-    nominal codes, department codes, product categories, job types, note types, and
-    sales-opportunity stages and probabilities.
-- aid: bigchange:bigchange-asset-management-api
-  name: BigChange Asset Management API
   tags:
   - Assets
-  - Service Agreements
-  - Maintenance
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/rest/api-reference
-  baseURL: https://api.bigchange.com
   properties:
-  - url: https://api.bigchange.com/swagger/asset-management/v1/swagger.json
-    type: OpenAPI
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: Manage customer assets and their categories, attributes, images, and
-    service schedules, plus service agreements and their activities - under the
-    /asset-management/v1 path. Published as its own OpenAPI document by BigChange.
+  - type: OpenAPI
+    url: openapi/bigchange-assets-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-contacts-api
+  name: BigChange Contacts API
+  description: The Contacts API from BigChange — 2 operation(s) for contacts.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-contacts-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-finance-api
+  name: BigChange Finance API
+  description: The Finance API from BigChange — 3 operation(s) for finance.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Finance
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-finance-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-jobs-api
+  name: BigChange Jobs API
+  description: The Jobs API from BigChange — 5 operation(s) for jobs.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Jobs
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-jobs-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-persons-api
+  name: BigChange Persons API
+  description: The Persons API from BigChange — 1 operation(s) for persons.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Persons
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-persons-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-reference-data-api
+  name: BigChange Reference Data API
+  description: The Reference Data API from BigChange — 1 operation(s) for reference data.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Reference Data
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-reference-data-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-resources-api
+  name: BigChange Resources API
+  description: The Resources API from BigChange — 1 operation(s) for resources.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Resources
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-resources-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-stock-api
+  name: BigChange Stock API
+  description: The Stock API from BigChange — 1 operation(s) for stock.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Stock
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-stock-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-users-api
+  name: BigChange Users API
+  description: The Users API from BigChange — 1 operation(s) for users.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-users-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
+- aid: bigchange:bigchange-vehicles-api
+  name: BigChange Vehicles API
+  description: The Vehicles API from BigChange — 1 operation(s) for vehicles.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
+  tags:
+  - Vehicles
+  properties:
+  - type: OpenAPI
+    url: openapi/bigchange-vehicles-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
 - aid: bigchange:bigchange-webhooks-api
   name: BigChange Webhooks API
+  description: The Webhooks API from BigChange — 2 operation(s) for webhooks.
+  humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  baseURL: https://api.bigchange.com
   tags:
   - Webhooks
-  - Events
-  - Subscriptions
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://developers.bigchange.com/docs/rest/api-reference
-  baseURL: https://api.bigchange.com
   properties:
-  - url: https://api.bigchange.com/swagger/webhooks/v1/swagger.json
-    type: OpenAPI
-  - url: openapi/bigchange-openapi.yml
-    type: OpenAPI
-  description: List webhook subscriptions and inspect, retry, or clear failed
-    webhook deliveries under /webhooks/v1. Webhooks are outbound HTTP callbacks
-    (server-to-consumer POST), not a WebSocket transport.
+  - type: OpenAPI
+    url: openapi/bigchange-webhooks-api-openapi.yml
+  - type: Documentation
+    url: https://developers.bigchange.com/docs/rest/api-reference
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
+  - type: PostmanCollection
+    url: collections/bigchange.postman_collection.json
+  - type: OpenCollection
+    url: collections/bigchange.opencollection.json
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes
+  - type: APIReference
+    url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
 common:
 - type: AgenticAccess
   url: agentic-access/bigchange-agentic-access.yml
