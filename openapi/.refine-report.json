@@ -1,0 +1,34 @@
+{
+  "provider": "bigchange",
+  "sources": [
+    "bigchange-assets-api-openapi.yml",
+    "bigchange-contacts-api-openapi.yml",
+    "bigchange-finance-api-openapi.yml",
+    "bigchange-jobs-api-openapi.yml",
+    "bigchange-persons-api-openapi.yml",
+    "bigchange-reference-data-api-openapi.yml",
+    "bigchange-resources-api-openapi.yml",
+    "bigchange-stock-api-openapi.yml",
+    "bigchange-users-api-openapi.yml",
+    "bigchange-vehicles-api-openapi.yml",
+    "bigchange-webhooks-api-openapi.yml"
+  ],
+  "outputs": [
+    "bigchange-assets-api-openapi.yml",
+    "bigchange-contacts-api-openapi.yml",
+    "bigchange-finance-api-openapi.yml",
+    "bigchange-jobs-api-openapi.yml",
+    "bigchange-persons-api-openapi.yml",
+    "bigchange-reference-data-api-openapi.yml",
+    "bigchange-resources-api-openapi.yml",
+    "bigchange-stock-api-openapi.yml",
+    "bigchange-users-api-openapi.yml",
+    "bigchange-vehicles-api-openapi.yml",
+    "bigchange-webhooks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
