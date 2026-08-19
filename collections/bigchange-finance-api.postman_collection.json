@@ -1,0 +1,538 @@
+{
+  "item": [
+    {
+      "id": "0c45f4d4-3f55-47bd-8c05-f9b05553ddd7",
+      "name": "Finance",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "b18bf2dd-6398-4fd2-afce-5c5243969a1b",
+          "name": "Get a list of invoices",
+          "request": {
+            "name": "Get a list of invoices",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "finance",
+                "invoices"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "ef513191-4140-4e2e-88b2-084f79659074",
+              "name": "A paged list of invoices.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "finance",
+                    "invoices"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 6024,\n  \"pageSize\": 8185,\n  \"totalCount\": 2936,\n  \"items\": [\n    {\n      \"key_0\": \"string\",\n      \"key_1\": 5005,\n      \"key_2\": true\n    },\n    {\n      \"key_0\": 9134,\n      \"key_1\": true,\n      \"key_2\": 9580,\n      \"key_3\": 9595.713253672737\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "894a6395-eb0e-4a12-bab4-18b5208c4485",
+          "name": "Create an invoice",
+          "request": {
+            "name": "Create an invoice",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "finance",
+                "invoices"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d9fd4dbc-36dc-4ffd-b064-0e90ac379595",
+              "name": "The created invoice.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "finance",
+                    "invoices"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "64308b38-132f-4daf-8f83-27cd0bbeae8f",
+          "name": "Get a list of quotes",
+          "request": {
+            "name": "Get a list of quotes",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "finance",
+                "quotes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "436aef9a-8c82-4b83-92d8-5ded61bcfddc",
+              "name": "A paged list of quotes.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "finance",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 1503,\n  \"pageSize\": 1246,\n  \"totalCount\": 9284,\n  \"items\": [\n    {\n      \"key_0\": true,\n      \"key_1\": 7089,\n      \"key_2\": \"string\"\n    },\n    {\n      \"key_0\": 7648\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1dc98a4d-6029-4928-bc3a-5deb5754a7fb",
+          "name": "Create a quote",
+          "request": {
+            "name": "Create a quote",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "finance",
+                "quotes"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3106bba4-8fe3-4770-bc0b-70fe61faccf0",
+              "name": "The created quote.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "finance",
+                    "quotes"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "55e45674-93f8-41e2-bb92-94606db03edd",
+          "name": "Get a list of purchase orders",
+          "request": {
+            "name": "Get a list of purchase orders",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "finance",
+                "purchaseOrders"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "243bfec9-c721-4217-97bc-7ae3346baeee",
+              "name": "A paged list of purchase orders.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "finance",
+                    "purchaseOrders"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 1503,\n  \"pageSize\": 1246,\n  \"totalCount\": 9284,\n  \"items\": [\n    {\n      \"key_0\": true,\n      \"key_1\": 7089,\n      \"key_2\": \"string\"\n    },\n    {\n      \"key_0\": 7648\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bigchange.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5e35eb7e-56a9-4eb1-97ac-1090898634cd",
+    "name": "BigChange DX REST Assets Finance API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec.\n\nContact Support:\n Name: BigChange Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}

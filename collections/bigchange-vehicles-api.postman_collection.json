@@ -1,0 +1,240 @@
+{
+  "item": [
+    {
+      "id": "f221269c-6017-4387-8a83-260421708fbf",
+      "name": "Vehicles",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "993c4ede-01ca-4da1-ac14-f5d912550151",
+          "name": "Get a list of vehicles",
+          "request": {
+            "name": "Get a list of vehicles",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "vehicles"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "cae950ad-67bc-47f5-8560-3fddecacaca5",
+              "name": "A paged list of fleet vehicles.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "vehicles"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 249,\n  \"pageSize\": 3880,\n  \"totalCount\": 7302,\n  \"items\": [\n    {\n      \"key_0\": 4260,\n      \"key_1\": \"string\",\n      \"key_2\": 3005\n    },\n    {\n      \"key_0\": 3860\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7671c860-b0ba-40f2-a3db-e47c1ee8aad5",
+          "name": "Create a vehicle",
+          "request": {
+            "name": "Create a vehicle",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "vehicles"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": 8575.14589705852,\n  \"key_1\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "70c51938-6273-4566-9fb7-28ed242df658",
+              "name": "The created vehicle.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "vehicles"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": \"string\",\n  \"key_1\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": \"string\",\n  \"key_1\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bigchange.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "fa70da2a-eb77-4f95-9e9e-6cab2496a0d3",
+    "name": "BigChange DX REST Assets Vehicles API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec.\n\nContact Support:\n Name: BigChange Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}

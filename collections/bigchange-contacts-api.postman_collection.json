@@ -1,0 +1,347 @@
+{
+  "item": [
+    {
+      "id": "a8218102-a37c-4243-ae88-b9d61711f0d1",
+      "name": "Contacts",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "a0d300d7-54c2-4d5a-ad94-65dd736bce67",
+          "name": "Get a list of contacts",
+          "request": {
+            "name": "Get a list of contacts",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "contacts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "4bdc7d47-e0e3-40d5-af21-d1da0f174648",
+              "name": "A paged list of contacts.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "contacts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 3060,\n  \"pageSize\": 3970,\n  \"totalCount\": 1254,\n  \"items\": [\n    {\n      \"key_0\": 5791,\n      \"key_1\": false,\n      \"key_2\": 1601.6021613753871\n    },\n    {\n      \"key_0\": true,\n      \"key_1\": false,\n      \"key_2\": 8018.08692179589,\n      \"key_3\": true,\n      \"key_4\": 5738.240758822256\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "03d26e22-0c0f-4a6c-9be7-00c9d4c63d6f",
+          "name": "Create a contact",
+          "request": {
+            "name": "Create a contact",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "contacts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": \"string\",\n  \"key_1\": 4781.392534492832\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "4bdf9db0-7ee5-472f-8592-6180cf5914a9",
+              "name": "The created contact.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "contacts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": \"string\",\n  \"key_1\": \"string\",\n  \"key_2\": 3782.0840665601095\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": \"string\",\n  \"key_1\": \"string\",\n  \"key_2\": 3782.0840665601095\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "32fe2ad2-a669-4214-b637-00c7b4af4051",
+          "name": "Get a contact",
+          "request": {
+            "name": "Get a contact",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "contacts",
+                ":contactId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<long>",
+                  "key": "contactId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "982a1c34-e1a5-4142-afd8-0e8ba3b2fa95",
+              "name": "The requested contact.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "contacts",
+                    ":contactId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<long>",
+                      "key": "contactId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": \"string\",\n  \"key_1\": \"string\",\n  \"key_2\": 3782.0840665601095\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bigchange.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "072a5e8f-8847-42e4-9f95-0113d1a1882b",
+    "name": "BigChange DX REST Assets Contacts API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec.\n\nContact Support:\n Name: BigChange Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}

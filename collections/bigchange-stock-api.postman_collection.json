@@ -1,0 +1,240 @@
+{
+  "item": [
+    {
+      "id": "0bad3db8-9ab8-4e27-a3da-a94034b7aa3a",
+      "name": "Stock",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "7e2acd84-c253-45cd-856f-8772e2cc7314",
+          "name": "Get a list of stock items",
+          "request": {
+            "name": "Get a list of stock items",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "stockItems"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "938cc4e5-25c1-4b0b-9d43-cb3c85c38578",
+              "name": "A paged list of stock items.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "stockItems"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 3715,\n  \"pageSize\": 9686,\n  \"totalCount\": 141,\n  \"items\": [\n    {\n      \"key_0\": 7418,\n      \"key_1\": false,\n      \"key_2\": true\n    },\n    {\n      \"key_0\": true,\n      \"key_1\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "036b7f5c-c01e-4b74-97a6-05be50f9fb16",
+          "name": "Create a stock item",
+          "request": {
+            "name": "Create a stock item",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "stockItems"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5d09df2c-2f4d-498c-a762-455a157c8cec",
+              "name": "The created stock item.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "stockItems"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": 5797.73234805731,\n  \"key_1\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"key_0\": 5797.73234805731,\n  \"key_1\": true\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bigchange.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "7945f96a-c6cf-4646-ab6e-85df89cc79e1",
+    "name": "BigChange DX REST Assets Stock API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec.\n\nContact Support:\n Name: BigChange Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}

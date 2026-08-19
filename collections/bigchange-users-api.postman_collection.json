@@ -1,0 +1,130 @@
+{
+  "item": [
+    {
+      "id": "54892e88-16ff-416a-bf35-7f32752d3b9d",
+      "name": "Users",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "36485af1-0098-4f15-af54-2d677cb3c166",
+          "name": "Gets a list of users",
+          "request": {
+            "name": "Gets a list of users",
+            "description": {},
+            "url": {
+              "path": [
+                "v1",
+                "users"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                "key": "Customer-Id",
+                "value": "<long>"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "491ee7e1-c61a-442f-82a0-714f5b6bf3f8",
+              "name": "A paged list of back-office users.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v1",
+                    "users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "(Required) The customer (BigChange account) identifier. Required on every operation in the published spec.",
+                    "key": "Customer-Id",
+                    "value": "<long>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"pageNumber\": 8364,\n  \"pageSize\": 726,\n  \"totalCount\": 8705,\n  \"items\": [\n    {\n      \"key_0\": true\n    },\n    {\n      \"key_0\": \"string\",\n      \"key_1\": 9510\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bigchange.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "bba72402-128d-409e-b5fe-7b8017dbc29d",
+    "name": "BigChange DX REST Assets Users API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).\n\nGrounded: the base URL (https://api.bigchange.com), the path templates, the HTTP methods, the Bearer JWT security scheme, and the required Customer-Id header are all taken directly from BigChange's own published Swagger/OpenAPI documents:\n  - https://api.bigchange.com/swagger/v1/swagger.json (BigChange DX, 108 paths)\n  - https://api.bigchange.com/swagger/asset-management/v1/swagger.json\n  - https://api.bigchange.com/swagger/webhooks/v1/swagger.json\n\n\nModeled: this document is an API Evangelist-authored, representative SUBSET of the full published specification. Request and response BODY schemas are summarized as generic objects here rather than reproduced field-by-field - consult the upstream swagger.json documents above for the complete, authoritative request/response models. Every path and method listed below exists in the published BigChange spec.\n\nContact Support:\n Name: BigChange Developer Portal",
+      "type": "text/plain"
+    }
+  }
+}

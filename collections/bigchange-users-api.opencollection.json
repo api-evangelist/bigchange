@@ -1,0 +1,41 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets Users API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Gets a list of users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/users",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Gets a list of users"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

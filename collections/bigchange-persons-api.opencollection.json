@@ -1,0 +1,62 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets Persons API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Persons",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of persons",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/persons",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get a list of persons"
+        },
+        {
+          "info": {
+            "name": "Create a person",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/persons",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a person"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

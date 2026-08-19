@@ -1,0 +1,62 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets Stock API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Stock",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of stock items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/stockItems",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get a list of stock items"
+        },
+        {
+          "info": {
+            "name": "Create a stock item",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/stockItems",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a stock item"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

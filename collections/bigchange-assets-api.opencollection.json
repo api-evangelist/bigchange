@@ -1,0 +1,62 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Assets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of assets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/asset-management/v1/assets",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Published in BigChange's separate Asset Management OpenAPI document."
+        },
+        {
+          "info": {
+            "name": "Create an asset",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/asset-management/v1/assets",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create an asset"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

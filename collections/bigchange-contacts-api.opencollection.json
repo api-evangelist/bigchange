@@ -1,0 +1,86 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets Contacts API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Contacts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of contacts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/contacts",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get a list of contacts"
+        },
+        {
+          "info": {
+            "name": "Create a contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/contacts",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a contact"
+        },
+        {
+          "info": {
+            "name": "Get a contact",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/contacts/:contactId",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "contactId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a contact"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

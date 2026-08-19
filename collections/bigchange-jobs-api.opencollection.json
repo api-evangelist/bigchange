@@ -1,0 +1,216 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "BigChange DX REST Assets Jobs API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Jobs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get a list of jobs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobs",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "typeId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "contactId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "pageNumber",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "pageSize",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Returns a paged list of jobs. Supports filtering by type, contact, resource, order number, and created-at date range, plus sorting and pagination (pageNumber, pageSize). Modeled from the published spec."
+        },
+        {
+          "info": {
+            "name": "Create a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bigchange.com/v1/jobs",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a job"
+        },
+        {
+          "info": {
+            "name": "Get a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a job"
+        },
+        {
+          "info": {
+            "name": "Update a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update a job"
+        },
+        {
+          "info": {
+            "name": "Schedule or unschedule a job",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/schedule",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Assign a job to a resource and time slot, or unschedule it."
+        },
+        {
+          "info": {
+            "name": "Set a job to started",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/start",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Set a job to started"
+        },
+        {
+          "info": {
+            "name": "Set a job's result",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.bigchange.com/v1/jobs/:jobId/result",
+            "headers": [
+              {
+                "name": "Customer-Id",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "jobId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Set a job's result"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
