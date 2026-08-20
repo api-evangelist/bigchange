@@ -32,6 +32,14 @@ tags:
 - Workforce Management
 - Fleet
 - CRM
+- Software-as-a-Service
+tags_raw:
+- Field Service Management
+- Job Management
+- Scheduling
+- Workforce Management
+- Fleet
+- CRM
 - SaaS
 created: '2026-07-12'
 modified: '2026-07-12'
@@ -133,6 +141,8 @@ apis:
   humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
   baseURL: https://api.bigchange.com
   tags:
+  - Job
+  tags_raw:
   - Jobs
   properties:
   - type: OpenAPI
@@ -283,6 +293,8 @@ apis:
   humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
   baseURL: https://api.bigchange.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -343,6 +355,8 @@ apis:
   humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
   baseURL: https://api.bigchange.com
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
