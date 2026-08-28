@@ -11,6 +11,18 @@ description: BigChange is an all-in-one field service and job management platfor
   authenticated with a Bearer JWT access token (obtained through BigChange's
   authentication proxy from a developer-portal API key) and scoped with a required
   Customer-Id header.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
