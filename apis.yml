@@ -276,6 +276,8 @@ apis:
   humanURL: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs
   baseURL: https://api.bigchange.com
   tags:
+  - Stocks
+  tags_raw:
   - Stock
   properties:
   - type: OpenAPI
