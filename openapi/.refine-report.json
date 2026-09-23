@@ -1,17 +1,7 @@
 {
   "provider": "bigchange",
   "sources": [
-    "bigchange-assets-api-openapi.yml",
-    "bigchange-contacts-api-openapi.yml",
-    "bigchange-finance-api-openapi.yml",
-    "bigchange-jobs-api-openapi.yml",
-    "bigchange-persons-api-openapi.yml",
-    "bigchange-reference-data-api-openapi.yml",
-    "bigchange-resources-api-openapi.yml",
-    "bigchange-stock-api-openapi.yml",
-    "bigchange-users-api-openapi.yml",
-    "bigchange-vehicles-api-openapi.yml",
-    "bigchange-webhooks-api-openapi.yml"
+    "_original/bigchange-openapi.yml"
   ],
   "outputs": [
     "bigchange-assets-api-openapi.yml",
@@ -29,6 +19,22 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "bigchange-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "bigchange-assets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-contacts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-finance-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-jobs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-persons-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-reference-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-resources-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-stock-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-users-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-vehicles-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bigchange-webhooks-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

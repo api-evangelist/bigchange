@@ -1,0 +1,29 @@
+# Front Door AI Index — bigchange — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: bigchange
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.bigchange.com
+  final_host: www.bigchange.com
+  ownership: own
+  owner: bigchange
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 16
+  host_score: 16
+  density: 10.32
+  words: 1550
+  tiers:
+    agentic: 4
+    core: 12
+    model: 0
+  ambiguous: 5
+  top_terms:
+    AI: 12
+    AI agent: 3
+    agent: 3
+    intelligence: 2
+    prompts: 1
