@@ -74,15 +74,6 @@ paths:
       operationId: getV1ContactsByContactId
       x-operation-id-source: derived
 components:
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
   schemas:
     GenericArray:
       type: array
@@ -104,6 +95,15 @@ components:
           type: integer
         items:
           $ref: '#/components/schemas/GenericArray'
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
   securitySchemes:
     bearer:
       type: http
