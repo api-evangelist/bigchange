@@ -52,7 +52,24 @@ paths:
       operationId: postV1StockItems
       x-operation-id-source: derived
 components:
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
   schemas:
+    GenericArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GenericObject'
+    GenericObject:
+      type: object
+      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
+      additionalProperties: true
     PagedResult:
       type: object
       description: Standard paged list envelope (modeled).
@@ -65,23 +82,6 @@ components:
           type: integer
         items:
           $ref: '#/components/schemas/GenericArray'
-    GenericObject:
-      type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
   securitySchemes:
     bearer:
       type: http
