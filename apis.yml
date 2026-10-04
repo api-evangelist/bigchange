@@ -400,6 +400,9 @@ apis:
   - type: APIReference
     url: https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data
 common:
+- type: CapabilityMap
+  url: capabilities/bigchange-capability-edges.yml
+  name: BigChange Business Capability Map
 - type: AgenticAccess
   url: agentic-access/bigchange-agentic-access.yml
 - type: DomainSecurity
