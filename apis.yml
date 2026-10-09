@@ -423,6 +423,8 @@ common:
   url: finops/bigchange-finops.yml
 - url: https://www.bigchange.com/blog/
   type: Blog
+- type: SpectralRules
+  url: https://github.com/BigChangeApps/openapi-linting/blob/6dd2b3aad9a015b3510f2c146a7887bea5253ab1/rest/.spectral.yaml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
