@@ -1,0 +1,16 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/bigchange/integrations
+- https://n8n.io/integrations/bigchange/
+- https://composio.dev/toolkits/bigchange
+- https://monid.ai/tools/bigchange
+checked:
+- https://composio.dev/toolkits/bigchange
+- https://monid.ai/tools/bigchange
+- https://n8n.io/integrations/bigchange/
+- https://zapier.com/apps/bigchange/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
