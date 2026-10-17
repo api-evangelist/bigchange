@@ -160,6 +160,22 @@ paths:
       operationId: putV1JobsByJobIdResult
       x-operation-id-source: derived
 components:
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
+    JobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
   schemas:
     GenericObject:
       type: object
@@ -181,22 +197,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/GenericObject'
-  parameters:
-    JobId:
-      name: jobId
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
   securitySchemes:
     bearer:
       type: http
