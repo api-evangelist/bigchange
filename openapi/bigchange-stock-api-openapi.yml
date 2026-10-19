@@ -1,90 +1,2746 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Stock API
+  title: BigChange DX Stock API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
 - name: Stock
 paths:
+  /v1/productCategories:
+    get:
+      tags:
+      - Stock
+      summary: Get a list of product categories
+      description: Retrieve a paged collection of product categories (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id
+        in: query
+        description: 'Only return product categories where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/ProductCategorySortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadProductCategoryModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ProductCategories
+      x-operation-id-source: derived
+  /v1/productCategories/{productCategoryId}:
+    get:
+      tags:
+      - Stock
+      summary: Get a product category
+      description: Retrieve the details of a single product category (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: productCategoryId
+        in: path
+        description: The unique identifier of the product category
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadProductCategoryModel'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ProductCategoriesByProductCategoryId
+      x-operation-id-source: derived
+  /v1/stock/make-models:
+    get:
+      tags:
+      - Stock
+      summary: Get a list of distinct stock make and model combinations
+      description: Retrieves a paged collection of distinct stock make models (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/StockMakeModelSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort (defaults to ascending)
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: searchQuery
+        in: query
+        description: Only return stock where make or model or stock number matches the value provided
+        schema:
+          type: string
+      - name: productCategoryId
+        in: query
+        description: Only return stock where `productCategoryId` matches the value provided
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadStockMakeModelModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockMakeModels
+      x-operation-id-source: derived
+  /v1/stockDetails:
+    get:
+      tags:
+      - Stock
+      summary: Get a list of stock details
+      description: Retrieves a paged collection of stock details (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/StockDetailsSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return stock details where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: productCategoryId
+        in: query
+        description: 'Only return stock details where `productCategoryId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: modelNumber
+        in: query
+        description: 'Only return stock details where `modelNumber` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: isConsumable
+        in: query
+        description: Only return stock details where `isConsumable` matches the value provided
+        schema:
+          type: boolean
+      - name: stockCode
+        in: query
+        description: 'Only return stock details where `stockCode` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: batchNumber
+        in: query
+        description: 'Only return stock details where `batchNumber` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadStockDetailsModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockDetails
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Stock
+      summary: Create a stock details
+      description: Creates a new stock details entity (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStockDetailsModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1StockDetails
+      x-operation-id-source: derived
+  /v1/stockDetails/{stockDetailsId}:
+    get:
+      tags:
+      - Stock
+      summary: Get a stock details
+      description: Retrieves single stock details (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        description: The unique identifier of the stock details
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStockDetailsModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockDetailsByStockDetailsId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Stock
+      summary: Update a stock details
+      description: Update the details of a single stock details (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStockDetailsModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1StockDetailsByStockDetailsId
+      x-operation-id-source: derived
+  /v1/stockDetails/{stockDetailsId}/suppliers:
+    get:
+      tags:
+      - Stock
+      summary: Get a list of stock suppliers
+      description: Retrieves a paged collection of stock suppliers (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        description: The unique identifier of the stock details
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: id
+        in: query
+        description: 'Only return notes where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadStockSupplierModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockDetailsByStockDetailsIdSuppliers
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Stock
+      summary: Create a stock supplier
+      description: Create a new stock supplier (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStockSupplierModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1StockDetailsByStockDetailsIdSuppliers
+      x-operation-id-source: derived
+  /v1/stockDetails/{stockDetailsId}/suppliers/{stockSupplierId}:
+    get:
+      tags:
+      - Stock
+      summary: Get a stock supplier
+      description: Get a stock supplier by its id (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        description: The unique identifier of the stock details entity
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: stockSupplierId
+        in: path
+        description: The unique identifier of the stock supplier
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStockSupplierModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockDetailsByStockDetailsIdSuppliersByStockSupplierId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Stock
+      summary: Update a stock supplier
+      description: Update the details of a stock supplier (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockDetailsId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockSupplierId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStockSupplierModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1StockDetailsByStockDetailsIdSuppliersByStockSupplierId
+      x-operation-id-source: derived
   /v1/stockItems:
     get:
       tags:
       - Stock
       summary: Get a list of stock items
+      description: Retrieves a paged collection of stock items (required scope stock:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/StockItemsSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return stock items where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: stockDetailsId
+        in: query
+        description: 'Only return stock items where `stockDetailsId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: serialNumber
+        in: query
+        description: Only return stock items where 'serialNumber' matches the value provided
+        schema:
+          type: string
+      - name: locationContactId
+        in: query
+        description: Only return stock items where 'locationContactId' matches the value provided
+        schema:
+          type: integer
+          format: int64
+      - name: locationVehicleId
+        in: query
+        description: Only return stock items where 'locationVehicleId' matches the value provided
+        schema:
+          type: integer
+          format: int64
+      - name: isSold
+        in: query
+        description: If true only returns stock items where 'soldAt' is not null, if false only returns stock items where 'soldAt' is null
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A paged list of stock items.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadStockItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1StockItems
       x-operation-id-source: derived
     post:
       tags:
       - Stock
       summary: Create a stock item
+      description: Creates a new stock item entity (required scope stock:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/CreateStockItemsModel'
       responses:
         '201':
-          description: The created stock item.
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: postV1StockItems
+      x-operation-id-source: derived
+  /v1/stockItems/{stockItemId}:
+    get:
+      tags:
+      - Stock
+      summary: Get a stock item
+      description: Retrieves a single stock item (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockItemId
+        in: path
+        description: The unique identifier of the stock item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+          example: 5514123
+        example: 5514123
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStockItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockItemsByStockItemId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Stock
+      summary: Update a stock item
+      description: Updates the details of a single stock item (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockItemId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStockItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1StockItemsByStockItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Stock
+      summary: Delete a stock item
+      description: Deletes a stock item (required scope stock:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: stockItemId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1StockItemsByStockItemId
+      x-operation-id-source: derived
+  /v1/stockMovement:
+    get:
+      tags:
+      - Stock
+      summary: Get a list of stock movements
+      description: Retrieves a paged collection of stock movements (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id
+        in: query
+        description: 'Only return resources where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: jobId
+        in: query
+        description: 'Only return resources where `jobId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pickUpAtFrom
+        in: query
+        description: Only return stock movement where `pickupAt` is the same or newer than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: pickUpAtTo
+        in: query
+        description: Only return stock movement where `pickupAt` is the same or older than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: dropOffAtFrom
+        in: query
+        description: Only return resources where 'dropOffDate' is greater than or equal to the UTC value provided
+        schema:
+          type: string
+          format: date-time
+      - name: dropOffAtTo
+        in: query
+        description: Only return resources where 'dropOffDate' is lesser than or equal to the UTC value provided
+        schema:
+          type: string
+          format: date-time
+      - name: stockDetailsId
+        in: query
+        description: 'Only return resources where `stockDetailsId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: stockItemId
+        in: query
+        description: 'Only return resources where `stockItemId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: vehicleId
+        in: query
+        description: 'Only return resources where `vehicleId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: dropOffContactId
+        in: query
+        description: 'Only return records where ''dropOffContactId'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: dropOffVehicleId
+        in: query
+        description: 'Only return records where ''dropOffVehicleId'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadStockMovementModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1StockMovement
       x-operation-id-source: derived
 components:
   schemas:
-    PagedResult:
+    PagedResponseReadStockMakeModelModel:
       type: object
-      description: Standard paged list envelope (modeled).
       properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadStockMakeModelModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
-        items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericObject:
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    UpdateStockItemModel:
+      type: object
+      properties:
+        quantity:
+          type:
+          - number
+          - 'null'
+          description: 'The quantity of the stock items. Must be omitted or null if the stock item is not consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.3
+          x-optional: Omit to retain current value or provide null to unset
+        locationContactId:
+          type:
+          - integer
+          - 'null'
+          description: 'The ID of the contact associated with the stock item, must be omitted or null if the stock item is located at a vehicle or another stock item<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        locationVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: 'The ID of the vehicle associated with the stock item, must be omitted or null if the stock item is located at a contact or another stock item<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        locationStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: 'The ID of the stock item this stock item is allocated to, must be omitted or null if the stock item is located at a contact or a vehicle<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        soldAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date when the stock item was sold<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '2024-08-29T12:30:45.0000000+00:00'
+          x-optional: Omit to retain current value or provide null to unset
+        notes:
+          type:
+          - string
+          - 'null'
+          description: 'Notes on the stock item, must be null or omitted if the stock item is consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Should be kept in warehouse
+          x-optional: Omit to retain current value or provide null to unset
+        serialNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The unique number or barcode assigned to each individual stock item for identification and tracking. Required if the stock item is non consumable, otherwise must be null or omitted. Cannot contain preceding or trailing whitespace<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: AT-25805
+          x-optional: Omit to retain current value or provide null to unset
+        altSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The alternative serial number of the stock item. Must be omitted or null if the stock item is consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: PA-09842
+          x-optional: Omit to retain current value or provide null to unset
+        supplierSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The unique number used by the supplier for the stock item. Must be omitted or null if the stock item is consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: TW-015
+          x-optional: Omit to retain current value or provide null to unset
+        customerSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The unique number used by the customer for the stock item. Must be omitted or null if the stock item is consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: LM-214750
+          x-optional: Omit to retain current value or provide null to unset
+        isEquipment:
+          type: boolean
+          description: 'Indicates whether the stock item is equipment or not<br/><br/>Optional: Omit to retain current value'
+          example: true
+          x-optional: Omit to retain current value
+        condition:
+          $ref: '#/components/schemas/StockItemCondition'
+        usage:
+          type:
+          - number
+          - 'null'
+          description: 'The usage of the stock item. For items which are chargeable on an hourly, daily or weekly rate. Must be null or omitted if the stock item is consumable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 6.15
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'The custom fields associated with the stock item<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Represents a model for updating a stock item
+    PagedResponseReadStockSupplierModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadStockSupplierModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CreateStockItemsModel:
+      required:
+      - stockDetailsId
+      type: object
+      properties:
+        stockDetailsId:
+          type: integer
+          description: The unique identifier of the stock details related to this stock item
+          format: int64
+          example: 5514123
+        quantity:
+          type:
+          - number
+          - 'null'
+          description: The quantity of the stock items. Must be omitted or null if the stock item is not consumable
+          format: double
+          example: 5.3
+        locationContactId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the contact associated with the stock item, must be omitted or null if the stock item is located at a vehicle or another stock item
+          format: int64
+          example: 5514123
+        locationVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the vehicle associated with the stock item, must be omitted or null if the stock item is located at a contact or another stock item
+          format: int64
+          example: 5514123
+        locationStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the stock item this stock item is allocated to, must be omitted or null if the stock item is located at a contact or a vehicle
+          format: int64
+          example: 5514123
+        soldAt:
+          type:
+          - string
+          - 'null'
+          description: The date when the stock item was sold
+          format: date-time
+          example: '2024-08-29T12:30:45.0000000+00:00'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes on the stock item, must be null or omitted if the stock item is not consumable
+          example: Should be kept in warehouse
+        serialNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number or barcode assigned to each individual stock item for identification and tracking. Required if the stock item is non consumable, otherwise must be null or omitted. Cannot contain preceding or trailing whitespace
+          example: AT-25805
+        altSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The alternative serial number of the stock item. Must be omitted or null if the stock item is consumable
+          example: PA-09842
+        supplierSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number used by the supplier for the stock item, must be null or omitted if the stock item is not consumable
+          example: TW-015
+        customerSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The number assigned by the customer for the stock item
+          example: LM-214750
+        isEquipment:
+          type: boolean
+          description: Indicates whether the stock item is equipment or not, defaults to false
+          example: true
+        condition:
+          $ref: '#/components/schemas/StockItemCondition'
+        usage:
+          type:
+          - number
+          - 'null'
+          description: The usage of the stock item, must be null or omitted when stock item is consumable
+          format: double
+          example: 0.7
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: The custom fields associated with the stock item
+      additionalProperties: false
+      description: Represents a model for creating stock items
+    CreateStockSupplierModel:
+      required:
+      - contactId
+      type: object
+      properties:
+        contactId:
+          type: integer
+          description: The unique identifier of the contact that supplies the stock
+          format: int64
+          example: 5514123
+        warrantyPeriod:
+          type:
+          - integer
+          - 'null'
+          description: The warranty period refers to the duration (in months) for which the stock supplier guarantees the inventory's quality and performance
+          format: int32
+          example: 12
+        cost:
+          type:
+          - number
+          - 'null'
+          description: The cost refers to the amount charged by the stock supplier for each unit of inventory. If CurrencyCode is not null, this field is required
+          format: double
+          example: 12.99
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+      additionalProperties: false
+      description: Represents a model that holds information about creating a stock supplier
+    ReadStockMakeModelModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the stock
+          format: int64
+          example: 12345
+        type:
+          type: integer
+          description: The unique identifier of the stock type (product category)
+          format: int64
+          example: 10
+        make:
+          type: string
+          description: The manufacturer or brand of the stock item
+          example: Bosch
+        model:
+          type: string
+          description: The model of the stock item
+          example: GBH 2-26 DRE
+        number:
+          type: string
+          description: The model number or reference number of the stock
+          example: '611253703'
+        createdAt:
+          type: string
+          description: The UTC date and time when the stock was created
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents stock details including make, model, and type information
+    PagedResponseReadStockDetailsModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadStockDetailsModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadStockSupplierModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the stock supplier
+          format: int64
+          example: 12345
+        stockDetailsId:
+          type: integer
+          description: The unique identifier of the stock details record
+          format: int64
+          example: 4334
+        contactId:
+          type: integer
+          description: The unique identifier of the contact for this stock supplier
+          format: int64
+          example: 88112
+        warrantyPeriod:
+          type:
+          - integer
+          - 'null'
+          description: The warranty period refers to the duration (in months) for which the stock supplier guarantees the inventory's quality and performance
+          format: int32
+          example: 12
+        cost:
+          type:
+          - number
+          - 'null'
+          description: The cost refers to the amount charged by the stock supplier for each unit of inventory
+          format: double
+          example: 12.99
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+      additionalProperties: false
+      description: Represents a model that holds information about a stock supplier
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ReadProductCategoryModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the product category
+          format: int64
+          example: 346583
+        name:
+          type: string
+          description: Represents the classification or grouping of a stock item based on its characteristics, usage, or other criteria. It helps in organising the inventory and can aid in tracking, reporting, and analysing inventory data
+          example: Electronics
+        createdAt:
+          type: string
+          description: The date and time when the stock item record was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model for reading product category
+    ReadStockMovementModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for each stock movement record
+          format: int64
+          example: 123456
+        stockDetailsId:
+          type: integer
+          description: The identifier of the type of stock associated with the stock movement
+          format: int64
+          example: 876
+        stockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the specific stock item involved in the stock movement
+          format: int64
+          example: 384
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the job associated with the stock usage/movement
+          format: int64
+          example: 559
+        pickupAt:
+          type:
+          - string
+          - 'null'
+          description: The timestamp with time zone offset of the stock pickup
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        dropOffAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of the stock drop-off
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        isDropOffForSell:
+          type: boolean
+          description: A flag indicating if the delivered stock is meant for sale
+          example: true
+        pickupPosition:
+          $ref: '#/components/schemas/Location'
+        dropOffPosition:
+          $ref: '#/components/schemas/Location'
+        pickupVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the vehicle at the pickup location
+          format: int64
+          example: 123
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the vehicle associated with the stock movement
+          format: int64
+          example: 123
+        dropOffVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the vehicle at the drop-off location
+          format: int64
+          example: 123
+        dropOffStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the stock item at the drop-off location
+          format: int64
+          example: 123
+        pickupStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the stock item at the pickup location
+          format: int64
+          example: 123
+        isEquipmentAtPickup:
+          type: boolean
+          description: A flag indicating if the stock at the pickup location is equipment
+          example: true
+        isEquipmentAtDropOff:
+          type: boolean
+          description: A flag indicating if the stock at the drop-off location is equipment
+          example: true
+        ownerId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the owner related to the stock movement
+          format: int64
+          example: 74837
+        ownerName:
+          type:
+          - string
+          - 'null'
+          description: The name of the individual or entity who owns the stock movement
+          example: John Doe
+        invoiceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the invoice associated with the stock usage or movement
+          format: int64
+          example: 50012345
+        pickupContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact at the pickup location
+          format: int64
+          example: 50012345
+        dropOffContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact at the drop-off location
+          format: int64
+          example: 50012345
+        pickUpQuantity:
+          type:
+          - number
+          - 'null'
+          description: The count of stock units that were picked up
+          format: double
+          example: 12.3
+        dropOffQuantity:
+          type:
+          - number
+          - 'null'
+          description: The count of stock units that were delivered
+          format: double
+          example: 13.14
+      additionalProperties: false
+      description: Represents a model for reading a stock movement
+    ReadStockDetailsModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the stock details
+          format: int64
+          example: 5514123
+        make:
+          type:
+          - string
+          - 'null'
+          description: The manufacturer or brand of the stock
+          example: DustGone Solutions
+        model:
+          type: string
+          description: The model name of the stock details
+          example: F1 Cleaner
+        sellingPrice:
+          type:
+          - number
+          - 'null'
+          description: The selling price of the stock
+          format: double
+          example: 19.99
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The department code of the stock
+          format: int64
+          example: 123
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The nominal code associated with the stock for accounting purposes
+          format: int64
+          example: 1234
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes associated with the stock
+          example: Great for cleaning windows
+        productCategoryId:
+          type: integer
+          description: The unique identifier of the product category related to this stock details
+          format: int64
+          example: 5514123
+        isConsumable:
+          type: boolean
+          description: Indicates whether the stock is a consumable item or not. Default is false
+          example: true
+        modelNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number assigned by the manufacturer to identify the model of the stock
+          example: F1-00010
+        stockCode:
+          type:
+          - string
+          - 'null'
+          description: The unique number or barcode assigned to each individual stock for identification and tracking
+          example: B10
+        batchNumber:
+          type:
+          - string
+          - 'null'
+          description: The batch number of the stock
+          example: S8
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the tax (vat) associated with the stock
+          format: int64
+          example: 1234
+        taxPercentage:
+          type:
+          - number
+          - 'null'
+          description: The tax (vat) percentage of the stock
+          format: double
+          example: 20
+        size:
+          type:
+          - number
+          - 'null'
+          description: The dimensions or volume of the stock (m3)
+          format: double
+          example: 199
+        weight:
+          type:
+          - number
+          - 'null'
+          description: The weight of the stock (kg)
+          format: double
+          example: 6.3
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this stock details was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Read stock details model
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    StockItemCondition:
+      enum:
+      - new
+      - refurbished
+      - used
+      type: string
+      description: 'Represents the condition of a stock item<p>Possible values:</p><ul><li><b>new</b>: New stock item</li><li><b>refurbished</b>: Refurbished stock item</li><li><b>used</b>: Used stock item</li></ul>'
+      example: new
+    UpdateStockDetailsModel:
+      type: object
+      properties:
+        productCategoryId:
+          type: integer
+          description: 'The unique identifier of the product category associated to this stock details<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value
+        model:
+          type: string
+          description: 'The model name of the stock details<br/><br/>Optional: Omit to retain current value'
+          example: F1 Cleaner
+          x-optional: Omit to retain current value
+        make:
+          type:
+          - string
+          - 'null'
+          description: 'The manufacturer or brand of the stock<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: DustGone Solutions
+          x-optional: Omit to retain current value or provide null to unset
+        sellingPrice:
+          type:
+          - number
+          - 'null'
+          description: 'The selling price of the stock. Cannot set to null if CurrencyCode is set<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 19.99
+          x-optional: Omit to retain current value or provide null to unset
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The department code of the stock<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 123
+          x-optional: Omit to retain current value or provide null to unset
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The nominal code associated with the stock for accounting purposes<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1234
+          x-optional: Omit to retain current value or provide null to unset
+        notes:
+          type:
+          - string
+          - 'null'
+          description: 'Notes associated with the stock<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Great for cleaning windows
+          x-optional: Omit to retain current value or provide null to unset
+        modelNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The unique number assigned by the manufacturer to identify the model of the stock<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: F1-00010
+          x-optional: Omit to retain current value or provide null to unset
+        stockCode:
+          type:
+          - string
+          - 'null'
+          description: 'The unique number or barcode assigned to each individual stock for identification and tracking<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: B10
+          x-optional: Omit to retain current value or provide null to unset
+        batchNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The batch number of the stock<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: S8
+          x-optional: Omit to retain current value or provide null to unset
+        size:
+          type:
+          - number
+          - 'null'
+          description: 'The dimensions or volume of the stock (m3)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 199
+          x-optional: Omit to retain current value or provide null to unset
+        weight:
+          type:
+          - number
+          - 'null'
+          description: 'The weight of the stock (kg)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 6.3
+          x-optional: Omit to retain current value or provide null to unset
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'The identifier of the tax (vat) associated with the stock.  If null, the user''s default tax rate will be applied<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1234
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Update stock details model
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    CurrencyWrite:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li></ul>'
+      example: EUR
+    StockDetailsSortOptions:
+      enum:
+      - model
+      type: string
+      description: 'Represents the fields that can be used to sort stock details<p>Possible values:</p><ul><li><b>model</b>: The name of the stock details model</li></ul>'
+      example: model
+    ReadStockItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the stock item
+          format: int64
+          example: 5514123
+        stockDetailsId:
+          type: integer
+          description: The unique identifier of the stock details associated with the stock item
+          format: int64
+          example: 5514123
+        quantity:
+          type:
+          - number
+          - 'null'
+          description: The quantity of the stock item
+          format: double
+          example: 2.5
+        locationContactId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the contact associated with the stock item, null if the stock item is not located at a contact
+          format: int64
+          example: 5514123
+        locationVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the vehicle associated with the stock item, null if the stock item is not located on a vehicle
+          format: int64
+          example: 5514123
+        locationStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the stock item this stock item is allocated to, null if the stock item is not allocated to an item
+          format: int64
+          example: 5514123
+        soldAt:
+          type:
+          - string
+          - 'null'
+          description: The date when the stock item was sold
+          format: date-time
+          example: '2024-08-29T12:30:45.0000000+00:00'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this stock item was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes on the stock item
+          example: Should be kept in warehouse
+        serialNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number or barcode assigned to each individual stock item for identification and tracking
+          example: AT-25805
+        altSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The alternative serial number of the stock item
+          example: PA-09842
+        supplierSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number used by the supplier for the stock item
+          example: TW-015
+        customerSerialNumber:
+          type:
+          - string
+          - 'null'
+          description: The number assigned by the customer for the stock item
+          example: LM-214750
+        isEquipment:
+          type: boolean
+          description: Indicates whether the stock item is equipment or not
+          example: true
+        condition:
+          $ref: '#/components/schemas/StockItemCondition'
+        usage:
+          type:
+          - number
+          - 'null'
+          description: The usage of the stock item
+          format: double
+          example: 10
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: The custom fields associated with the stock item
+      additionalProperties: false
+      description: Represents a model for reading stock item information
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    StockItemsSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort stock items<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the stock item was created</li></ul>'
+      example: createdAt
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    PagedResponseReadProductCategoryModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadProductCategoryModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CurrencyRead:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      - UNKNOWN
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site with an unknown value to handle unrecognised currencies returned from the database<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li><li><b>UNKNOWN</b>: Unknown currency</li></ul>'
+      example: EUR
+    CreateStockDetailsModel:
+      required:
+      - model
+      - productCategoryId
+      type: object
+      properties:
+        model:
+          minLength: 1
+          type: string
+          description: The model name of the stock details
+          example: F1 Cleaner
+        productCategoryId:
+          type: integer
+          description: The unique identifier of the product category related to this stock details
+          format: int64
+          example: 5514123
+        make:
+          type:
+          - string
+          - 'null'
+          description: The manufacturer or brand of the stock
+          example: DustGone Solutions
+        sellingPrice:
+          type:
+          - number
+          - 'null'
+          description: The selling price of the stock
+          format: double
+          example: 19.99
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The department code of the stock
+          format: int64
+          example: 123
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The nominal code associated with the stock for accounting purposes
+          format: int64
+          example: 1234
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes associated with the stock
+          example: Great for cleaning windows
+        isConsumable:
+          type: boolean
+          description: Indicates whether the stock is a consumable item or not. Default is false
+          example: true
+        modelNumber:
+          type:
+          - string
+          - 'null'
+          description: The unique number assigned by the manufacturer to identify the model of the stock
+          example: F1-00010
+        stockCode:
+          type:
+          - string
+          - 'null'
+          description: The unique number or barcode assigned to each individual stock for identification and tracking
+          example: B10
+        batchNumber:
+          type:
+          - string
+          - 'null'
+          description: The batch number of the stock
+          example: S8
+        size:
+          type:
+          - number
+          - 'null'
+          description: The dimensions or volume of the stock (m3)
+          format: double
+          example: 199
+        weight:
+          type:
+          - number
+          - 'null'
+          description: The weight of the stock (kg)
+          format: double
+          example: 6.3
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the tax (vat) associated with the stock.  If null or omitted, the user's default tax rate will be applied
+          format: int64
+          example: 1234
+      additionalProperties: false
+      description: Create stock details model
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    StockMakeModelSortOptions:
+      enum:
+      - make
+      - model
+      - modelNumber
+      - creationDate
+      type: string
+      description: 'Represents the fields that can be used to sort stock make-models.<p>Possible values:</p><ul><li><b>make</b>: Sort by stock make</li><li><b>model</b>: Sort by stock model</li><li><b>modelNumber</b>: Sort by model number (stock number)</li><li><b>creationDate</b>: Sort by creation date</li></ul>'
+      example: make
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    PagedResponseReadStockMovementModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadStockMovementModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadStockItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadStockItemModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ProductCategorySortOptions:
+      enum:
+      - name
+      type: string
+      description: 'Represents the sort options for product categories<p>Possible values:</p><ul><li><b>name</b>: Sort product categories by name</li></ul>'
+      example: name
+    UpdateStockSupplierModel:
+      type: object
+      properties:
+        contactId:
+          type: integer
+          description: 'The identifier of the contact associated with the stock supplier. It is used for communication and relationship management with the supplier<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 12345
+          x-optional: Omit to retain current value
+        warrantyPeriod:
+          type:
+          - integer
+          - 'null'
+          description: 'The warranty period refers to the duration (in months) for which the stock supplier guarantees the inventory''s quality and performance<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int8
+          example: 12
+          x-optional: Omit to retain current value or provide null to unset
+        cost:
+          type:
+          - number
+          - 'null'
+          description: 'The cost refers to the amount charged by the stock supplier for each unit of inventory. If set to null, CurrencyCode is also changed to null. If CurrencyCode is omitted from request and it''s previous value is null, the default currency is used<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 12.99
+          x-optional: Omit to retain current value or provide null to unset
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+      additionalProperties: false
+      description: Represents a model that holds information to update a stock supplier
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

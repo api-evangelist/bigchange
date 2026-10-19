@@ -1,0 +1,706 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Absences API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Absences
+paths:
+  /v1/absences:
+    get:
+      tags:
+      - Absences
+      summary: Get a list of absences
+      description: Retrieve a paged collection of absence records (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: query
+        description: Only return absences for the resource with this identifier
+        schema:
+          type: integer
+          format: int32
+      - name: dateFrom
+        in: query
+        description: Only return absences starting on or after this date
+        schema:
+          type: string
+          format: date-time
+      - name: dateTo
+        in: query
+        description: Only return absences ending on or before this date
+        schema:
+          type: string
+          format: date-time
+      - name: status
+        in: query
+        description: Only return absences with this status
+        schema:
+          $ref: '#/components/schemas/AbsenceStatus'
+      - name: absenceTypeId
+        in: query
+        description: Only return absences of this absence type
+        schema:
+          type: integer
+          format: int32
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadAbsenceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1Absences
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Absences
+      summary: Create an absence
+      description: Create a new absence record for a resource (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Create absence model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAbsenceModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1Absences
+      x-operation-id-source: derived
+  /v1/absences/{absenceId}:
+    patch:
+      tags:
+      - Absences
+      summary: Update an absence
+      description: Update the details or status of a single absence (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: absenceId
+        in: path
+        description: Absence id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Model used to update the absence. At least one optional value must be provided
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAbsenceModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1AbsencesByAbsenceId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Absences
+      summary: Delete an absence
+      description: Delete an absence record (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: absenceId
+        in: path
+        description: Absence id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1AbsencesByAbsenceId
+      x-operation-id-source: derived
+  /v1/absenceTypes:
+    get:
+      tags:
+      - Absences
+      summary: Get a paged list of absence types
+      description: Retrieve a paged list of absence types (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number to retrieve, starting at 1. (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The number of items per page. Defaults to 100, maximum 1000. (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadAbsenceTypeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1AbsenceTypes
+      x-operation-id-source: derived
+components:
+  schemas:
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadAbsenceTypeModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadAbsenceTypeModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    UpdateAbsenceModel:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/AbsenceStatus'
+        comment:
+          type: string
+          description: 'Comment or reason for the status change<br/><br/>Max length: 500 characters<br/><br/>Optional: Omit to retain current value'
+          example: Approved by manager
+          x-optional: Omit to retain current value
+        absenceTypeId:
+          type: integer
+          description: 'The unique identifier of the absence type. Must reference a valid absence type for this customer<br/><br/>Optional: Omit to retain current value'
+          format: int32
+          example: 1
+          x-optional: Omit to retain current value
+        startAt:
+          type: string
+          description: 'The updated start date and time of the absence<br/><br/>Optional: Omit to retain current value'
+          format: date-time
+          example: '2026-01-01T00:00:00.0000000+00:00'
+          x-optional: Omit to retain current value
+        endAt:
+          type: string
+          description: 'The updated end date and time of the absence<br/><br/>Optional: Omit to retain current value'
+          format: date-time
+          example: '2026-01-02T00:00:00.0000000+00:00'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Update absence request model. At least one optional value must be provided
+    CreateAbsenceModel:
+      required:
+      - absenceTypeId
+      - endAt
+      - resourceId
+      - startAt
+      type: object
+      properties:
+        resourceId:
+          type: integer
+          description: The unique identifier of the resource the absence is for
+          format: int32
+          example: 12345
+        startAt:
+          type: string
+          description: The date and time the absence starts
+          format: date-time
+          example: '2026-01-01T00:00:00.0000000+00:00'
+        endAt:
+          type: string
+          description: The date and time the absence ends. Must be on or after StartAt
+          format: date-time
+          example: '2026-01-02T00:00:00.0000000+00:00'
+        absenceTypeId:
+          type: integer
+          description: The unique identifier of the absence type. Must reference a valid absence type for this customer
+          format: int32
+          example: 1
+        daysRequested:
+          type:
+          - number
+          - 'null'
+          description: The number of days requested for the absence
+          format: double
+          example: 1
+        reason:
+          type:
+          - string
+          - 'null'
+          description: Free-text reason for the absence
+          example: Annual leave
+        isPaidLeave:
+          type:
+          - boolean
+          - 'null'
+          description: Whether this absence is paid leave
+          example: false
+      additionalProperties: false
+      description: Create absence request model
+    AbsenceStatus:
+      enum:
+      - requested
+      - queried
+      - rejected
+      - approved
+      type: string
+      description: 'The status of a resource absence<p>Possible values:</p><ul><li><b>requested</b>: The absence has been requested by the resource</li><li><b>queried</b>: The absence has been queried and requires review</li><li><b>rejected</b>: The absence has been rejected</li><li><b>approved</b>: The absence has been approved</li></ul>'
+      example: requested
+    ReadAbsenceTypeModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the absence type
+          format: int32
+          example: 42
+        name:
+          type: string
+          description: The display name of the absence type
+          example: Holiday
+        colour:
+          type: string
+          description: The colour associated with the absence type
+          example: '#FF5733'
+        isActive:
+          type: boolean
+          description: Indicates whether the absence type is active
+          example: true
+      additionalProperties: false
+      description: Represents an absence type returned by the API
+    PagedResponseReadAbsenceModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadAbsenceModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadAbsenceModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the absence
+          format: int32
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource the absence belongs to
+          format: int32
+        startAt:
+          type: string
+          description: The date and time the absence starts
+          format: date-time
+        endAt:
+          type: string
+          description: The date and time the absence ends
+          format: date-time
+        daysRequested:
+          type: number
+          description: The number of days requested for the absence
+          format: double
+        typeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the absence type
+          format: int32
+        typeName:
+          type: string
+          description: The name of the absence type
+        status:
+          type: string
+          description: The current status of the absence
+        statusChangedAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time the status was last changed
+          format: date-time
+        owner:
+          type: string
+          description: The name of the user who last changed the status
+        reason:
+          type:
+          - string
+          - 'null'
+          description: The reason provided for the absence
+        isPaidLeave:
+          type: boolean
+          description: Whether the absence is paid leave
+      additionalProperties: false
+      description: Represents a resource absence record
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,680 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Job Recurrences API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: JobRecurrences
+paths:
+  /v1/jobRecurrences/{recurrenceId}:
+    get:
+      tags:
+      - JobRecurrences
+      summary: Get a job recurrence
+      description: Retrieve the details of a single recurrence series (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: recurrenceId
+        in: path
+        description: The unique identifier of the recurrence series
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobRecurrenceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobRecurrencesByRecurrenceId
+      x-operation-id-source: derived
+  /v1/jobRecurrences/{recurrenceId}/jobs:
+    get:
+      tags:
+      - JobRecurrences
+      summary: Get the jobs belonging to a recurrence series
+      description: Retrieve a paged collection of jobs belonging to the recurrence series (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: recurrenceId
+        in: path
+        description: The unique identifier of the recurrence series
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobRecurrencesByRecurrenceIdJobs
+      x-operation-id-source: derived
+components:
+  schemas:
+    ReadJobModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 5514123
+        uid:
+          type:
+          - string
+          - 'null'
+          description: The unique uid of the job
+          format: uuid
+          example: 3729C414-ED21-4849-816F-25D332265DC8
+        typeId:
+          type: integer
+          description: The unique identifier of the type assigned to this job
+          format: int64
+          example: 5514123
+        typeName:
+          type: string
+          description: The name of the type assigned to this job
+          example: Boiler Service
+        contactId:
+          type: integer
+          description: The unique identifier of the contact (customer) for whom this job is to be performed
+          format: int64
+          example: 5514123
+        contactName:
+          type: string
+          description: The name of the customer (business or individual) for whom this job is to be performed
+          example: Global Solutions Ltd
+        contactAddress:
+          type: string
+          description: The complete address of the contact (customer) for whom this job is to be performed
+          example: 15 High Street, Lichfield, Staffordshire, WS15 3TT
+        contactLocation:
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        statusModifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time of the job's current status, as provided by the user or device that set it (it may be backdated, so it is not necessarily when the change was recorded in the system)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        statusRecordedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when the most recent job status history entry was recorded in the system. It does not change when existing status history entries are edited and may be null (e.g. for cancelled jobs)
+          format: date-time
+          example: '2022-11-29T13:41:12.0000000+00:00'
+        plannedDuration:
+          type: integer
+          description: The planned duration of the job, specified in minutes
+          format: int32
+          example: 90
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time the job is required to be completed by
+          format: date-time
+          example: '2022-11-29T06:00:00.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the job - should usually be unique
+          example: ABC/5514123
+        description:
+          type: string
+          description: The textual details about the job
+          example: New boiler install - please remove and retain the old boiler
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this job was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated to the job
+          example: PAO/1312KU
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 3729c414-ed21-4849-816f-25d332265dc8
+        personName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the person who will serve as primary point of contact for the job
+          example: Peter Brown
+        isConfirmed:
+          type: boolean
+          description: A flag indicating whether the job has been confirmed by the contact
+          example: true
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job is assigned to
+          format: int32
+          example: 5514123
+        categoryName:
+          type:
+          - string
+          - 'null'
+          description: The name of the category that the job is assigned
+          example: Global Solutions Ltd
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned to this job
+          example: John Smith
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle assigned to this job
+          format: int64
+          example: 665433
+        vehicleRegistration:
+          type:
+          - string
+          - 'null'
+          description: The registration number of the vehicle assigned to this job
+          example: BC21 BCL
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to begin
+          format: date-time
+          example: '2022-11-29T12:00:00.0000000+00:00'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to finish
+          format: date-time
+          example: '2022-11-29T13:30:00.0000000+00:00'
+        actualStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually started (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T12:03:00.0000000+00:00'
+        actualEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually finished (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        actualDuration:
+          type:
+          - integer
+          - 'null'
+          description: The actual duration of the job, specified in seconds (as indicated by resource's device)
+          format: int32
+          example: 6000
+        internalComment:
+          type: string
+          description: Notes about the job outcome, added by the back office
+          example: Old boiler has been moved to storage
+        resourcesComment:
+          type: string
+          description: Notes about the job outcome, added by the resource
+          example: Boiler removed and stored in van
+        contactComment:
+          type: string
+          description: Notes about the job outcome, added by the customer
+          example: No issues with new boiler
+        result:
+          type:
+          - string
+          - 'null'
+          description: The result of a job that has been completed or completed with issues. This will be null if the job has any other status
+          example: Ok
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group
+          format: int64
+          example: 123456789
+        isFinanciallyComplete:
+          type: boolean
+          description: A flag indicating whether the job is financially complete
+          example: false
+        isActioned:
+          type: boolean
+          description: A flag indicating whether all actions concerned with the job have been completed
+          example: false
+        officeNotes:
+          type: string
+          description: Notes for the office team regarding the job
+          example: Customer has requested a follow-up call
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract that the job is associated with
+          format: int64
+          example: 123456
+        recurrenceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the recurrence series this job belongs to, or null if the job is not part of a recurring series
+          format: int64
+          example: 789012
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields applied to this job
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobAssistantModel'
+          description: The list of job assistants assigned to this job
+        siteContactIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The unique identifiers of the site contacts associated with this job
+          example:
+          - 15548440
+          - 9425766
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the sales opportunity associated with this job, if applicable
+          format: int32
+          example: 12345
+      additionalProperties: false
+      description: Represents a model that holds information about a job
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    JobStatus:
+      enum:
+      - new
+      - scheduled
+      - unscheduled
+      - sent
+      - read
+      - accepted
+      - refused
+      - onTheWay
+      - started
+      - suspended
+      - completedOk
+      - completedWithIssues
+      - cancelled
+      - lateStart
+      - lateFinish
+      - rescheduled
+      type: string
+      description: 'Describes each possible status of a Job<p>Possible values:</p><ul><li><b>new</b>: A job that is newly created in BigChange All Jobs start with a New status, regardless of schedule detail</li><li><b>scheduled</b>: Job has been scheduled. Scheduled status is when the Vehicle, Driver, and Planned Date Time are all allocated</li><li><b>unscheduled</b>: Job has been unscheduled. Unscheduled status happens when any combination of the Vehicle, Driver, and Planned Date Time are all removed from a Scheduled job</li><li><b>sent</b>: The scheduled job has been delivered to the driver''s mobile device (tablet/phone). The driver must be logged into BigChange for jobs to be sent</li><li><b>read</b>: Job Detail has been read by the Driver on their mobile terminal</li><li><b>accepted</b>: Driver accepted the job</li><li><b>refused</b>: Driver refused the job</li><li><b>onTheWay</b>: Driver indicated they are on route to the Job Address</li><li><b>started</b>: Driver has indicated they have started the work detailed in the Job</li><li><b>suspended</b>: Driver paused work – ie taking a break</li><li><b>completedOk</b>: Job Completed with no issues</li><li><b>completedWithIssues</b>: Job Completed with issues</li><li><b>cancelled</b>: Job was Cancelled</li><li><b>lateStart</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>lateFinish</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>rescheduled</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li></ul>'
+      example: new
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    ReadJobRecurrenceModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the recurrence series
+          format: int64
+          example: 789012
+        patternName:
+          type: string
+          description: The name of the recurrence pattern
+          example: Weekly Unit Test Service
+        cronExpression:
+          type:
+          - string
+          - 'null'
+          description: The cron expression describing the recurrence schedule (reserved for future POST/PUT support)
+          example: 0 0 9 * * MON
+        startDateAt:
+          type: string
+          description: The UTC date and time the recurrence series starts
+          format: date-time
+          example: '2022-11-29T09:00:00.0000000+00:00'
+        endDateAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time the recurrence series ends
+          format: date-time
+          example: '2023-11-29T09:00:00.0000000+00:00'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this recurrence series was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model for reading a job recurrence series
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    ReadJobAssistantModel:
+      type: object
+      properties:
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned as assistant to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned as assistant to this job
+          example: John Smith
+      additionalProperties: false
+      description: Represents a model for reading job assistant information
+    PagedResponseReadJobModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

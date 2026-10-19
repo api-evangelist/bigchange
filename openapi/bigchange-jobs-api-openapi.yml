@@ -1,73 +1,323 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Jobs API
+  title: BigChange DX Jobs API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
 - name: Jobs
 paths:
+  /v1/jobGroups/{groupId}/jobFlags:
+    post:
+      tags:
+      - Jobs
+      summary: Applies a job flag to all jobs within the specified group
+      description: Apply a job flag to all jobs within the specified group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: groupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The flag details to apply
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyJobGroupJobFlagResult'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobGroupsByGroupIdJobFlags
+      x-operation-id-source: derived
   /v1/jobs:
     get:
       tags:
       - Jobs
       summary: Get a list of jobs
-      description: Returns a paged list of jobs. Supports filtering by type, contact, resource, order number, and created-at date range, plus sorting and pagination (pageNumber, pageSize). Modeled from the published spec.
+      description: Retrieve a paged collection of jobs (required scope jobs:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return jobs where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
       - name: typeId
         in: query
+        description: 'Only return jobs where `typeId` matches the value(s) provided (Max items: 50)'
         schema:
-          type: integer
-          format: int64
+          type: array
+          items:
+            type: integer
+            format: int64
       - name: contactId
         in: query
+        description: 'Only return jobs where `contactId` matches the value(s) provided (Max items: 50)'
         schema:
-          type: integer
-          format: int64
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: orderNumber
+        in: query
+        description: 'Only return jobs where `orderNumber` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
       - name: pageNumber
         in: query
+        description: 'The page number being requested. (minimum: 1, maximum: 2147483)'
         schema:
+          maximum: 2147483
+          minimum: 1
           type: integer
+          format: int32
       - name: pageSize
         in: query
+        description: 'The page size being requested. (minimum: 1, maximum: 1000)'
         schema:
+          maximum: 1000
+          minimum: 1
           type: integer
+          format: int32
+      - name: createdAtFrom
+        in: query
+        description: Only return jobs where `createdAt` is the same or newer than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return jobs where `createdAt` is the same or older than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: resourceId
+        in: query
+        description: 'Only return jobs where `resourceId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: vehicleId
+        in: query
+        description: 'Only return jobs where `vehicleId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: reference
+        in: query
+        description: 'Only return jobs where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: plannedAtFrom
+        in: query
+        description: Only return jobs where `plannedStartAt` is newer than this value
+        schema:
+          type: string
+          format: date-time
+          deprecated: true
+      - name: plannedAtTo
+        in: query
+        description: Only return jobs where `plannedStartAt` is older than this value
+        schema:
+          type: string
+          format: date-time
+          deprecated: true
+      - name: startAtFrom
+        in: query
+        description: Only return jobs where `plannedStartAt` or `actualStartAt` is newer than this value
+        schema:
+          type: string
+          format: date-time
+      - name: startAtTo
+        in: query
+        description: Only return jobs where `plannedStartAt` or `actualStartAt` is older than this value
+        schema:
+          type: string
+          format: date-time
+      - name: statusModifiedAtFrom
+        in: query
+        description: Only return jobs where `statusModifiedAt` is newer than this value
+        schema:
+          type: string
+          format: date-time
+      - name: statusModifiedAtTo
+        in: query
+        description: Only return jobs where `statusModifiedAt` is older than this value
+        schema:
+          type: string
+          format: date-time
+      - name: status
+        in: query
+        description: 'Only return jobs where `status` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobStatus'
       responses:
         '200':
-          description: A paged list of jobs.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1Jobs
       x-operation-id-source: derived
     post:
       tags:
       - Jobs
       summary: Create a job
+      description: Create a new job. A job can be added to any job group, except a job group marked Financially Complete (required scope jobs:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/CreateJobModel'
       responses:
         '201':
-          description: The created job.
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: postV1Jobs
       x-operation-id-source: derived
   /v1/jobs/{jobId}:
@@ -75,131 +325,4757 @@ paths:
       tags:
       - Jobs
       summary: Get a job
+      description: Retrieve the details of a single job (required scope jobs:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      - $ref: '#/components/parameters/JobId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
       responses:
         '200':
-          description: The requested job.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/ReadJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1JobsByJobId
       x-operation-id-source: derived
     patch:
       tags:
       - Jobs
       summary: Update a job
+      description: Updates the details of a specific job. To set the JobGroupId, any existing JobGroupId must have been removed by setting it to null in a previous update. A job can be added to any job group, except a job group marked Financially Complete (required scope jobs:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      - $ref: '#/components/parameters/JobId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/UpdateJobModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1JobsByJobId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/assistants:
+    put:
+      tags:
+      - Jobs
+      summary: Update job assistants
+      description: Add or remove assistants from a specific job (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobAssistantsModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdAssistants
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/cancel:
+    put:
+      tags:
+      - Jobs
+      summary: Cancel a job
+      description: Cancels a specific job. The job cannot be cancelled if it has already been started, suspended or completed (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelJobModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdCancel
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/constraints:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job's constraints
+      description: Retrieve a paged collection of a job's constraints (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobConstraintSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested. (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
       responses:
         '200':
-          description: The updated job.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
-      operationId: patchV1JobsByJobId
+                $ref: '#/components/schemas/PagedResponseReadJobStatusModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdConstraints
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Jobs
+      summary: Create a job constraint
+      description: Create a new job constraint. (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Create Job Constraint Model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobConstraintModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobsByJobIdConstraints
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/constraints/{constraintId}:
+    delete:
+      tags:
+      - Jobs
+      summary: Delete a job constraint
+      description: Delete a job constraint. (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: constraintId
+        in: path
+        description: The unique identifier of the constraint
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobsByJobIdConstraintsByConstraintId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/customerActivity:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job's customer activity
+      description: Retrieve a paged collection of customer activity for a job (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifer of the job
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobCustomerActivitySortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobCustomerActivityModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdCustomerActivity
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/flags:
+    get:
+      tags:
+      - Jobs
+      summary: Gets currently active flag for the specified job
+      description: Retrieve the current active flag for a job (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Jobs
+      summary: Create a new flag for a job
+      description: Create a new flag for a job (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The job id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: The model containing flag information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobsByJobIdFlags
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/flags/{jobFlagId}:
+    delete:
+      tags:
+      - Jobs
+      summary: Delete a flag from a job
+      description: Remove a flag from a job. (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobFlagId
+        in: path
+        description: The unique identifier of the job flag record
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobsByJobIdFlagsByJobFlagId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/flags/history:
+    get:
+      tags:
+      - Jobs
+      summary: Gets the flag history for the specified job
+      description: Retrieve the flag history for a job (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested. (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/lineItems:
+    get:
+      tags:
+      - Jobs
+      summary: Gets a list of job line items that belong to the specified job
+      description: Retrieve a paged list of line items for a job (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job associated with the line item
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobLineItemSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdLineItems
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Jobs
+      summary: Create a job line item
+      description: Create a new job line item (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobLineItemModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobsByJobIdLineItems
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/lineItems/{lineItemId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job line item
+      description: Retrieve the details of a single line item (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job associated with the line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The unique identifier of the line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Jobs
+      summary: Update a job line item
+      description: Update the details of a single job line item (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The job id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the line item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobLineItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1JobsByJobIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Jobs
+      summary: Delete a job line item
+      description: Delete a line item from a job (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The job id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobsByJobIdLineItemsByLineItemId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/recurrence:
+    post:
+      tags:
+      - Jobs
+      summary: Create a recurring series on a job
+      description: Adds a recurring series to an existing job. (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Create Job Recurrence Model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRecurrenceModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobRecurrenceResponseModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobsByJobIdRecurrence
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Jobs
+      summary: Update a recurring series on a job
+      description: Updates the recurring series on an existing job. (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Update Job Recurrence Model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRecurrenceModel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobRecurrenceResponseModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdRecurrence
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/result:
+    put:
+      tags:
+      - Jobs
+      summary: Sets a job's result
+      description: Sets a specific job's result. The job status must be started to use this endpoint (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobResultModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdResult
       x-operation-id-source: derived
   /v1/jobs/{jobId}/schedule:
     put:
       tags:
       - Jobs
       summary: Schedule or unschedule a job
-      description: Assign a job to a resource and time slot, or unschedule it.
+      description: Updates the schedule of a specific job. The job status must be either new, scheduled or unscheduled to use this endpoint (required scope jobs:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      - $ref: '#/components/parameters/JobId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/ScheduleJobModel'
       responses:
         '204':
-          description: The job schedule was updated.
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: putV1JobsByJobIdSchedule
       x-operation-id-source: derived
   /v1/jobs/{jobId}/start:
     put:
       tags:
       - Jobs
-      summary: Set a job to started
+      summary: Sets a job to started
+      description: Sets a specific job to started. The job must be in a valid state to use this endpoint (required scope jobs:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      - $ref: '#/components/parameters/JobId'
-      responses:
-        '204':
-          description: The job was marked started.
-      operationId: putV1JobsByJobIdStart
-      x-operation-id-source: derived
-  /v1/jobs/{jobId}/result:
-    put:
-      tags:
-      - Jobs
-      summary: Set a job's result
-      parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      - $ref: '#/components/parameters/JobId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/UpdateJobStartModel'
       responses:
         '204':
-          description: The job result was recorded.
-      operationId: putV1JobsByJobIdResult
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdStart
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/status/history:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job's status history
+      description: Retrieve a paged collection of changes to job status (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifer of the job
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobStatusSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobStatusModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdStatusHistory
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/stock:
+    get:
+      tags:
+      - Jobs
+      summary: Get a list of job stocks
+      description: Retrieve a paged collection of job stocks (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifer of the job
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: jobStockId
+        in: query
+        description: 'Only return job stocks where `JobStockId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: stockDetailsId
+        in: query
+        description: 'Only return job stocks where ''StockDetailsId'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: stockItemId
+        in: query
+        description: 'Only return job stocks where ''StockItemId'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: action
+        in: query
+        description: Only return job stocks where 'Action' matches the value provided
+        schema:
+          $ref: '#/components/schemas/JobStockActionFilter'
+      - name: isActual
+        in: query
+        description: Only return job stocks where 'IsActual' matches the value provided
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdStock
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Jobs
+      summary: Create a job stock
+      description: Create a new job stock. Job stock cannot be created for a job with cancelled status (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobStockModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobsByJobIdStock
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/stock/{jobStockId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job stock
+      description: Retrieve the details of a single job stock (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job stock
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: jobStockId
+        in: path
+        description: The unique identifier of the job stock
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobStockModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdStockByJobStockId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Jobs
+      summary: Delete a job stock
+      description: Permanently deletes a job stock (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The ID of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobStockId
+        in: path
+        description: The ID of the job stock
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobsByJobIdStockByJobStockId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/worksheetQuestions/{questionId}/worksheetAnswer:
+    put:
+      tags:
+      - Jobs
+      summary: Sets a worksheet answer against a worksheet question for a given job
+      description: Sets worksheet answer against a worksheet question for a given job (required scope worksheets:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: questionId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetJobWorksheetAnswerModel'
+      responses:
+        '204':
+          description: No Content
+      operationId: putV1JobsByJobIdWorksheetQuestionsByQuestionIdWorksheetAnswer
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Jobs
+      summary: Delete a job worksheet answer
+      description: Deletes a worksheet answer for a given worksheet question for a given job (required scope worksheets:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The identifier of the job
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: questionId
+        in: path
+        description: The identifier of the question
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+      operationId: deleteV1JobsByJobIdWorksheetQuestionsByQuestionIdWorksheetAnswer
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/worksheets:
+    get:
+      tags:
+      - Jobs
+      summary: Get a list of job worksheets
+      description: Retrieve a paged collection of worksheets for a given job (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifer of the job
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: includeBranchedWorksheets
+        in: query
+        description: Whether to include branched worksheets in the response
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobWorksheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdWorksheets
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Jobs
+      summary: Sets a collection of worksheets for a given job
+      description: Sets a collection of worksheets for a given job (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique job id to query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model to set worksheet information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetJobWorksheetsModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobsByJobIdWorksheets
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/worksheets/{worksheetId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job worksheet
+      description: Retrieve the details of a single job worksheet (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobId
+        in: path
+        description: The unique identifier of the job stock
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: worksheetId
+        in: path
+        description: The unique identifier of the worksheet
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobWorksheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsByJobIdWorksheetsByWorksheetId
+      x-operation-id-source: derived
+  /v1/jobs/categories:
+    get:
+      tags:
+      - Jobs
+      summary: Get a list of job categories
+      description: Retrieve a paged collection of job categories applicable to jobs (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: name
+        in: query
+        description: Filter to job categories whose name contains this value. Case-insensitive, partial match
+        schema:
+          type: string
+          example: Maintenance
+        example: Maintenance
+      - name: isActive
+        in: query
+        description: Filter to active or inactive job categories only. Omit to return both
+        schema:
+          type: boolean
+          example: true
+        example: true
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+          example: 1
+        example: 1
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. Default is 100, maximum is 1000 (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          example: 100
+        example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobCategoryModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsCategories
+      x-operation-id-source: derived
+  /v1/jobs/schedulingAssistant:
+    get:
+      tags:
+      - Jobs
+      summary: Get scheduling assistant suggestions
+      description: Suggests candidate resources or vehicles and time slots for scheduling a job. Returns suggestions only - use PUT /v1/jobs/{jobId}/schedule to act on one (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: schedulingType
+        in: query
+        description: Whether to find candidate resources or vehicles
+        schema:
+          $ref: '#/components/schemas/SchedulingAssistantType'
+      - name: latitude
+        in: query
+        description: The latitude of the location to schedule the job at. Required unless jobId is supplied, in which case the job's own location is used
+        schema:
+          type: number
+          format: double
+          example: 51.5074
+        example: 51.5074
+      - name: longitude
+        in: query
+        description: The longitude of the location to schedule the job at. Required unless jobId is supplied, in which case the job's own location is used
+        schema:
+          type: number
+          format: double
+          example: -0.1278
+        example: -0.1278
+      - name: fromDate
+        in: query
+        description: The UTC start of the date range to search for available slots in
+        schema:
+          type: string
+          format: date-time
+          example: '2022-11-29T00:00:00.0000000+00:00'
+        example: '2022-11-29T00:00:00.0000000+00:00'
+      - name: toDate
+        in: query
+        description: The UTC end of the date range to search for available slots in. The range is capped at 7 days from fromDate
+        schema:
+          type: string
+          format: date-time
+          example: '2022-12-01T00:00:00.0000000+00:00'
+        example: '2022-12-01T00:00:00.0000000+00:00'
+      - name: when
+        in: query
+        description: The time-of-day period to restrict suggestions to
+        schema:
+          $ref: '#/components/schemas/SchedulingAssistantWhenPeriod'
+      - name: whenFrom
+        in: query
+        description: The start of the custom time-of-day period. Required when when is Custom
+        schema:
+          type: string
+          format: date-span
+          example: 09:00
+        example: 09:00
+      - name: whenTo
+        in: query
+        description: The end of the custom time-of-day period. Required when when is Custom
+        schema:
+          type: string
+          format: date-span
+          example: '17:00'
+        example: '17:00'
+      - name: jobId
+        in: query
+        description: The unique identifier of the job to schedule. When supplied, the job's own location, duration and restrictions are used instead of the raw parameters
+        schema:
+          type: integer
+          format: int64
+          example: 5514123
+        example: 5514123
+      - name: resourceId
+        in: query
+        description: Restrict suggestions to a single resource
+        schema:
+          type: integer
+          format: int64
+          example: 243556
+        example: 243556
+      - name: resourceGroupId
+        in: query
+        description: Restrict suggestions to a single resource group
+        schema:
+          type: integer
+          format: int64
+          example: 112233
+        example: 112233
+      - name: vehicleId
+        in: query
+        description: Restrict suggestions to a single vehicle
+        schema:
+          type: integer
+          format: int64
+          example: 665433
+        example: 665433
+      - name: vehicleGroupId
+        in: query
+        description: Restrict suggestions to a single vehicle group
+        schema:
+          type: integer
+          format: int64
+          example: 445566
+        example: 445566
+      - name: skillIds
+        in: query
+        description: 'Restrict suggestions to resources with all of the given skills (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: attributeIds
+        in: query
+        description: 'Restrict suggestions to vehicles with all of the given attributes (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchedulingAssistantSuggestionsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobsSchedulingAssistant
       x-operation-id-source: derived
 components:
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
-    JobId:
-      name: jobId
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
   schemas:
-    GenericObject:
+    SetJobWorksheetsModel:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    PagedResult:
-      type: object
-      description: Standard paged list envelope (modeled).
       properties:
+        worksheetIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The collection of unique identifiers of worksheets to associate with a job
+      additionalProperties: false
+      description: Represents a model that holds information linking worksheets to a job
+    JobLineItemSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'JobLineItemSortOptions enum<p>Possible values:</p><ul><li><b>createdAt</b>: JobLineItemSortOptions CreatedAt</li></ul>'
+      example: createdAt
+    SchedulingAssistantWhenPeriod:
+      enum:
+      - anytime
+      - morning
+      - afternoon
+      - custom
+      type: string
+      description: 'The time-of-day period to restrict scheduling suggestions to<p>Possible values:</p><ul><li><b>anytime</b>: Any time of day</li><li><b>morning</b>: The morning period</li><li><b>afternoon</b>: The afternoon period</li><li><b>custom</b>: A custom period, defined by whenFrom and whenTo</li></ul>'
+      example: anytime
+    PagedResponseReadJobLineItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobLineItemModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    UpdateJobStartModel:
+      type: object
+      properties:
+        comment:
+          type:
+          - string
+          - 'null'
+          description: Optional free-form comment to associate with the status update<br/>            <br/>Validation:<br/>- Maximum length of 250 characters
+          example: Arrived on site
+        statusModifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp the status change should be recorded as.<br/>If omitted, the current UTC time will be used.<br/>            <br/>Validation:<br/>- Must not be a future date/time
+          format: date-time
+          example: '2025-01-05T14:23:10.0000000+00:00'
+      additionalProperties: false
+      description: 'Represents a model containing information for starting a job<br/>            <br/>Validation:<br/>- Job status must be one of: Scheduled, Rescheduled, Sent, Read, Accepted, OnTheWay, Suspended'
+    JobSortOptions:
+      enum:
+      - createdAt
+      - scheduledAt
+      type: string
+      description: 'Represents the fields that can be used to sort jobs<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the job was created</li><li><b>scheduledAt</b>: The date and time when the job was scheduled to start</li></ul>'
+      example: createdAt
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadJobCustomerActivityModel:
+      type: object
+      properties:
         items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobCustomerActivityModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    JobStockActionFilter:
+      enum:
+      - noMovement
+      - broughtAndLeft
+      - broughtAndTakenBack
+      - broughtToSwap
+      - onSiteAndTakenBack
+      - onSiteAndLeft
+      - usedInStock
+      type: string
+      description: 'Represents the actions that can be performed on a job stock<p>Possible values:</p><ul><li><b>noMovement</b>: No movement</li><li><b>broughtAndLeft</b>: Brought to job and left at location</li><li><b>broughtAndTakenBack</b>: Brought to job and taken back</li><li><b>broughtToSwap</b>: Brought to job to swap with other stock item</li><li><b>onSiteAndTakenBack</b>: Taken from job location</li><li><b>onSiteAndLeft</b>: Already on site and left at location</li><li><b>usedInStock</b>: Used on equipment</li></ul>'
+      example: noMovement
+    WriteWorksheetAnswerText:
+      required:
+      - stringValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        stringValue:
+          type: string
+          description: Represents the text answer to a worksheet question
+          example: Hello world
+      additionalProperties: false
+      description: Model for writing a text answer to a worksheet question
+    JobConstraintSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort job constraint<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the job constraint was created</li></ul>'
+      example: createdAt
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    WriteWorksheetAnswer:
+      type: object
+      additionalProperties: false
+      description: Dynamic model for writing a worksheet answer
+    WriteWorksheetAnswerDecimal:
+      required:
+      - decimalValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        decimalValue:
+          type: number
+          description: Represents the decimal answer to a worksheet question
+          format: double
+          example: 3.14
+      additionalProperties: false
+      description: Model for writing a decimal answer to a worksheet question
+    ConstraintTypes:
+      enum:
+      - jobMustStartAfter
+      - jobMustStartBefore
+      - jobMustCompleteBefore
+      - jobResource
+      - jobResourceGroup
+      - jobVehicle
+      - jobVehicleGroup
+      - jobMustStartInAvailableHours
+      - jobMustCompleteInAvailableHours
+      - jobRequiresResourceSkill
+      - jobRequiresVehicleAttribute
+      type: string
+      description: 'Enum of restriction rules that can be applied to a constraint<p>Possible values:</p><ul><li><b>jobMustStartAfter</b>: Job must start after a specified time</li><li><b>jobMustStartBefore</b>: Job must start before a specified time</li><li><b>jobMustCompleteBefore</b>: Job must complete before a specified time</li><li><b>jobResource</b>: Job resource</li><li><b>jobResourceGroup</b>: Job resource group</li><li><b>jobVehicle</b>: Job vehicle</li><li><b>jobVehicleGroup</b>: Job vehicle group</li><li><b>jobMustStartInAvailableHours</b>: Job must start within the available hours of the resource</li><li><b>jobMustCompleteInAvailableHours</b>: Job must complete within the available hours of the resource</li><li><b>jobRequiresResourceSkill</b>: Job requires a resource with the specified skill</li><li><b>jobRequiresVehicleAttribute</b>: Job requires a vehicle with the specified attribute</li></ul>'
+      example: jobMustStartAfter
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    JobCustomerActivityStatusRead:
+      enum:
+      - bookingRequested
+      - quoteCreated
+      - quoteUnsent
+      - quoteSent
+      - quoteUnaccepted
+      - quoteAccepted
+      - quoteRejected
+      - note
+      - confirmationUnsent
+      - confirmationSent
+      - confirmationUnconfirmed
+      - confirmationConfirmed
+      - appPaymentSent
+      - appPaymentUnaccepted
+      - appPaymentAccepted
+      - cancellationRequested
+      - cancellationConfirmed
+      - jobCardUnsent
+      - jobCardSent
+      - notInvoiced
+      - invoiceCreated
+      - invoiceUnsent
+      - invoiceSent
+      - invoiceUnpaid
+      - invoicePaid
+      - invoiceCancelled
+      - purchaseOrderCreated
+      - financiallyComplete
+      - financiallyIncomplete
+      type: string
+      description: 'Describes the status of a job customer activity<p>Possible values:</p><ul><li><b>bookingRequested</b>: Customer activity status of Booking Requested</li><li><b>quoteCreated</b>: Customer activity status of Quote Created</li><li><b>quoteUnsent</b>: Customer activity status of Quote Unsent</li><li><b>quoteSent</b>: Customer activity status of Quote Sent</li><li><b>quoteUnaccepted</b>: Customer activity status of Quote Unaccepted</li><li><b>quoteAccepted</b>: Customer activity status of Quote Accepted</li><li><b>quoteRejected</b>: Customer activity status of Quote Rejected</li><li><b>note</b>: Customer activity status of Note</li><li><b>confirmationUnsent</b>: Customer activity status of Confirmation Unsent</li><li><b>confirmationSent</b>: Customer activity status of Confirmation Sent</li><li><b>confirmationUnconfirmed</b>: Customer activity status of Confirmation Unconfirmed</li><li><b>confirmationConfirmed</b>: Customer activity status of Confirmation Confirmed</li><li><b>appPaymentSent</b>: Customer activity status of App Payment Sent</li><li><b>appPaymentUnaccepted</b>: Customer activity status of App Payment Unaccepted</li><li><b>appPaymentAccepted</b>: Customer activity status of App Payment Accepted</li><li><b>cancellationRequested</b>: Customer activity status of Cancellation Requested</li><li><b>cancellationConfirmed</b>: Customer activity status of Cancellation Confirmed</li><li><b>jobCardUnsent</b>: Customer activity status of Job Card Unsent</li><li><b>jobCardSent</b>: Customer activity status of Job Card Sent</li><li><b>notInvoiced</b>: Customer activity status of Not Invoiced</li><li><b>invoiceCreated</b>: Customer activity status of Invoice Created</li><li><b>invoiceUnsent</b>: Customer activity status of Invoice Unsent</li><li><b>invoiceSent</b>: Customer activity status of Invoice Sent</li><li><b>invoiceUnpaid</b>: Customer activity status of Invoice Unpaid</li><li><b>invoicePaid</b>: Customer activity status of Invoice Paid</li><li><b>invoiceCancelled</b>: Customer activity status of Invoice Cancelled</li><li><b>purchaseOrderCreated</b>: Customer activity status of Purchase Order Created</li><li><b>financiallyComplete</b>: Customer activity status of Financially Complete</li><li><b>financiallyIncomplete</b>: Customer activity status of Financially Incomplete</li></ul>'
+      example: bookingRequested
+    WriteWorksheetAnswerListMulti:
+      required:
+      - selectedItems
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItems:
+          type: array
+          items:
+            type: string
+          description: Represents selected items from a list multi answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list multi answer to a worksheet question
+    WriteWorksheetAnswerListSingle:
+      required:
+      - selectedItem
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItem:
+          type: string
+          description: Represents selected item from a list single answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list single answer to a worksheet question
+    CreateJobRecurrenceModel:
+      required:
+      - cronExpression
+      - startDateAt
+      type: object
+      properties:
+        cronExpression:
+          minLength: 1
+          type: string
+          description: 'A standard 5-field CRON expression (minute hour dayOfMonth month dayOfWeek) describing the recurrence schedule.<br/>Only a limited subset is supported: minute must be ''0'', month must be ''*'', and at most one of dayOfMonth/dayOfWeek<br/>may be a specific value (the other must be ''*'')'
+          example: 0 9 * * 2
+        recurTo:
+          $ref: '#/components/schemas/RecurTo'
+        startDateAt:
+          type: string
+          description: The date and time the recurrence series starts
+          format: date-time
+          example: '2026-09-01T09:00:00.0000000+00:00'
+        endDateAt:
+          type:
+          - string
+          - 'null'
+          description: The date the recurrence series stops. Must not be provided together with BigChange.BO.RestApi.Application.JobRecurrences.Models.CreateJobRecurrenceModel.OccurrenceCount
+          format: date-time
+          example: '2027-03-01T00:00:00.0000000+00:00'
+        occurrenceCount:
+          type:
+          - integer
+          - 'null'
+          description: The number of occurrences after which the recurrence series stops. Must not be provided together with BigChange.BO.RestApi.Application.JobRecurrences.Models.CreateJobRecurrenceModel.EndDateAt
+          format: int32
+          example: 10
+      additionalProperties: false
+      description: Represents a model for creating a recurring series on an existing job
+    WriteWorksheetAnswerTime:
+      required:
+      - time
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        time:
+          type: string
+          description: Represents the time answer to a worksheet question
+          format: time
+          example: 01:23
+      additionalProperties: false
+      description: Model for writing a time answer to a worksheet question
+    UpdateJobResultModel:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/JobResult'
+        result:
+          type:
+          - string
+          - 'null'
+          description: Required if status is completedOk; optional if completedWithIssues. Must exactly match a valid result string for the job type and status
+          example: complete
+        statusModifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp the status change should be recorded at. If omitted the current UTC time is used
+          format: date-time
+          example: '2025-01-05T14:23:10.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model containing information for setting the result of a job
+    PagedResponseReadJobWorksheetModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobWorksheetModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    JobStockActionRead:
+      enum:
+      - Unknown
+      - noMovement
+      - broughtAndLeft
+      - broughtAndTakenBack
+      - broughtToSwap
+      - onSiteAndTakenBack
+      - onSiteAndLeft
+      - usedInStock
+      type: string
+      description: 'Represents the actions that can be performed on a job stock<p>Possible values:</p><ul><li><b>unknown</b>: Unknown action</li><li><b>noMovement</b>: No movement</li><li><b>broughtAndLeft</b>: Brought to job and left at location</li><li><b>broughtAndTakenBack</b>: Brought to job and taken back</li><li><b>broughtToSwap</b>: Brought to job to swap with other stock item</li><li><b>onSiteAndTakenBack</b>: Taken from job location</li><li><b>onSiteAndLeft</b>: Already on site and left at location</li><li><b>usedInStock</b>: Used on equipment</li></ul>'
+      example: Unknown
+    JobAssistantModel:
+      type: object
+      properties:
+        resourceId:
+          type: integer
+          description: A unique identifier representing resource
+          format: int64
+          example: 12356
+      additionalProperties: false
+      description: Represents Job Assistant
+    SchedulingAssistantSuggestionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchedulingAssistantSuggestionModel'
+          description: The suggested resources or vehicles and time slots
+      additionalProperties: false
+      description: Represents a collection of scheduling assistant suggestions
+    UpdateJobLineItemModel:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 'The quantity of the job line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 2.5
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'Description of the job line item<br/><br/>Optional: Omit to retain current value'
+          example: Replacement filter cartridge
+          x-optional: Omit to retain current value
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'Tax identifier (must exist and not be deleted for customer). Nullable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1001
+          x-optional: Omit to retain current value or provide null to unset
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: 'Unit cost (nullable, non-negative)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.5
+          x-optional: Omit to retain current value or provide null to unset
+        unitSellingPrice:
+          type: number
+          description: 'Unit selling price (non-negative)<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 10.99
+          x-optional: Omit to retain current value
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Nominal code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 50001
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Department code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 20002
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Represents a model for updating a job line item
+    ReadJobAssistantModel:
+      type: object
+      properties:
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned as assistant to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned as assistant to this job
+          example: John Smith
+      additionalProperties: false
+      description: Represents a model for reading job assistant information
+    PagedResponseReadJobCategoryModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobCategoryModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadJobCategoryModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job category
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the job category
+          example: Reactive Maintenance
+        isActive:
+          type: boolean
+          description: Whether the job category is currently active
+          example: true
+        visibility:
+          type: array
+          items:
+            type: string
+          description: The entities the job category is visible for. Contains "Job", "Group", or both
+          example:
+          - Job
+          - Group
+      additionalProperties: false
+      description: Represents a job category
+    JobResult:
+      enum:
+      - completedOk
+      - completedWithIssues
+      type: string
+      description: 'Describes the result of a job<p>Possible values:</p><ul><li><b>completedOk</b>: Job completed with a positive result</li><li><b>completedWithIssues</b>: Job completed with a negative result</li></ul>'
+      example: completedOk
+    ReadJobStockWorksheetModel:
+      type: object
+      properties:
+        worksheetId:
+          type: integer
+          description: The identifier of the worksheet associated with the stock item on this job
+          format: int64
+          example: 1234
+        worksheetAnswersEntityId:
+          type: integer
+          description: The entity identifier to use as the `entityId` filter when querying worksheet answers<br/>with an `entityType` of `stockItem`
+          format: int64
+          example: 4321
+      additionalProperties: false
+      description: Represents the association between a job stock item and a worksheet
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    LineItemType:
+      enum:
+      - freeText
+      - predefined
+      - stockItem
+      - worksheet
+      - drivingPlanned
+      - drivingActual
+      - workPlanned
+      - workActual
+      - expense
+      - invoice
+      - stock
+      - ratingTable
+      type: string
+      description: 'Represents the type of a purchase order line item<p>Possible values:</p><ul><li><b>freeText</b>: A free text line item</li><li><b>predefined</b>: A predefined invoicing item</li><li><b>stockItem</b>: A stock item line item</li><li><b>worksheet</b>: A worksheet line item</li><li><b>drivingPlanned</b>: A driving planned line item</li><li><b>drivingActual</b>: A driving actual line item</li><li><b>workPlanned</b>: A work planned line item</li><li><b>workActual</b>: A work actual line item</li><li><b>expense</b>: An expense line item</li><li><b>invoice</b>: An invoice line item</li><li><b>stock</b>: A stock line item</li><li><b>ratingTable</b>: A rating table line item</li></ul>'
+      example: freeText
+    CreateJobConstraintModel:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ConstraintTypes'
+        constraintAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time associated with the job constraint
+          format: date-time
+          example: '2024-07-01T09:00:00.0000000+00:00'
+        entityId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the entity associated with the constraint. Required when Type is JobResource, JobResourceGroup, JobVehicle, JobVehicleGroup, JobRequiresResourceSkill, or JobRequiresVehicleAttribute. Must not be provided when Type is not JobResource, JobResourceGroup, JobVehicle, JobVehicleGroup, JobRequiresResourceSkill, or JobRequiresVehicleAttribute
+          format: int64
+          example: 12345
+      additionalProperties: false
+      description: Represents a model that holds information about creating a job constraint
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    CreateJobLineItemModel:
+      required:
+      - quantity
+      type: object
+      properties:
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this job item
+          format: int64
+          example: 54321
+        quantity:
+          type: number
+          description: The quantity of the job item
+          format: double
+          example: 1
+        description:
+          type: string
+          description: Description of the job line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Tax identifier (must exist and not be deleted for customer). Nullable
+          format: int64
+          example: 1001
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost (nullable, non-negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price (non-negative)
+          format: double
+          example: 10.99
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Represents a model that holds information about creating a job item
+    ReadJobCustomerActivityModel:
+      type: object
+      properties:
+        id:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job customer activity. Will be null if the job is cancelled
+          format: int64
+          example: 5514123
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job that this customer activity is associated with
+          format: int64
+          example: 1234567
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group that this customer activity is associated with
+          format: int64
+          example: 7654321
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this job customer activity entry was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        status:
+          $ref: '#/components/schemas/JobCustomerActivityStatusRead'
+        ownerName:
+          type: string
+          description: The owner associated with the customer activity
+          example: Bob Tables
+        comment:
+          type: string
+          description: Textual context about the customer activity that was created
+          example: Appliance successfully tested
+      additionalProperties: false
+      description: Represents a model that holds information about a job customer activity
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    JobStockActionWrite:
+      enum:
+      - noMovement
+      - broughtAndLeft
+      - broughtAndTakenBack
+      - onSiteAndTakenBack
+      - onSiteAndLeft
+      - usedInStock
+      type: string
+      description: 'Represents the actions that can be performed on a job stock<p>Possible values:</p><ul><li><b>noMovement</b>: No movement. Can not use when job is completed or cancelled</li><li><b>broughtAndLeft</b>: Brought to job and left at location. Can not use when job is completed or cancelled. When this action is selected, the drop off contact id will be set to the job contact id automatically</li><li><b>broughtAndTakenBack</b>: Brought to job and taken back. Can not use when job is completed or cancelled</li><li><b>onSiteAndTakenBack</b>: Taken from job location. Can not use when job is completed or cancelled. When this action is selected, the pickup contact id will be set to the job contact id automatically</li><li><b>onSiteAndLeft</b>: Already on site and left at location. Can not use when job is cancelled</li><li><b>usedInStock</b>: Used on equipment. Can not use when job is completed or cancelled</li></ul>'
+      example: noMovement
+    WriteWorksheetAnswerInteger:
+      required:
+      - integerValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        integerValue:
+          type: integer
+          description: Represents the integer answer to a worksheet question
+          format: int64
+          example: 44
+      additionalProperties: false
+      description: Model for writing a integer answer to a worksheet question
+    SchedulingAssistantType:
+      enum:
+      - resources
+      - vehicles
+      type: string
+      description: 'The type of entity to find scheduling suggestions for<p>Possible values:</p><ul><li><b>resources</b>: Suggest resources</li><li><b>vehicles</b>: Suggest vehicles</li></ul>'
+      example: resources
+    ReadJobLineItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier associated with the job line item
+          format: int64
+          example: 12345
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job associated with the job line item
+          format: int64
+          example: 54321
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with the job line item
+          format: int64
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with the job line item
+          format: int64
+        createdAt:
+          type: string
+          description: The date and time when the job line item was created
+          format: date-time
+        lineItemType:
+          $ref: '#/components/schemas/LineItemType'
+        quantity:
+          type: number
+          description: The quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the job line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: VAT / Tax identifier associated with the line item
+          format: int64
+          example: 1001
+        taxPercentage:
+          type: number
+          description: Tax percentage applied to the line item (GET only, never null). Defaults to 0 when no tax is applied
+          format: double
+          example: 20
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost of the item (cannot be negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price of the item (cannot be negative)
+          format: double
+          example: 10.99
+        taxAmount:
+          type:
+          - number
+          - 'null'
+          description: Tax amount for the line item (GET only)
+          format: double
+          example: 2.2
+        grossAmount:
+          type:
+          - number
+          - 'null'
+          description: Gross amount (formerly NetPrice internal) of the line item (GET only)
+          format: double
+          example: 13.19
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Model for reading a job line item
+    JobStatusSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort job status history records<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the job status history record was created</li></ul>'
+      example: createdAt
+    WriteWorksheetAnswerListIconSingle:
+      required:
+      - selectedItem
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItem:
+          type: string
+          description: Represents selected item from a list icon single answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list icon single answer to a worksheet question
+    CreateJobRecurrenceResponseModel:
+      type: object
+      properties:
+        recurrenceId:
+          type: integer
+          description: The unique identifier of the newly created recurrence series
+          format: int64
+          example: 789012
+        jobId:
+          type: integer
+          description: The unique identifier of the job the recurrence was created on
+          format: int64
+          example: 123456
+        recurrenceType:
+          type: string
+          description: The recurrence pattern resolved from the CRON expression
+          example: Weekly
+        cronExpression:
+          type: string
+          description: The CRON expression that was provided
+          example: 0 9 * * 2
+        startDateAt:
+          type: string
+          description: The date and time the recurrence series starts
+          format: date-time
+          example: '2026-09-01T09:00:00.0000000+00:00'
+        endCondition:
+          type: string
+          description: A description of when the recurrence series stops — an end date, a number of occurrences, or "None" if it recurs indefinitely
+          example: None
+        upcomingOccurrences:
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: The calculated schedule of upcoming occurrences, within the platform's configured "months ahead" window. This<br/>reflects the calculated schedule, not already-created job records
+      additionalProperties: false
+      description: Represents the outcome of creating a recurring series on a job
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    LinkType:
+      enum:
+      - linkedToJob
+      - branchedFromWorksheetQuestion
+      type: string
+      description: 'The type of link the worksheet has to the job. Worksheet question can have conditional branching which allows different worksheets to be linked based on answers given.<p>Possible values:</p><ul><li><b>linkedToJob</b>: The worksheet is linked directly to the job</li><li><b>branchedFromWorksheetQuestion</b>: The worksheet is branched from a worksheet question</li></ul>'
+      example: linkedToJob
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadJobModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 5514123
+        uid:
+          type:
+          - string
+          - 'null'
+          description: The unique uid of the job
+          format: uuid
+          example: 3729C414-ED21-4849-816F-25D332265DC8
+        typeId:
+          type: integer
+          description: The unique identifier of the type assigned to this job
+          format: int64
+          example: 5514123
+        typeName:
+          type: string
+          description: The name of the type assigned to this job
+          example: Boiler Service
+        contactId:
+          type: integer
+          description: The unique identifier of the contact (customer) for whom this job is to be performed
+          format: int64
+          example: 5514123
+        contactName:
+          type: string
+          description: The name of the customer (business or individual) for whom this job is to be performed
+          example: Global Solutions Ltd
+        contactAddress:
+          type: string
+          description: The complete address of the contact (customer) for whom this job is to be performed
+          example: 15 High Street, Lichfield, Staffordshire, WS15 3TT
+        contactLocation:
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        statusModifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time of the job's current status, as provided by the user or device that set it (it may be backdated, so it is not necessarily when the change was recorded in the system)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        statusRecordedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when the most recent job status history entry was recorded in the system. It does not change when existing status history entries are edited and may be null (e.g. for cancelled jobs)
+          format: date-time
+          example: '2022-11-29T13:41:12.0000000+00:00'
+        plannedDuration:
+          type: integer
+          description: The planned duration of the job, specified in minutes
+          format: int32
+          example: 90
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time the job is required to be completed by
+          format: date-time
+          example: '2022-11-29T06:00:00.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the job - should usually be unique
+          example: ABC/5514123
+        description:
+          type: string
+          description: The textual details about the job
+          example: New boiler install - please remove and retain the old boiler
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this job was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated to the job
+          example: PAO/1312KU
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 3729c414-ed21-4849-816f-25d332265dc8
+        personName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the person who will serve as primary point of contact for the job
+          example: Peter Brown
+        isConfirmed:
+          type: boolean
+          description: A flag indicating whether the job has been confirmed by the contact
+          example: true
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job is assigned to
+          format: int32
+          example: 5514123
+        categoryName:
+          type:
+          - string
+          - 'null'
+          description: The name of the category that the job is assigned
+          example: Global Solutions Ltd
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned to this job
+          example: John Smith
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle assigned to this job
+          format: int64
+          example: 665433
+        vehicleRegistration:
+          type:
+          - string
+          - 'null'
+          description: The registration number of the vehicle assigned to this job
+          example: BC21 BCL
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to begin
+          format: date-time
+          example: '2022-11-29T12:00:00.0000000+00:00'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to finish
+          format: date-time
+          example: '2022-11-29T13:30:00.0000000+00:00'
+        actualStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually started (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T12:03:00.0000000+00:00'
+        actualEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually finished (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        actualDuration:
+          type:
+          - integer
+          - 'null'
+          description: The actual duration of the job, specified in seconds (as indicated by resource's device)
+          format: int32
+          example: 6000
+        internalComment:
+          type: string
+          description: Notes about the job outcome, added by the back office
+          example: Old boiler has been moved to storage
+        resourcesComment:
+          type: string
+          description: Notes about the job outcome, added by the resource
+          example: Boiler removed and stored in van
+        contactComment:
+          type: string
+          description: Notes about the job outcome, added by the customer
+          example: No issues with new boiler
+        result:
+          type:
+          - string
+          - 'null'
+          description: The result of a job that has been completed or completed with issues. This will be null if the job has any other status
+          example: Ok
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group
+          format: int64
+          example: 123456789
+        isFinanciallyComplete:
+          type: boolean
+          description: A flag indicating whether the job is financially complete
+          example: false
+        isActioned:
+          type: boolean
+          description: A flag indicating whether all actions concerned with the job have been completed
+          example: false
+        officeNotes:
+          type: string
+          description: Notes for the office team regarding the job
+          example: Customer has requested a follow-up call
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract that the job is associated with
+          format: int64
+          example: 123456
+        recurrenceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the recurrence series this job belongs to, or null if the job is not part of a recurring series
+          format: int64
+          example: 789012
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields applied to this job
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobAssistantModel'
+          description: The list of job assistants assigned to this job
+        siteContactIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The unique identifiers of the site contacts associated with this job
+          example:
+          - 15548440
+          - 9425766
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the sales opportunity associated with this job, if applicable
+          format: int32
+          example: 12345
+      additionalProperties: false
+      description: Represents a model that holds information about a job
+    PagedResponseReadJobFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    UpdateJobRecurrenceModel:
+      required:
+      - cronExpression
+      - startDateAt
+      type: object
+      properties:
+        cronExpression:
+          minLength: 1
+          type: string
+          description: 'A standard 5-field CRON expression (minute hour dayOfMonth month dayOfWeek) describing the recurrence schedule.<br/>Only a limited subset is supported: minute must be ''0'', month must be ''*'', and at most one of<br/>dayOfMonth/dayOfWeek may be a specific value (the other must be ''*'')'
+          example: 0 9 * * 2
+        recurTo:
+          $ref: '#/components/schemas/RecurTo'
+        startDateAt:
+          type: string
+          description: The date and time the recurrence series starts
+          format: date-time
+          example: '2026-09-01T09:00:00.0000000+00:00'
+        endDateAt:
+          type:
+          - string
+          - 'null'
+          description: The date the recurrence series stops. Must not be provided together with BigChange.BO.RestApi.Application.JobRecurrences.Models.UpdateJobRecurrenceModel.OccurrenceCount
+          format: date-time
+          example: '2027-03-01T00:00:00.0000000+00:00'
+        occurrenceCount:
+          type:
+          - integer
+          - 'null'
+          description: The number of occurrences after which the recurrence series stops. Must not be provided together with BigChange.BO.RestApi.Application.JobRecurrences.Models.UpdateJobRecurrenceModel.EndDateAt
+          format: int32
+          example: 10
+      additionalProperties: false
+      description: Represents a model for updating the recurring series on an existing job
+    CreateJobModel:
+      required:
+      - contactId
+      - typeId
+      type: object
+      properties:
+        typeId:
+          type: integer
+          description: The unique identifier of the type assigned to this job
+          format: int64
+          example: 5514123
+        contactId:
+          type: integer
+          description: The unique identifier of the contact (customer) for who this job is to be performed
+          format: int64
+          example: 5514123
+        plannedDuration:
+          type:
+          - integer
+          - 'null'
+          description: The planned duration for the job, indicated in minutes. If not provided, the default duration for the job type will be used
+          format: int32
+          example: 90
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of the job - should usually be unique. If not provided and job type auto-reference set, auto-referenced value will be used
+          example: ABC/5514123
+        description:
+          type:
+          - string
+          - 'null'
+          description: The textual details about the job
+          example: New boiler install - please remove and retain the old boiler
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 3729c414-ed21-4849-816f-25d332265dc8
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated to the job. May be required, dependent upon job type
+          example: PAO/1312KU
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group to which this job belongs
+          format: int64
+          example: 42
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job is assigned to
+          format: int64
+          example: 5514123
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields applied to this job
+        siteContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the site contact for this job<br/>If provided, the contact must exist within the customer's account
+          format: int64
+          example: 15548440
+      additionalProperties: false
+      description: Represents a model that holds information about creating a job
+    CreateJobFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: This job requires special attention
+      additionalProperties: false
+      description: Represents a model that holds information about creating a job flag
+    ScheduleJobModel:
+      type: object
+      properties:
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned to this job. If the chosen resource is not active for job watch, the request will be rejected with a 422. If null and the chosen vehicle id is fixed to a resource, this will be automatically populated
+          format: int64
+          example: 5514123
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle assigned to this job. If null and the chosen resource id is fixed to a vehicle, this will be automatically populated
+          format: int64
+          example: 5514123
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when the job is planned to start
+          format: date-time
+          example: '2022-11-29T11:00:00.0000000+00:00'
+        assistantIds:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/JobAssistantModel'
+          description: A list of unique identifiers of the resources assigned to this job
+      additionalProperties: false
+      description: Represents a model that holds information about scheduling a job. To schedule a job, PlannedStartAt must not be null and at least one of the ids must be populated. To unschedule a job, both ResourceId and VehicleId must be null
+    WriteWorksheetAnswerBoolean:
+      required:
+      - booleanValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        booleanValue:
+          type: boolean
+          description: Represents the boolean (yes/no) answer to a worksheet question
+          example: true
+      additionalProperties: false
+      description: Model for writing a boolean answer to a worksheet question
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    ReadJobFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        jobId:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 654321
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The name of the owner who applied the flag
+          example: John Doe
+        comments:
+          type: string
+          description: Additional comments about the flag
+          example: Urgent issue requires immediate attention
+      additionalProperties: false
+      description: Represents a model that holds information about a job flag
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadJobWorksheetModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the worksheet associated with the job
+          format: int64
+          example: 1234
+        name:
+          type: string
+          description: The name of the worksheet associated with the job
+          example: Worksheet Example Name
+        linkType:
+          $ref: '#/components/schemas/LinkType'
+      additionalProperties: false
+      description: Represents a model that holds information about a job worksheet
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    JobStatus:
+      enum:
+      - new
+      - scheduled
+      - unscheduled
+      - sent
+      - read
+      - accepted
+      - refused
+      - onTheWay
+      - started
+      - suspended
+      - completedOk
+      - completedWithIssues
+      - cancelled
+      - lateStart
+      - lateFinish
+      - rescheduled
+      type: string
+      description: 'Describes each possible status of a Job<p>Possible values:</p><ul><li><b>new</b>: A job that is newly created in BigChange All Jobs start with a New status, regardless of schedule detail</li><li><b>scheduled</b>: Job has been scheduled. Scheduled status is when the Vehicle, Driver, and Planned Date Time are all allocated</li><li><b>unscheduled</b>: Job has been unscheduled. Unscheduled status happens when any combination of the Vehicle, Driver, and Planned Date Time are all removed from a Scheduled job</li><li><b>sent</b>: The scheduled job has been delivered to the driver''s mobile device (tablet/phone). The driver must be logged into BigChange for jobs to be sent</li><li><b>read</b>: Job Detail has been read by the Driver on their mobile terminal</li><li><b>accepted</b>: Driver accepted the job</li><li><b>refused</b>: Driver refused the job</li><li><b>onTheWay</b>: Driver indicated they are on route to the Job Address</li><li><b>started</b>: Driver has indicated they have started the work detailed in the Job</li><li><b>suspended</b>: Driver paused work – ie taking a break</li><li><b>completedOk</b>: Job Completed with no issues</li><li><b>completedWithIssues</b>: Job Completed with issues</li><li><b>cancelled</b>: Job was Cancelled</li><li><b>lateStart</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>lateFinish</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>rescheduled</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li></ul>'
+      example: new
+    WriteWorksheetAnswerDate:
+      required:
+      - date
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        date:
+          type: string
+          description: Represents the date answer to a worksheet question
+          format: date
+          example: '2025-01-31'
+        time:
+          type:
+          - string
+          - 'null'
+          description: Represents the time answer to a worksheet question
+          format: time
+          example: 01:23
+      additionalProperties: false
+      description: Model for writing a date answer to a worksheet question
+    ReadJobStatusModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job status change
+          format: int64
+          example: 5514123
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        createdAt:
+          type: string
+          description: The UTC date and time of the job status change, as provided by the user or device that set it (it may be backdated, so it is not necessarily when this entry was recorded in the system). The status history is sorted by this date
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        recordedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this job status history entry was recorded in the system. It does not change when the entry is edited and may be null
+          format: date-time
+          example: '2022-11-29T16:52:03.0000000+00:00'
+        actionedBy:
+          type: string
+          description: The name of the user who triggered the change in status
+          example: Bob Brown
+        comment:
+          type: string
+          description: Textual context about the status change that was made
+          example: Appliance successfully tested
+      additionalProperties: false
+      description: Represents a model that holds information about a job status change
+    UpdateJobAssistantsModel:
+      type: object
+      properties:
+        add:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/JobAssistantModel'
+          description: The list of assistant IDs to add to the job. If provided, these assistants will be added to the job's existing assistants
+        remove:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/JobAssistantModel'
+          description: The list of assistant IDs to remove from the job. If provided, these assistants will be removed from the job's existing assistants
+      additionalProperties: false
+      description: Represents a model containing information to update the assistants for a job, allowing for adding and/or removing assistants
+    CancelJobModel:
+      type: object
+      properties:
+        reason:
+          type:
+          - string
+          - 'null'
+          description: A textual reason as to why the job is cancelled
+          example: Customer no longer requires the work
+      additionalProperties: false
+      description: Represents a model that holds information about cancelling a job
+    RecurTo:
+      enum:
+      - unallocatedJobs
+      - resourceOnceScheduled
+      type: string
+      description: 'Determines how future occurrences of a recurring job are resourced.<p>Possible values:</p><ul><li><b>unallocatedJobs</b>: Future occurrences are created as unallocated jobs.</li><li><b>resourceOnceScheduled</b>: Future occurrences keep the resource from the job that was scheduled once.</li></ul>'
+      example: unallocatedJobs
+    SchedulingAssistantSuggestionModel:
+      type: object
+      properties:
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the suggested resource, populated when scheduling by resource
+          format: int64
+          example: 243556
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the suggested vehicle, populated when scheduling by vehicle
+          format: int64
+          example: 665433
+        resourceReference:
+          type:
+          - string
+          - 'null'
+          description: The reference of the suggested resource or vehicle
+          example: ENG-04
+        resourceName:
+          type: string
+          description: The display name of the suggested resource, or the registration of the suggested vehicle
+          example: John Smith
+        resourceGroupName:
+          type:
+          - string
+          - 'null'
+          description: The name of the resource or vehicle group the suggestion belongs to, if any
+          example: Plumbers
+        skills:
+          type: array
+          items:
+            type: string
+          description: The names of the skills or attributes held by the suggested resource or vehicle
+          example:
+          - Gas Safe
+          - Electrical
+        startAt:
+          type: string
+          description: The UTC start time of the suggested time slot
+          format: date-time
+          example: '2022-11-29T12:00:00.0000000+00:00'
+        extraDistanceKm:
+          type: number
+          description: The additional travel distance, in kilometres, introduced by scheduling the job in this slot
+          format: double
+          example: 4.2
+        extraDrivingMinutes:
+          type: integer
+          description: The additional driving time, in minutes, introduced by scheduling the job in this slot
+          format: int32
+          example: 12
+        jobCost:
+          type: number
+          description: The estimated cost of the job if scheduled in this slot
+          format: double
+          example: 45.5
+        averageDurationMinutes:
+          type:
+          - integer
+          - 'null'
+          description: The average duration, in minutes, this resource takes to complete jobs of this type, when available
+          format: int32
+          example: 75
+        successRatePercent:
+          type:
+          - number
+          - 'null'
+          description: The percentage of jobs of this type this resource completes successfully, when available
+          format: double
+          example: 92.5
+        punctualityPercent:
+          type:
+          - number
+          - 'null'
+          description: The percentage of jobs of this type this resource completes on time, when available
+          format: double
+          example: 88
+      additionalProperties: false
+      description: Represents a candidate resource or vehicle and time slot suggested for scheduling a job
+    SetJobWorksheetAnswerModel:
+      type: object
+      properties:
+        note:
+          type:
+          - string
+          - 'null'
+          description: The note related to the job worksheet answer
+          example: This answer was completed on Tuesday morning
+        answer:
+          oneOf:
+          - $ref: '#/components/schemas/WriteWorksheetAnswerBoolean'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerCost'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerDate'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerDecimal'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerInteger'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListIconMulti'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListIconSingle'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListMulti'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListSingle'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerText'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerTime'
+          description: The answer to the worksheet question
+      additionalProperties: false
+      description: Set job worksheet answer model
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    UpdateJobModel:
+      type: object
+      properties:
+        plannedDuration:
+          type: integer
+          description: 'The planned duration for the job, indicated in minutes.<br/>            <br/>Validation:<br/>- Must be greater than 0.<br/>- Must be less than or equal to 1440.<br/><br/>Optional: Omit to retain current value'
+          format: int32
+          example: 90
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'The textual details about the job.<br/>Cannot be updated if the job has been started or completed.<br/>            <br/>Validation:<br/>- Only allowed when job status is New, Sent, Accepted, Refused, or Scheduled.<br/>- Cannot be null when provided.<br/>- Maximum length is 1000 characters.<br/><br/>Optional: Omit to retain current value'
+          example: New boiler install - please remove and retain the old boiler
+          x-optional: Omit to retain current value
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The internal reference of the job.<br/>Should usually be unique.<br/>            <br/>Validation:<br/>- Maximum length is 40 characters.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: ABC/5514123
+          x-optional: Omit to retain current value or provide null to unset
+        personId:
+          type:
+          - string
+          - 'null'
+          description: 'The unique UUID identifier of the person who will serve as primary point of contact for the job.<br/>If set to null, the primary person for the contact will be set instead.<br/>Cannot be updated if the job has been started or completed.<br/>            <br/>Validation:<br/>- Only allowed when job status is New, Sent, Accepted, Refused, or Scheduled.<br/>- If provided and not null, the person must exist and belong to the job’s contact.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: uuid
+          example: 3729c414-ed21-4849-816f-25d332265dc8
+          x-optional: Omit to retain current value or provide null to unset
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The order number associated with the job.<br/>May be required, dependent upon job type.<br/>            <br/>Validation:<br/>- Required if the job type mandates an order number.<br/>- Maximum length is 40 characters.<br/>- Cannot be empty when required.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: PAO/1312KU
+          x-optional: Omit to retain current value or provide null to unset
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the job group to which this job belongs.<br/>            <br/>Validation:<br/>- If provided, job must not already belong to another group.<br/>- The job group must exist.<br/>- The job group must not be financially completed.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 42
+          x-optional: Omit to retain current value or provide null to unset
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the category that the job is assigned to.<br/><br/>Validation:<br/>- If provided and not null, the category must exist and be visible for Jobs (JobCategoryVisibility 0 or 2).<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        isFinanciallyComplete:
+          type: boolean
+          description: 'Indicates whether the job is financially complete.<br/>            <br/>Validation:<br/>- Can only be set to true when job status is CompletedOk or CompletedWithIssues.<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        isActioned:
+          type: boolean
+          description: 'A flag indicating whether all actions concerned with the job have been completed.<br/>            <br/>Validation:<br/>- Can only be set to true when job status is CompletedOk or CompletedWithIssues.<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        officeNotes:
+          type:
+          - string
+          - 'null'
+          description: 'Notes for the office team regarding the job.<br/>            <br/>Validation:<br/>- Maximum length is 500 characters.<br/>- Only allowed when job status is CompletedOk or CompletedWithIssues if non-empty.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Customer has requested a follow-up call
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the job.<br/>Omit or use an empty list to retain current values.<br/>            <br/>Validation:<br/>- Cannot be null when provided.<br/>- Each custom field must satisfy its definition rules for the job type.<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobAssistantModel'
+          description: 'Assistants associated with the job.<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+        siteContactId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the site contact for this job.<br/>If provided, the contact must exist within the customer''s account.<br/>Cannot be null when provided.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 15548440
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Update job model.<br/>At least one optional value must be provided.<br/>            <br/>Validation:<br/>- The request body must contain at least one provided value
+    CreateJobStockModel:
+      type: object
+      properties:
+        stockDetailsId:
+          type: integer
+          description: The identifier of the type of stock associated with the planned stock usage on the job. Only one job stock can be created per stock detail if stock item id is null
+          format: int64
+          example: 7775
+        stockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the specific stock item associated with the planned stock usage on the job. Must be null when stock detail is consumable. Only one job stock can be created per stock item
+          format: int64
+          example: 5954
+        action:
+          $ref: '#/components/schemas/JobStockActionWrite'
+        quantityPlanned:
+          type:
+          - number
+          - 'null'
+          description: The anticipated quantity of stock units that will be used on a job. Must be null or 1 when stock detail is not consumable. Can't be null when stock detail is consumable
+          format: double
+          example: 10.5
+        pickupContactId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier for the contact at the pickup location during the planned stock usage
+          format: int64
+          example: 1234
+        dropOffContactId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier for contact at the drop-off location during the planned stock usage
+          format: int64
+          example: 676
+        isDeliveredToBeSold:
+          type: boolean
+          description: A flag indicating whether the stock is delivered to be sold
+          example: true
+        isEquipmentAtDropOff:
+          type: boolean
+          description: A flag indicating whether the stock equipment is at the drop-off location
+          example: true
+      additionalProperties: false
+      description: Represents a model that holds information about creating a job stock
+    PagedResponseReadJobStatusModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobStatusModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    WriteWorksheetAnswerCost:
+      required:
+      - name
+      - quantity
+      - taxPercentage
+      - unitSellingPrice
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        name:
+          type: string
+          description: Dynamic answer associated to the cost question
+          example: This is my cost
+        quantity:
+          minimum: 0
+          type: number
+          description: Represents the quantity associated to the cost
+          format: double
+          example: 12.5
+        unitSellingPrice:
+          minimum: 0
+          type: number
+          description: The unit selling price associated to the cost
+          format: double
+          example: 10.1
+        taxPercentage:
+          minimum: 0
+          type: number
+          description: The tax percentage associated to the cost
+          format: double
+          example: 20
+      additionalProperties: false
+      description: Model for writing a cost answer to a worksheet question
+    ApplyJobGroupJobFlagResult:
+      type: object
+      properties:
+        groupId:
+          type: integer
+          description: The ID of the job group
+          format: int64
+        jobsFlaggedCount:
+          type: integer
+          description: The number of jobs to which the flag was applied
+          format: int32
+      additionalProperties: false
+      description: Represents the result of applying a job flag to a job group
+    WriteWorksheetAnswerListIconMulti:
+      required:
+      - selectedItems
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItems:
+          type: array
+          items:
+            type: string
+          description: Represents selected items from a list icon multi answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list icon multi answer to a worksheet question
+    JobCustomerActivitySortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort job customer activity records<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the job customer activity record was created</li></ul>'
+      example: createdAt
+    ReadJobStockModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for each planned stock usage record
+          format: int64
+          example: 123
+        jobId:
+          type: integer
+          description: The identifier of the job associated with the planned stock usage
+          format: int64
+          example: 3334
+        stockDetailsId:
+          type: integer
+          description: The identifier of the type of stock associated with the planned stock usage on the job
+          format: int64
+          example: 7775
+        stockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier of the specific stock item associated with the planned stock usage on the job
+          format: int64
+          example: 5954
+        action:
+          $ref: '#/components/schemas/JobStockActionRead'
+        quantityPlanned:
+          type: number
+          description: The anticipated quantity of stock units that will be used on a job
+          format: double
+          example: 10.5
+        pickupContactId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier for the contact at the pickup location during the planned stock usage. If set, allowed actions are 'BroughtAndLeft', 'BroughtAndTakenBack' and 'UsedInStock'. Null value indicates that the stock will be on the vehicle relating to the job
+          format: int64
+          example: 1234
+        dropOffContactId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier for contact at the drop-off location during the planned stock usage. If set, allowed actions are 'BroughtAndTakenBack' and 'OnSiteAndTakenBack'. Null value indicates that the stock will be on the vehicle relating to the job
+          format: int64
+          example: 676
+        isDeliveredToBeSold:
+          type: boolean
+          description: A flag indicating whether the stock is delivered to be sold
+          example: true
+        isEquipmentAtDropOff:
+          type: boolean
+          description: A flag indicating whether the stock equipment is at the drop-off location
+          example: true
+        quantityActual:
+          type: number
+          description: The actual quantity of stock units that were used on a job
+          format: double
+          example: 2.5
+        make:
+          type:
+          - string
+          - 'null'
+          description: Make of a stock item used in a job
+          example: Samsung
+        model:
+          type: string
+          description: Model of a stock item used in a job. Usually used in conjunction with the Make for generic identification
+          example: Smart Fridge V100
+        serialNumber:
+          type:
+          - string
+          - 'null'
+          description: Used as a unique reference field for a stock item to track specific unit. Doesn't have to be set when a job is initialised
+          example: SN001/200/500
+        dropOffStockItemId:
+          type:
+          - integer
+          - 'null'
+          description: The identifier for the specific item of stock that is planned to be dropped at off or delivered to
+          format: int64
+          example: 12345
+        worksheets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobStockWorksheetModel'
+          description: The worksheets associated with this stock item on the job. Each entry contains the worksheet identifier<br/>and the entity identifier to use as the `entityId` filter when querying worksheet answers<br/>with an `entityType` of `stockItem`
+      additionalProperties: false
+      description: Represents a model that holds information about planned stock usage for a job
+    PagedResponseReadJobModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

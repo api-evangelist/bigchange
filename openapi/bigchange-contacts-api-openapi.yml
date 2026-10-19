@@ -1,14 +1,10 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Contacts API
+  title: BigChange DX Contacts API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
@@ -19,36 +15,172 @@ paths:
       tags:
       - Contacts
       summary: Get a list of contacts
+      description: Retrieve a paged collection of contacts (required scope contacts:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/ContactSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: status
+        in: query
+        description: Only return contacts where `status` matches the value provided
+        schema:
+          $ref: '#/components/schemas/AccountStatus'
+      - name: name
+        in: query
+        description: Only return contacts where `name` matches or starts with the value provided
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: 'Only return contacts where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: id
+        in: query
+        description: 'Only return contacts where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: parentId
+        in: query
+        description: 'Only return contacts where `parentId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: groupId
+        in: query
+        description: 'Only return contacts where `groupId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A paged list of contacts.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadContactModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1Contacts
       x-operation-id-source: derived
     post:
       tags:
       - Contacts
       summary: Create a contact
+      description: Create a new contact (required scope contacts:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Create contact model
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/CreateContactModel'
+        required: true
       responses:
         '201':
-          description: The created contact.
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: postV1Contacts
       x-operation-id-source: derived
   /v1/contacts/{contactId}:
@@ -56,57 +188,1549 @@ paths:
       tags:
       - Contacts
       summary: Get a contact
+      description: Retrieve the details of a single contact (required scope contacts:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
       - name: contactId
         in: path
+        description: The unique identifier of the contact
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadContactModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ContactsByContactId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Contacts
+      summary: Update a contact
+      description: Update the details of a single contact (required scope contacts:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: Contact id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Model used to update contact. At least one optional value must be provided
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1ContactsByContactId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Contacts
+      summary: Delete a contact
+      description: Delete a contact record (required scope contacts:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: Contact id
         required: true
         schema:
           type: integer
           format: int64
       responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1ContactsByContactId
+      x-operation-id-source: derived
+  /v1/contacts/{contactId}/accessHours:
+    get:
+      tags:
+      - Contacts
+      summary: Get a list of site access hours
+      description: Retrieve a collection of access hours (required scope contacts:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: The unique identifier of the contact
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
         '200':
-          description: The requested contact.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
-      operationId: getV1ContactsByContactId
+                $ref: '#/components/schemas/PagedResponseReadAccessHourModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ContactsByContactIdAccessHours
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Contacts
+      summary: Update a site access hours
+      description: Update the details of access hours for a contact (required scope contacts:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: Id of the contact
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Access hours model used to update
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UpdateAccessHourModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1ContactsByContactIdAccessHours
+      x-operation-id-source: derived
+  /v1/contacts/{contactId}/attachments:
+    get:
+      tags:
+      - Contacts
+      summary: Get a list of attachments for a contact
+      description: Retrieve a paged collection of attachments belonging to a contact (required scope attachments:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: The unique identifier of the contact
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: folderId
+        in: query
+        description: Only return attachments within the folder with the given ID. Omit, or supply 0, to return attachments outside of any folder
+        schema:
+          type: integer
+          format: int32
+      - name: isResourceVisible
+        in: query
+        description: Only return attachments that are visible to a resource (mobile field engineer) when true. Omit to return attachments regardless of resource visibility
+        schema:
+          type: boolean
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/AttachmentSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadAttachmentModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ContactsByContactIdAttachments
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Contacts
+      summary: Create an attachment for a contact
+      description: Creates a new attachment for a contact (required scope attachments:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: The contact id
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: The file to upload
+                  format: binary
+                folderId:
+                  type: integer
+                  description: The ID of the folder where the attachment should be stored (optional)
+                  format: int64
+                isResourceVisible:
+                  type: boolean
+                  description: Whether the attachment should be visible to resources (mobile field engineers)
+            encoding:
+              file:
+                style: form
+              folderId:
+                style: form
+              isResourceVisible:
+                style: form
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1ContactsByContactIdAttachments
+      x-operation-id-source: derived
+  /v1/contacts/{contactId}/attachments/folders:
+    get:
+      tags:
+      - Contacts
+      summary: Get a list of attachment folders
+      description: Retrieve a collection of attachment folders belonging to a contact (required scope attachments:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: contactId
+        in: path
+        description: The unique identifier of the contact
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadContactAttachmentFolderModel'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ContactsByContactIdAttachmentsFolders
+      x-operation-id-source: derived
+  /v1/contacts/{contactId}/stop:
+    put:
+      tags:
+      - Contacts
+      summary: Puts a contact on stop
+      description: Puts business dealings with a contact on stop, usually because they have outstanding payments. (required scope contacts:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: Contact id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Model representing stop contact operation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopContactModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1ContactsByContactIdStop
+      x-operation-id-source: derived
+  /v1/contacts/{contactId}/unstop:
+    put:
+      tags:
+      - Contacts
+      summary: Unstops a contact
+      description: Resumes business dealings with a contact (required scope contacts:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: path
+        description: Contact id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The unstop contact model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnstopContactModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1ContactsByContactIdUnstop
       x-operation-id-source: derived
 components:
   schemas:
-    PagedResult:
+    PagedResponseReadAccessHourModel:
       type: object
-      description: Standard paged list envelope (modeled).
       properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadAccessHourModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
-        items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericObject:
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadContactAttachmentFolderModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the attachment folder
+          format: int64
+          example: 123456
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the parent attachment folder, if any (for hierarchy)
+          format: int64
+          example: 123450
+        name:
+          type: string
+          description: The name of the attachment folder
+          example: Site Photos
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this attachment folder was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        modifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this attachment folder was last modified
+          format: date-time
+          example: '2024-07-01T09:00:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model that holds information about an attachment folder
+    UnstopContactModel:
+      type: object
+      properties:
+        appliesTo:
+          $ref: '#/components/schemas/UnstopAppliesTo'
+      additionalProperties: false
+      description: Unstop contact model
+    StopContactModel:
+      type: object
+      properties:
+        appliesTo:
+          $ref: '#/components/schemas/StopAppliesTo'
+        status:
+          $ref: '#/components/schemas/StopStatus'
+        stopReason:
+          type: string
+          description: The textual description of why the contact has been put on stop
+          example: This customer has not paid for our services and won't return calls.
+      additionalProperties: false
+      description: Represents a model that holds information about putting a contact on stop
+    ReadAccessHourModel:
+      type: object
+      properties:
+        dayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+        start:
+          type: string
+          description: The 24H format time of day that access to the contact site starts (hh:mm)
+          example: 09:00
+        stop:
+          type: string
+          description: The 24H format time of day that access to the contact site stops (hh:mm)
+          example: '17:00'
+      additionalProperties: false
+      description: Represents a read model for an AccessHour object
+    UpdateContactModel:
+      type: object
+      properties:
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The internal reference of the contact - should usually be unique<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: '5514123'
+          x-optional: Omit to retain current value or provide null to unset
+        name:
+          type: string
+          description: 'The name of the contact<br/><br/>Optional: Omit to retain current value'
+          example: Example Company
+          x-optional: Omit to retain current value
+        groupId:
+          type: integer
+          description: 'The unique identifier of the group this contact belongs to<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the parent contact of this contact<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        extraInformation:
+          type:
+          - string
+          - 'null'
+          description: 'A free text description about the contact<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Loyal customer for many years
+          x-optional: Omit to retain current value or provide null to unset
+        street:
+          type:
+          - string
+          - 'null'
+          description: 'The contact street address<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: 3150 Century Way
+          x-optional: Omit to retain current value or provide null to unset
+        town:
+          type:
+          - string
+          - 'null'
+          description: 'The contact address town / city / village / locality<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Leeds
+          x-optional: Omit to retain current value or provide null to unset
+        postalCode:
+          type:
+          - string
+          - 'null'
+          description: 'The contact address postcode or zipcode<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: LS15 6HU
+          x-optional: Omit to retain current value or provide null to unset
+        country:
+          type:
+          - string
+          - 'null'
+          description: 'The textual name of the contact address country<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: England
+          x-optional: Omit to retain current value or provide null to unset
+        location:
+          $ref: '#/components/schemas/Location'
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the contact. Omit or use an empty list to retain current values<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Update contact model. At least one optional value must be provided. The API doesn't currently support polygon information for a contact. If the contact has been set up with polygon information in JobWatch, updating the location here will overwrite the polygon data and revert to a circle. To avoid unintentional updates, very small changes to the location are ignored by this endpoint
+    ReadAttachmentListModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the attachment
+          format: int64
+          example: 123456
+        fileName:
+          type: string
+          description: The file name of the attachment
+          example: invoice.pdf
+        fileDescription:
+          type:
+          - string
+          - 'null'
+          description: The description of the attachment
+          example: Signed contract
+        fileType:
+          type: string
+          description: The MIME type of the attachment file
+          example: application/pdf
+        fileExtension:
+          type: string
+          description: The file extension of the attachment
+          example: pdf
+        isNew:
+          type: boolean
+          description: Whether the attachment has not yet been viewed
+          example: true
+        isImage:
+          type: boolean
+          description: Whether the attachment file is an image
+          example: true
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this attachment was created
+          format: date-time
+          example: '2024-01-15T09:30:00.0000000+00:00'
+        entityType:
+          $ref: '#/components/schemas/AttachmentEntityType'
+        isResourceVisible:
+          type: boolean
+          description: Whether the attachment is visible to a resource (mobile field engineer)
+          example: true
+      additionalProperties: false
+      description: Represents an attachment
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    ReadContactModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the contact
+          format: int64
+          example: 5514123
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this contact was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        modifiedAt:
+          type: string
+          description: The UTC timestamp of when this contact was modified
+          format: date-time
+          example: '2023-09-12T11:24:23.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the contact - should usually be unique
+          example: '5514123'
+        name:
+          type: string
+          description: The name of the contact
+          example: Example Company
+        groupId:
+          type: integer
+          description: The unique identifier of the group this contact belongs to
+          format: int64
+          example: 5514123
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the parent contact of this contact
+          format: int64
+          example: 5514123
+        extraInformation:
+          type: string
+          description: A free text description about the contact
+          example: Loyal customer for many years
+        street:
+          type: string
+          description: The contact street address
+          example: 3150 Century Way
+        town:
+          type: string
+          description: The contact address town / city / village / locality
+          example: Leeds
+        postalCode:
+          type: string
+          description: The contact address postcode or zipcode
+          example: LS15 6HU
+        country:
+          type: string
+          description: The textual name of the contact address country
+          example: England
+        location:
+          $ref: '#/components/schemas/Location'
+        accountStatus:
+          $ref: '#/components/schemas/AccountStatus'
+        stopReason:
+          type: string
+          description: If the contact status has been set to on stop, a textual description explaining why
+          example: This customer has not paid for our services and won't return calls
+        stoppedAt:
+          type:
+          - string
+          - 'null'
+          description: The date that this contact was placed on stop
+          format: date
+          example: '2023-09-12'
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the contact
+      additionalProperties: false
+      description: Represents a model for reading contact
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    StopAppliesTo:
+      enum:
+      - contactOnly
+      - contactAndChildren
+      type: string
+      description: 'Indicates if the contact''s child contacts should also be on stop<p>Possible values:</p><ul><li><b>contactOnly</b>: Contact only</li><li><b>contactAndChildren</b>: Contact and children</li></ul>'
+      example: contactOnly
+    UnstopAppliesTo:
+      enum:
+      - contactOnly
+      - contactAndChildren
+      type: string
+      description: 'Indicates if the contact''s child contacts should also no longer be on stop<p>Possible values:</p><ul><li><b>contactOnly</b>: Contact only</li><li><b>contactAndChildren</b>: Contact and children</li></ul>'
+      example: contactOnly
+    AttachmentEntityType:
+      enum:
+      - job
+      - worksheetAnswer
+      - contactNote
+      - invoice
+      - contact
+      - jobGroup
+      - salesOpportunity
+      - invoiceAttachment
+      type: string
+      description: 'The type of entity an attachment is associated with<p>Possible values:</p><ul><li><b>job</b>: Associated with a job entity</li><li><b>worksheetAnswer</b>: Associated with a worksheet answer entity</li><li><b>contactNote</b>: Associated with a contact note entity</li><li><b>invoice</b>: Associated with an invoice entity</li><li><b>contact</b>: Associated with a contact entity</li><li><b>jobGroup</b>: Associated with a job group entity</li><li><b>salesOpportunity</b>: Associated with a sales opportunity entity</li><li><b>invoiceAttachment</b>: Associated with an invoice attachment entity</li></ul>'
+      example: job
+    ContactSortOptions:
+      enum:
+      - name
+      - createdAt
+      type: string
+      description: 'Shows the possible values for sorting contacts<p>Possible values:</p><ul><li><b>name</b>: Sort contacts by name</li><li><b>createdAt</b>: Sort contacts by created at</li></ul>'
+      example: name
+    CreateContactModel:
+      required:
+      - groupId
+      - location
+      - name
+      type: object
+      properties:
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of the contact - should usually be unique
+          example: '5514123'
+        name:
+          minLength: 1
+          type: string
+          description: The name of the contact
+          example: Example Company
+        groupId:
+          type: integer
+          description: The unique identifier of the group this contact belongs to
+          format: int64
+          example: 5514123
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the parent contact of this contact
+          format: int64
+          example: 1
+        extraInformation:
+          type:
+          - string
+          - 'null'
+          description: A free text description about the contact
+          example: Loyal customer for many years
+        street:
+          type:
+          - string
+          - 'null'
+          description: The contact street address
+          example: 3150 Century Way
+        town:
+          type:
+          - string
+          - 'null'
+          description: The contact address town / city / village / locality
+          example: Leeds
+        postalCode:
+          type:
+          - string
+          - 'null'
+          description: The contact address postcode or zipcode
+          example: LS15 6HU
+        country:
+          type:
+          - string
+          - 'null'
+          description: The textual name of the contact address country
+          example: England
+        location:
+          $ref: '#/components/schemas/Location'
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields associated with the contact
+      additionalProperties: false
+      description: Create contact request model
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    AccountStatus:
+      enum:
+      - normal
+      - contactOnStop
+      - creditLimitOnStop
+      type: string
+      description: 'The status of the contact (if they are on stop)<p>Possible values:</p><ul><li><b>normal</b>: Normal</li><li><b>contactOnStop</b>: Contact is on stop</li><li><b>creditLimitOnStop</b>: Credit limit is on stop</li></ul>'
+      example: normal
+    PagedResponseReadAttachmentModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/ReadAttachmentModel'
+            - $ref: '#/components/schemas/ReadAttachmentModelWithFolderId'
+            description: Represents an attachment, including its download URL
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    AttachmentSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'The field to sort attachments by<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by the date the attachment was created</li></ul>'
+      example: createdAt
+    DayOfWeek:
+      enum:
+      - sunday
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      type: string
+      description: <p>Possible values:</p><ul><li><b>sunday</b></li><li><b>monday</b></li><li><b>tuesday</b></li><li><b>wednesday</b></li><li><b>thursday</b></li><li><b>friday</b></li><li><b>saturday</b></li></ul>
+      example: sunday
+    PagedResponseReadContactAttachmentFolderModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadContactAttachmentFolderModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    ReadAttachmentModel:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ReadAttachmentListModel'
+      properties:
+        url:
+          type: string
+          description: The URL from which the attachment file can be downloaded
+        thumbnailUrl:
+          type: string
+          description: The URL from which the attachment's thumbnail can be downloaded, populated only when the attachment is an image
+      additionalProperties: false
+      description: Represents an attachment, including its download URL
+    StopStatus:
+      enum:
+      - contactOnStop
+      - creditLimitOnStop
+      type: string
+      description: 'Indicates whether the contact should be put on stop or their credit limit<p>Possible values:</p><ul><li><b>contactOnStop</b>: Contact on stop</li><li><b>creditLimitOnStop</b>: Credit limit on stop</li></ul>'
+      example: contactOnStop
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    PagedResponseReadContactModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadContactModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    UpdateAccessHourModel:
+      required:
+      - start
+      - stop
+      type: object
+      properties:
+        dayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+        start:
+          type: string
+          description: The 24H format time of day that access to the contact site starts (hh:mm)
+          format: time
+          example: 09:00
+        stop:
+          type: string
+          description: The 24H format time of day that access to the contact site stops (hh:mm)
+          format: time
+          example: '17:00'
+      additionalProperties: false
+      description: Update access hour model
+    ReadAttachmentModelWithFolderId:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ReadAttachmentModel'
+      properties:
+        folderId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+      additionalProperties: false
+      description: Represents an attachment
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

@@ -1,0 +1,2348 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Invoices API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Invoices
+paths:
+  /v1/finance/invoices:
+    get:
+      tags:
+      - Invoices
+      summary: Get a list of invoices
+      description: Retrieve a paged collection of invoices. At least one filter (invoiceId, jobId, jobGroupId, contactId, reference, or createdAtFrom/createdAtTo) is required. (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/InvoiceSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return invoices where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: jobId
+        in: query
+        description: 'Only return invoices where `jobId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: jobGroupId
+        in: query
+        description: 'Only return invoices where `jobGroupId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: contactId
+        in: query
+        description: 'Only return invoices where `contactId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: reference
+        in: query
+        description: 'Only return invoices where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: createdAtFrom
+        in: query
+        description: Only return invoices created at or after this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return invoices created at or before this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadInvoiceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoices
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Invoices
+      summary: Create an invoice
+      description: Create a new invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to create the invoice
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceModel'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceInvoices
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}:
+    get:
+      tags:
+      - Invoices
+      summary: Get an invoice
+      description: Retrieve the details of a single invoice (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The unique identifier of the invoice
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadInvoiceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Invoices
+      summary: Update an invoice
+      description: Update an invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The id of the invoice to update
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the invoice
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvoiceModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceInvoicesByInvoiceId
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/cancel:
+    put:
+      tags:
+      - Invoices
+      summary: Cancel an invoice
+      description: Mark an invoice as cancelled (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceInvoicesByInvoiceIdCancel
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/createDocument:
+    put:
+      tags:
+      - Invoices
+      summary: Create an invoice document pdf
+      description: Creates a PDF document for an invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceInvoicesByInvoiceIdCreateDocument
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/flags:
+    get:
+      tags:
+      - Invoices
+      summary: Gets the currently active flag for the specified invoice
+      description: Retrieve the current active flag for a invoice (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Invoices
+      summary: Create a new flag for a invoice
+      description: Create a new flag for a invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model containing flag information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceInvoicesByInvoiceIdFlags
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/flags/{flagId}:
+    delete:
+      tags:
+      - Invoices
+      summary: Deletes a flag from the specified invoice
+      description: Delete a flag from a invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: flagId
+        in: path
+        description: The flag history id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceInvoicesByInvoiceIdFlagsByFlagId
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/flags/history:
+    get:
+      tags:
+      - Invoices
+      summary: Gets the flag history for the specified invoice
+      description: Retrieve the flag history for a invoice (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: The page number being requested
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The page size being requested
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/lineItems:
+    get:
+      tags:
+      - Invoices
+      summary: Gets a list of invoice line items that belong to the specified invoice
+      description: Retrieve a paged list of line items for an invoice (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The unique identifier of the invoice associated with the line items
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadInvoiceLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceIdLineItems
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Invoices
+      summary: Create an invoice line item
+      description: Create a new invoice line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInvoiceLineItemModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceInvoicesByInvoiceIdLineItems
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/lineItems/{lineItemId}:
+    get:
+      tags:
+      - Invoices
+      summary: Get an invoice line item
+      description: Retrieve the details of a single line item (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The unique identifier of the invoice associated with the invoice line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The unique identifier of the invoice line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadInvoiceLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Invoices
+      summary: Update an invoice line item
+      description: Update the details of a single line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the line item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvoiceLineItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceInvoicesByInvoiceIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Invoices
+      summary: Delete an invoice line item
+      description: Delete a line item from an invoice (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The invoice id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceInvoicesByInvoiceIdLineItemsByLineItemId
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/paid:
+    put:
+      tags:
+      - Invoices
+      summary: Mark an invoice as paid
+      description: Mark an invoice as paid (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvoicePaidModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceInvoicesByInvoiceIdPaid
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/payments:
+    get:
+      tags:
+      - Invoices
+      summary: Gets a paged list of payments that belong to the specified invoice
+      description: Retrieve a paged list of payments for an invoice (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        description: The unique identifier of the invoice
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadInvoicePaymentModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceInvoicesByInvoiceIdPayments
+      x-operation-id-source: derived
+  /v1/finance/invoices/{invoiceId}/sent:
+    put:
+      tags:
+      - Invoices
+      summary: Mark an invoice as sent
+      description: Mark an invoice as sent (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: invoiceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInvoiceSentModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceInvoicesByInvoiceIdSent
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    PagedResponseReadInvoicePaymentModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadInvoicePaymentModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    ReadInvoicePaymentModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the invoice payment
+          format: int64
+          example: 12345
+        invoiceId:
+          type: integer
+          description: The unique identifier of the invoice this payment is applied to
+          format: int64
+          example: 54321
+        paidAt:
+          type: string
+          description: The date and time the payment was made (UTC)
+          format: date-time
+        amount:
+          type: number
+          description: The payment amount
+          format: double
+          example: 500
+        vatAmount:
+          type: number
+          description: The VAT amount applied to the payment
+          format: double
+          example: 100
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The payment reference
+          example: INV-REF-001
+        method:
+          $ref: '#/components/schemas/InvoicePaymentMethod'
+        onlineReference:
+          type:
+          - string
+          - 'null'
+          description: The payment gateway's own reference (e.g. a Stripe PaymentIntent id)
+          example: pi_3OxXXXXXXXXXXXXXX
+      additionalProperties: false
+      description: Model for reading an invoice payment
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    InvoicePaymentMethod:
+      enum:
+      - Unknown
+      - other
+      - cheque
+      - bacs
+      - cash
+      - card
+      - accountingSys
+      - judoPayment
+      - judoPreAuth
+      - blueSnapPayment
+      - blueSnapPreAuth
+      - stripePayment
+      - stripePreAuth
+      type: string
+      description: 'The payment method used to settle an invoice<p>Possible values:</p><ul><li><b>unknown</b>: Unknown payment method</li><li><b>other</b>: Other payment method</li><li><b>cheque</b>: Cheque payment</li><li><b>bacs</b>: BACS bank transfer</li><li><b>cash</b>: Cash payment</li><li><b>card</b>: Card payment</li><li><b>accountingSys</b>: Accounting system payment</li><li><b>judoPayment</b>: JudoPay payment</li><li><b>judoPreAuth</b>: JudoPay pre-authorisation</li><li><b>blueSnapPayment</b>: BlueSnap payment</li><li><b>blueSnapPreAuth</b>: BlueSnap pre-authorisation</li><li><b>stripePayment</b>: Stripe payment</li><li><b>stripePreAuth</b>: Stripe pre-authorisation</li></ul>'
+      example: Unknown
+    PagedResponseReadInvoiceModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadInvoiceModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    PagedResponseReadEntityFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadEntityFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ReadInvoiceModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the invoice
+          format: int64
+          example: 12345
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job associated with this invoice, if applicable
+          format: int64
+          example: 54321
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with this invoice, if applicable
+          format: int64
+          example: 67890
+        contactId:
+          type: integer
+          description: The unique identifier of the contact associated with this invoice
+          format: int64
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract associated with this invoice, if applicable.<br/>Shown even if the contract has been soft deleted
+          format: int64
+          example: 101112
+        createdAt:
+          type: string
+          description: The dateTime the invoice was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The date the invoice is due to be paid, calculated from the issue date and the payment terms.<br/>Null if payment terms have not been set on the invoice
+          format: date-time
+          example: '2022-12-29T16:50:16.0000000+00:00'
+        reference:
+          type: string
+          description: The reference of the invoice
+          example: InvoiceNote101
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the delivery site contact associated with this invoice, if applicable
+          format: int64
+          example: 56789
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the nominal code associated with this invoice, if applicable
+          format: int64
+          example: 45678
+        bankAccountId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the bank account associated with this invoice, if applicable
+          format: int64
+          example: 34567
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the department associated with this invoice, if applicable
+          format: int64
+          example: 23456
+        clientNotes:
+          type: string
+          description: Notes on the invoice
+          example: Please pay within 30 days
+        internalNotes:
+          type: string
+          description: Internal notes not visible to the client
+          example: Follow up in two weeks
+        sentAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the invoice was sent, if applicable
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        cancelledAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the invoice was cancelled, if applicable
+          format: date-time
+          example: '2024-02-20T14:45:00.0000000+00:00'
+        paidAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the invoice was paid, if applicable
+          format: date-time
+          example: '2024-01-30T09:15:00.0000000+00:00'
+        acceptedAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the invoice was accepted, if applicable
+          format: date-time
+          example: '2024-01-20T11:00:00.0000000+00:00'
+        cost:
+          type:
+          - number
+          - 'null'
+          description: The cost of the invoice
+          format: double
+          example: 850.5
+        totalExclTax:
+          type: number
+          description: The total amount excluding tax
+          format: double
+          example: 1000
+        totalInclTax:
+          type: number
+          description: The total amount including tax
+          format: double
+          example: 1200
+        totalPaid:
+          type: number
+          description: The total amount paid
+          format: double
+          example: 1200
+        paymentLink:
+          type: string
+          description: The payment link associated with the invoice, if applicable
+          example: '{bookingSiteBaseUrl}/pay/{invoiceUid}/{invoiceId}/{customerId}'
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the sales opportunity associated with this invoice, if applicable
+          format: int32
+          example: 12345
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the invoice
+      additionalProperties: false
+      description: Represents a model that holds information about an invoice
+    CreateInvoiceModel:
+      type: object
+      properties:
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job associated with this invoice, if applicable
+          format: int64
+          example: 12345
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with this invoice, if applicable
+          format: int64
+          example: 54321
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this invoice. Will reference the job or job group contact if not provided
+          format: int64
+          example: 1234
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: The dateTime the invoice was created. If null, will default to the current dateTime
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The reference of the invoice. If null, will default to an auto-generated reference
+          example: InvoiceNote101
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the delivery site contact associated with this invoice, if applicable
+          format: int64
+          example: 56789
+        bankAccountId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the bank account associated with this invoice, if applicable
+          format: int64
+          example: 34567
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the department associated with this invoice, if applicable
+          format: int64
+          example: 23456
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the nominal code associated with this invoice, if applicable
+          format: int64
+        clientNotes:
+          type:
+          - string
+          - 'null'
+          description: Notes on the invoice
+          example: Please pay within 30 days
+        internalNotes:
+          type:
+          - string
+          - 'null'
+          description: Internal notes not visible to the client
+          example: Follow up in two weeks
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the sales opportunity associated with this invoice, if applicable
+          format: int32
+          example: 12345
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields to set on the invoice. If a custom field is omitted, its value will be set to the default value for that field
+      additionalProperties: false
+      description: Represents a model that holds information about creating an invoice
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    UpdateInvoicePaidModel:
+      type: object
+      properties:
+        paidAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time when the invoice was paid, if omitted the current date and time will be used
+          format: date-time
+      additionalProperties: false
+      description: Represents a model that holds information about marking an invoice as paid
+    UpdateInvoiceModel:
+      type: object
+      properties:
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the delivery site contact associated with this invoice, if applicable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 56789
+          x-optional: Omit to retain current value or provide null to unset
+        clientNotes:
+          type:
+          - string
+          - 'null'
+          description: 'Notes on the invoice. Length must not exceed 3000 characters when provided.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Please pay within 30 days
+          x-optional: Omit to retain current value or provide null to unset
+        internalNotes:
+          type:
+          - string
+          - 'null'
+          description: 'Internal notes not visible to the client. Length must not exceed 3000 characters when provided.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Follow up in two weeks
+          x-optional: Omit to retain current value or provide null to unset
+        bankAccountId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the bank account associated with this invoice, if applicable.<br/>Validation: When provided and not null must be a positive integer within 32-bit bounds and must exist.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 34567
+          x-optional: Omit to retain current value or provide null to unset
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the nominal code associated with this invoice, if applicable.<br/>Validation: When provided and not null must be a positive integer within 32-bit bounds and must exist.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 45678
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the department code associated with this invoice, if applicable.<br/>Validation: When provided and not null must be a positive integer within 32-bit bounds and must exist.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 23456
+          x-optional: Omit to retain current value or provide null to unset
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The reference code for the invoice.<br/>Validation: When provided and not null, must not be empty and can only contain alphanumeric characters, hyphens, underscores, and forward slashes.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: INV-2024/001_A
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the invoice.<br/>Omit or use an empty list to retain current values.<br/>            <br/>Validation:<br/>- Cannot be null when provided.<br/>- Each custom field must satisfy its definition rules for the invoice type.<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Represents a model that holds information about updating an invoice
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadInvoiceLineItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier associated with the invoice line item
+          format: int64
+          example: 12345
+        invoiceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the invoice associated with the invoice line item
+          format: int64
+          example: 54321
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with the invoice line item
+          format: int64
+        createdAt:
+          type: string
+          description: The date and time when the invoice line item was created
+          format: date-time
+        quantity:
+          type: number
+          description: The quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the invoice line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: VAT / Tax identifier associated with the line item
+          format: int64
+          example: 1001
+        taxPercentage:
+          type: number
+          description: Tax percentage applied to the line item (GET only, never null). Defaults to 0 when no tax is applied
+          format: double
+          example: 20
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost of the item (cannot be negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price of the item (cannot be negative)
+          format: double
+          example: 10.99
+        taxAmount:
+          type:
+          - number
+          - 'null'
+          description: Tax amount for the line item (GET only)
+          format: double
+          example: 2.2
+        grossAmount:
+          type:
+          - number
+          - 'null'
+          description: Gross amount (formerly NetPrice internal) of the line item (GET only)
+          format: double
+          example: 13.19
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Model for reading an invoice line item
+    CurrencyWrite:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li></ul>'
+      example: EUR
+    UpdateInvoiceSentModel:
+      type: object
+      properties:
+        sentAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time when the invoice was sent, if omitted the current date and time will be used
+          format: date-time
+      additionalProperties: false
+      description: Represents a model that holds information about marking an invoice as sent
+    CreateInvoiceLineItemModel:
+      required:
+      - quantity
+      type: object
+      properties:
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this invoice item
+          format: int64
+          example: 54321
+        quantity:
+          type: number
+          description: The quantity of the invoice item
+          format: double
+          example: 1
+        description:
+          type: string
+          description: Description of the invoice line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Tax identifier (must exist and not be deleted for customer). Nullable
+          format: int64
+          example: 1001
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost (nullable, non-negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price (non-negative)
+          format: double
+          example: 10.99
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Represents a model that holds information about creating an invoice item
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    InvoiceSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort invoices.<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the invoice was created</li></ul>'
+      example: createdAt
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    UpdateInvoiceLineItemModel:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 'The quantity of the invoice line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 2.5
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'Description of the invoice line item<br/><br/>Optional: Omit to retain current value'
+          example: Replacement filter cartridge
+          x-optional: Omit to retain current value
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'Tax identifier (must exist and not be deleted for customer). Nullable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1001
+          x-optional: Omit to retain current value or provide null to unset
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: 'Unit cost (nullable, non-negative)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.5
+          x-optional: Omit to retain current value or provide null to unset
+        unitSellingPrice:
+          type: number
+          description: 'Unit selling price (non-negative)<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 10.99
+          x-optional: Omit to retain current value
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Nominal code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 50001
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Department code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 20002
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: represents a model for updating an invoice line item
+    CurrencyRead:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      - UNKNOWN
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site with an unknown value to handle unrecognised currencies returned from the database<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li><li><b>UNKNOWN</b>: Unknown currency</li></ul>'
+      example: EUR
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadInvoiceLineItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadInvoiceLineItemModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadEntityFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The owner who applied the flag (user email or ID)
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: {}
+      description: Represents a flag applied to an entity. Used as the response model for all entity flag endpoints.<br/>The entity identifier is serialised under its entity-specific key (e.g. `jobId`,<br/>`jobGroupId`) taken from BigChange.BO.RestApi.Application.EntityFlags.Services.EntityFlagConfig.PrimaryKeyColumn
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

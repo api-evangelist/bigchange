@@ -1,0 +1,2317 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Sales Opportunities API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: SalesOpportunities
+paths:
+  /v1/finance/salesOpportunities:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Get a list of sales opportunities
+      description: Retrieve a paged collection of sales opportunities (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/SalesOpportunitySortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return sales opportunities where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: status
+        in: query
+        description: Only return sales opportunities with the specified status
+        schema:
+          $ref: '#/components/schemas/SalesOpportunityStatus'
+      - name: contactId
+        in: query
+        description: Only return sales opportunities where `contactId` matches the value provided
+        schema:
+          type: integer
+          format: int64
+      - name: ownerId
+        in: query
+        description: Only return sales opportunities where `ownerId` matches the value provided
+        schema:
+          type: integer
+          format: int64
+      - name: reference
+        in: query
+        description: Only return sales opportunities where `reference` starts with the value provided
+        schema:
+          type: string
+      - name: createdAtFrom
+        in: query
+        description: Only return sales opportunities created at or after this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return sales opportunities created at or before this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: dueDateFrom
+        in: query
+        description: Only return sales opportunities with a due date at or after this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: dueDateTo
+        in: query
+        description: Only return sales opportunities with a due date at or before this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadSalesOpportunityModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunities
+      x-operation-id-source: derived
+    post:
+      tags:
+      - SalesOpportunities
+      summary: Create a sales opportunity
+      description: Create a new sales opportunity (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to create the sales opportunity
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/CreateSalesOpportunityModel'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSalesOpportunityModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateSalesOpportunityModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceSalesOpportunities
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{opportunityId}/flags:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Gets the currently active flag for the specified sales opportunity
+      description: Retrieve the current active flag for a Sales Opportunity (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: opportunityId
+        in: path
+        description: The sales opportunity id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesByOpportunityIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - SalesOpportunities
+      summary: Create a new flag for a sales opportunity
+      description: Create a new flag for a Sales Opportunity (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: opportunityId
+        in: path
+        description: The sales opportunity id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model containing flag information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceSalesOpportunitiesByOpportunityIdFlags
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{opportunityId}/flags/{flagId}:
+    delete:
+      tags:
+      - SalesOpportunities
+      summary: Deletes a flag from the specified sales opportunity
+      description: Delete a flag from a Sales Opportunity (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: opportunityId
+        in: path
+        description: The sales opportunity id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: flagId
+        in: path
+        description: The flag history id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceSalesOpportunitiesByOpportunityIdFlagsByFlagId
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{opportunityId}/flags/history:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Gets the flag history for the specified sales opportunity
+      description: Retrieve the flag history for a Sales Opportunity (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: opportunityId
+        in: path
+        description: The sales opportunity id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: The page number being requested
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The page size being requested
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesByOpportunityIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{salesOpportunityId}:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Get a sales opportunity
+      description: Retrieve the details of a single sales opportunity (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The unique identifier of the sales opportunity
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadSalesOpportunityModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesBySalesOpportunityId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - SalesOpportunities
+      summary: Update a sales opportunity
+      description: Update a sales opportunity (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The id of the sales opportunity to update
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the sales opportunity
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSalesOpportunityModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceSalesOpportunitiesBySalesOpportunityId
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{salesOpportunityId}/jobs:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Gets a list of jobs that are associated with the specified sales opportunity
+      description: Retrieve a paged list of jobs for a sales opportunity (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The unique identifier of the sales opportunity associated with the jobs
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: includeCancelled
+        in: query
+        description: Whether or not cancelled jobs should be included. If not specified, the default is to exclude cancelled jobs
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesBySalesOpportunityIdJobs
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{salesOpportunityId}/lineItems:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Gets a list of sales opportunity line items that belong to the specified sales…
+      description: Retrieve a paged list of line items for a sales opportunity (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The unique identifier of the sales opportunity associated with the line items
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadSalesOpportunityLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesBySalesOpportunityIdLineItems
+      x-operation-id-source: derived
+    post:
+      tags:
+      - SalesOpportunities
+      summary: Create a sales opportunity line item
+      description: Create a new sales opportunity line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSalesOpportunityLineItemModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceSalesOpportunitiesBySalesOpportunityIdLineItems
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{salesOpportunityId}/lineItems/{lineItemId}:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Get a sales opportunity line item
+      description: Retrieve the details of a single line item (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The unique identifier of the sales opportunity
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The unique identifier of the sales opportunity line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadSalesOpportunityLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesBySalesOpportunityIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - SalesOpportunities
+      summary: Delete a sales opportunity line item
+      description: Delete a line item from a sales opportunity (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The sales opportunity id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceSalesOpportunitiesBySalesOpportunityIdLineItemsByLineItemId
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/{salesOpportunityId}/lineItems/{salesOpportunityLineItemId}:
+    patch:
+      tags:
+      - SalesOpportunities
+      summary: Update a sales opportunity line item
+      description: Update a sales opportunity line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityId
+        in: path
+        description: The unique idenfitier of the sales opportunity
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: salesOpportunityLineItemId
+        in: path
+        description: The unique idenfitier of the sales opportunity line item
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSalesOpportunityLineItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceSalesOpportunitiesBySalesOpportunityIdLineItemsBySalesOpportunityLineItemId
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/probabilities:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Get a list of sales opportunity probabilities
+      description: Retrieve a paged collection of sales opportunity probabilities (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/SalesOpportunityProbabilitiesSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return sales opportunity probabilities where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadSalesOpportunityProbabilityModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesProbabilities
+      x-operation-id-source: derived
+  /v1/finance/salesOpportunities/stages:
+    get:
+      tags:
+      - SalesOpportunities
+      summary: Get a list of sales opportunity stages
+      description: Retrieve a paged collection of sales opportunity stages (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/SalesOpportunityStageSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return stages where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadSalesOpportunityModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceSalesOpportunitiesStages
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadSalesOpportunityModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the sales opportunity
+          format: int64
+          example: 12345
+        contactId:
+          type: integer
+          description: The identifier of the contact associated with the sales opportunity
+          format: int64
+          example: 67890
+        subject:
+          type: string
+          description: The subject of the sales opportunity
+          example: New office equipment deal
+        status:
+          $ref: '#/components/schemas/SalesOpportunityStatus'
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The due date of the sales opportunity
+          format: date-time
+          example: '2025-06-30T00:00:00.0000000+00:00'
+        stageId:
+          type: integer
+          description: The identifier of the stage associated with the sales opportunity
+          format: int64
+          example: 3
+        probabilityId:
+          type: integer
+          description: The identifier of the probability associated with the sales opportunity
+          format: int64
+          example: 2
+        ownerId:
+          type: integer
+          description: The identifier of the owner of the sales opportunity
+          format: int64
+          example: 456
+        ownerName:
+          type: string
+          description: The name of the owner of the sales opportunity
+          example: Jane Smith
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes associated with the sales opportunity
+          example: Customer is interested in bulk pricing
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The reference for the sales opportunity
+          example: SO-2025-001
+        createdAt:
+          type: string
+          description: The date the sales opportunity was created
+          format: date-time
+          example: '2025-01-15T09:30:00.0000000+00:00'
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the sales opportunity
+      additionalProperties: false
+      description: Represents a model for reading sales opportunity information
+    PagedResponseReadSalesOpportunityProbabilityModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadSalesOpportunityProbabilityModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    SalesOpportunityProbabilitiesSortOptions:
+      enum:
+      - creationDate
+      type: string
+      description: 'Sort options for sales opportunity probabilities.<p>Possible values:</p><ul><li><b>creationDate</b>: Sort by creation date.</li></ul>'
+      example: creationDate
+    ReadSalesOpportunityLineItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the sales opportunity line item
+          format: int64
+          example: 987654
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The sales opportunity id associated with the line item
+          format: int64
+          example: 12345
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The contact id associated with the line item
+          format: int64
+          example: 1234
+        createdAt:
+          type: string
+          description: The date and time when the sales opportunity line item was created
+          format: date-time
+        quantity:
+          type: number
+          description: The quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the sales opportunity line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: VAT / Tax identifier associated with the line item
+          format: int64
+          example: 1001
+        taxPercentage:
+          type: number
+          description: Tax percentage applied to the line item (GET only, never null). Defaults to 0 when no tax is applied
+          format: double
+          example: 20
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost of the item (cannot be negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price of the item (cannot be negative)
+          format: double
+          example: 10.99
+        taxAmount:
+          type:
+          - number
+          - 'null'
+          description: Tax amount for the line item (GET only)
+          format: double
+          example: 2.2
+        grossAmount:
+          type:
+          - number
+          - 'null'
+          description: Gross amount of the line item (GET only)
+          format: double
+          example: 13.19
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Model for reading a sales opportunity line item
+    SalesOpportunitySortOptions:
+      enum:
+      - creationDate
+      - subject
+      - dueDate
+      - reference
+      type: string
+      description: 'Sort options for sales opportunities.<p>Possible values:</p><ul><li><b>creationDate</b>: Sort by creation date.</li><li><b>subject</b>: Sort by subject.</li><li><b>dueDate</b>: Sort by due date.</li><li><b>reference</b>: Sort by reference.</li></ul>'
+      example: creationDate
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    PagedResponseReadEntityFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadEntityFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CreateSalesOpportunityLineItemModel:
+      required:
+      - quantity
+      type: object
+      properties:
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this sales opportunity line item
+          format: int64
+          example: 54321
+        quantity:
+          type: number
+          description: The quantity of the sales opportunity line item
+          format: double
+          example: 1
+        description:
+          type: string
+          description: Description of the sales opportunity line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Tax identifier (must exist and not be deleted for customer). Nullable
+          format: int64
+          example: 1001
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost (nullable, non-negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price (non-negative)
+          format: double
+          example: 10.99
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Represents a model that holds information about creating a sales opportunity line item
+    JobStatus:
+      enum:
+      - new
+      - scheduled
+      - unscheduled
+      - sent
+      - read
+      - accepted
+      - refused
+      - onTheWay
+      - started
+      - suspended
+      - completedOk
+      - completedWithIssues
+      - cancelled
+      - lateStart
+      - lateFinish
+      - rescheduled
+      type: string
+      description: 'Describes each possible status of a Job<p>Possible values:</p><ul><li><b>new</b>: A job that is newly created in BigChange All Jobs start with a New status, regardless of schedule detail</li><li><b>scheduled</b>: Job has been scheduled. Scheduled status is when the Vehicle, Driver, and Planned Date Time are all allocated</li><li><b>unscheduled</b>: Job has been unscheduled. Unscheduled status happens when any combination of the Vehicle, Driver, and Planned Date Time are all removed from a Scheduled job</li><li><b>sent</b>: The scheduled job has been delivered to the driver''s mobile device (tablet/phone). The driver must be logged into BigChange for jobs to be sent</li><li><b>read</b>: Job Detail has been read by the Driver on their mobile terminal</li><li><b>accepted</b>: Driver accepted the job</li><li><b>refused</b>: Driver refused the job</li><li><b>onTheWay</b>: Driver indicated they are on route to the Job Address</li><li><b>started</b>: Driver has indicated they have started the work detailed in the Job</li><li><b>suspended</b>: Driver paused work – ie taking a break</li><li><b>completedOk</b>: Job Completed with no issues</li><li><b>completedWithIssues</b>: Job Completed with issues</li><li><b>cancelled</b>: Job was Cancelled</li><li><b>lateStart</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>lateFinish</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li><li><b>rescheduled</b>: Internal Status used by BigChange Alert Management - should not be visible from the the API</li></ul>'
+      example: new
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadJobAssistantModel:
+      type: object
+      properties:
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned as assistant to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned as assistant to this job
+          example: John Smith
+      additionalProperties: false
+      description: Represents a model for reading job assistant information
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadJobModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 5514123
+        uid:
+          type:
+          - string
+          - 'null'
+          description: The unique uid of the job
+          format: uuid
+          example: 3729C414-ED21-4849-816F-25D332265DC8
+        typeId:
+          type: integer
+          description: The unique identifier of the type assigned to this job
+          format: int64
+          example: 5514123
+        typeName:
+          type: string
+          description: The name of the type assigned to this job
+          example: Boiler Service
+        contactId:
+          type: integer
+          description: The unique identifier of the contact (customer) for whom this job is to be performed
+          format: int64
+          example: 5514123
+        contactName:
+          type: string
+          description: The name of the customer (business or individual) for whom this job is to be performed
+          example: Global Solutions Ltd
+        contactAddress:
+          type: string
+          description: The complete address of the contact (customer) for whom this job is to be performed
+          example: 15 High Street, Lichfield, Staffordshire, WS15 3TT
+        contactLocation:
+          $ref: '#/components/schemas/Location'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        statusModifiedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time of the job's current status, as provided by the user or device that set it (it may be backdated, so it is not necessarily when the change was recorded in the system)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        statusRecordedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when the most recent job status history entry was recorded in the system. It does not change when existing status history entries are edited and may be null (e.g. for cancelled jobs)
+          format: date-time
+          example: '2022-11-29T13:41:12.0000000+00:00'
+        plannedDuration:
+          type: integer
+          description: The planned duration of the job, specified in minutes
+          format: int32
+          example: 90
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time the job is required to be completed by
+          format: date-time
+          example: '2022-11-29T06:00:00.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the job - should usually be unique
+          example: ABC/5514123
+        description:
+          type: string
+          description: The textual details about the job
+          example: New boiler install - please remove and retain the old boiler
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this job was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated to the job
+          example: PAO/1312KU
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 3729c414-ed21-4849-816f-25d332265dc8
+        personName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the person who will serve as primary point of contact for the job
+          example: Peter Brown
+        isConfirmed:
+          type: boolean
+          description: A flag indicating whether the job has been confirmed by the contact
+          example: true
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job is assigned to
+          format: int32
+          example: 5514123
+        categoryName:
+          type:
+          - string
+          - 'null'
+          description: The name of the category that the job is assigned
+          example: Global Solutions Ltd
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource assigned to this job
+          format: int64
+          example: 243556
+        resourceName:
+          type:
+          - string
+          - 'null'
+          description: The full name of the resource assigned to this job
+          example: John Smith
+        vehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle assigned to this job
+          format: int64
+          example: 665433
+        vehicleRegistration:
+          type:
+          - string
+          - 'null'
+          description: The registration number of the vehicle assigned to this job
+          example: BC21 BCL
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to begin
+          format: date-time
+          example: '2022-11-29T12:00:00.0000000+00:00'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job is planned to finish
+          format: date-time
+          example: '2022-11-29T13:30:00.0000000+00:00'
+        actualStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually started (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T12:03:00.0000000+00:00'
+        actualEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job actually finished (as indicated by resource's device)
+          format: date-time
+          example: '2022-11-29T13:39:00.0000000+00:00'
+        actualDuration:
+          type:
+          - integer
+          - 'null'
+          description: The actual duration of the job, specified in seconds (as indicated by resource's device)
+          format: int32
+          example: 6000
+        internalComment:
+          type: string
+          description: Notes about the job outcome, added by the back office
+          example: Old boiler has been moved to storage
+        resourcesComment:
+          type: string
+          description: Notes about the job outcome, added by the resource
+          example: Boiler removed and stored in van
+        contactComment:
+          type: string
+          description: Notes about the job outcome, added by the customer
+          example: No issues with new boiler
+        result:
+          type:
+          - string
+          - 'null'
+          description: The result of a job that has been completed or completed with issues. This will be null if the job has any other status
+          example: Ok
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group
+          format: int64
+          example: 123456789
+        isFinanciallyComplete:
+          type: boolean
+          description: A flag indicating whether the job is financially complete
+          example: false
+        isActioned:
+          type: boolean
+          description: A flag indicating whether all actions concerned with the job have been completed
+          example: false
+        officeNotes:
+          type: string
+          description: Notes for the office team regarding the job
+          example: Customer has requested a follow-up call
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract that the job is associated with
+          format: int64
+          example: 123456
+        recurrenceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the recurrence series this job belongs to, or null if the job is not part of a recurring series
+          format: int64
+          example: 789012
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields applied to this job
+        assistants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobAssistantModel'
+          description: The list of job assistants assigned to this job
+        siteContactIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: The unique identifiers of the site contacts associated with this job
+          example:
+          - 15548440
+          - 9425766
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the sales opportunity associated with this job, if applicable
+          format: int32
+          example: 12345
+      additionalProperties: false
+      description: Represents a model that holds information about a job
+    ReadSalesOpportunityProbabilityModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the sales opportunity probability
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the sales opportunity probability
+          example: Likely
+        colour:
+          type: string
+          description: The colour associated with the probability
+          example: Blue
+        createdAt:
+          type: string
+          description: The date and time the probability was created
+          format: date-time
+          example: '2025-06-30T00:00:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model for reading sales opportunity probability information
+    CreateSalesOpportunityModel:
+      type: object
+      properties:
+        contactId:
+          type: integer
+          description: The unique identifier of the contact associated with this sales opportunity
+          format: int64
+          example: 67890
+        subject:
+          type: string
+          description: The subject of the sales opportunity
+          example: New office equipment deal
+        status:
+          $ref: '#/components/schemas/SalesOpportunityStatus'
+        dueAt:
+          type: string
+          description: The due date of the sales opportunity
+          format: date-time
+          example: '2025-06-30T00:00:00.0000000+00:00'
+        stageId:
+          type: integer
+          description: The unique identifier of the stage associated with the sales opportunity
+          format: int64
+          example: 3
+        probabilityId:
+          type: integer
+          description: The unique identifier of the probability associated with the sales opportunity
+          format: int64
+          example: 2
+        notes:
+          type:
+          - string
+          - 'null'
+          description: Notes associated with the sales opportunity
+          example: Customer is interested in bulk pricing
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The reference for the sales opportunity
+          example: SO-2025-001
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields to set on the sales opportunity. If a custom field is omitted, its value will be set to the default value for that field
+      additionalProperties: false
+      description: Represents a model that holds information about creating a sales opportunity
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    PagedResponseReadSalesOpportunityLineItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadSalesOpportunityLineItemModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    UpdateSalesOpportunityLineItemModel:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 'The quantity of the sales opportunity line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 1
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'Description of the sales opportunity line item<br/><br/>Optional: Omit to retain current value'
+          example: Replacement filter cartridge
+          x-optional: Omit to retain current value
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'Tax identifier (must exist and not be deleted for customer). Nullable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1001
+          x-optional: Omit to retain current value or provide null to unset
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: 'Unit cost (nullable, non-negative)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.5
+          x-optional: Omit to retain current value or provide null to unset
+        unitSellingPrice:
+          type: number
+          description: 'Unit selling price (non-negative)<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 10.99
+          x-optional: Omit to retain current value
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Nominal code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 50001
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Department code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 20002
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Represents a model that holds information about updating a sales opportunity line item
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    UpdateSalesOpportunityModel:
+      type: object
+      properties:
+        subject:
+          type: string
+          description: 'The subject of the sales opportunity<br/><br/>Optional: Omit to retain current value'
+          example: New office equipment deal
+          x-optional: Omit to retain current value
+        status:
+          $ref: '#/components/schemas/SalesOpportunityStatus'
+        dueAt:
+          type: string
+          description: 'The due date of the sales opportunity<br/><br/>Optional: Omit to retain current value'
+          format: date-time
+          example: '2025-06-30T00:00:00.0000000+00:00'
+          x-optional: Omit to retain current value
+        stageId:
+          type: integer
+          description: 'The unique identifier of the stage associated with the sales opportunity<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 3
+          x-optional: Omit to retain current value
+        probabilityId:
+          type: integer
+          description: 'The unique identifier of the probability associated with the sales opportunity<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 2
+          x-optional: Omit to retain current value
+        notes:
+          type: string
+          description: 'Notes associated with the sales opportunity<br/><br/>Optional: Omit to retain current value'
+          example: Customer is interested in bulk pricing
+          x-optional: Omit to retain current value
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The reference for the sales opportunity<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: SO-2025-001
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the sales opportunity.<br/>Omit or use an empty list to retain current values.<br/>            <br/>Validation:<br/>- Cannot be null when provided.<br/>- Each custom field must satisfy its definition rules for the sales opportunity type.<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Represents a model that holds information about updating a sales opportunity
+    SalesOpportunityStatus:
+      enum:
+      - created
+      - onHold
+      - completedWon
+      - completedLost
+      type: string
+      description: 'Represents the status of a sales opportunity.<p>Possible values:</p><ul><li><b>created</b>: The sales opportunity has been created.</li><li><b>onHold</b>: The sales opportunity is on hold.</li><li><b>completedWon</b>: The sales opportunity has been completed and won.</li><li><b>completedLost</b>: The sales opportunity has been completed and lost.</li></ul>'
+      example: created
+    PagedResponseReadSalesOpportunityModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadSalesOpportunityModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    SalesOpportunityStageSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort sales opportunity stages<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the stage was created</li></ul>'
+      example: createdAt
+    ReadEntityFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The owner who applied the flag (user email or ID)
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: {}
+      description: Represents a flag applied to an entity. Used as the response model for all entity flag endpoints.<br/>The entity identifier is serialised under its entity-specific key (e.g. `jobId`,<br/>`jobGroupId`) taken from BigChange.BO.RestApi.Application.EntityFlags.Services.EntityFlagConfig.PrimaryKeyColumn
+    PagedResponseReadJobModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,69 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX REST Users API
+  version: '1.0'
+  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
+  contact:
+    name: BigChange Developer Portal
+    url: https://developers.bigchange.com/docs/rest/api-reference
+servers:
+- url: https://api.bigchange.com
+  description: BigChange DX production API (all products share this host)
+security:
+- bearer: []
+tags:
+- name: Users
+paths:
+  /v1/users:
+    get:
+      tags:
+      - Users
+      summary: Gets a list of users
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: A paged list of back-office users.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResult'
+      operationId: getV1Users
+      x-operation-id-source: derived
+components:
+  schemas:
+    PagedResult:
+      type: object
+      description: Standard paged list envelope (modeled).
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+        items:
+          $ref: '#/components/schemas/GenericArray'
+    GenericObject:
+      type: object
+      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
+      additionalProperties: true
+    GenericArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GenericObject'
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

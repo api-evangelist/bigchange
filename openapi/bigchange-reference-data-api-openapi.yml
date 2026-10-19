@@ -1,57 +1,966 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Reference Data API
+  title: BigChange DX Reference Data API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
 - name: Reference Data
 paths:
-  /v1/jobTypes:
+  /v1/departmentCodes:
     get:
       tags:
       - Reference Data
-      summary: Get a list of job types
+      summary: Get a list of department codes
+      description: Retrieves a paged collection of department codes (required scope stock:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/DepartmentCodeSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return department codes where ''id'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A list of job types.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericArray'
-      operationId: getV1JobTypes
+                $ref: '#/components/schemas/PagedResponseReadDepartmentCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1DepartmentCodes
+      x-operation-id-source: derived
+  /v1/departmentCodes/{departmentCodeId}:
+    get:
+      tags:
+      - Reference Data
+      summary: Retrieves the details of a single department code
+      description: Retrieve the details of a single department code (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: departmentCodeId
+        in: path
+        description: The unique identifier of the department code
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadDepartmentCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1DepartmentCodesByDepartmentCodeId
+      x-operation-id-source: derived
+  /v1/flags:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a list of flags by entity type
+      description: Retrieves a collection of flags filtered by entity type (required scope flags:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: entityType
+        in: query
+        description: The entity type to filter flags by
+        schema:
+          $ref: '#/components/schemas/FlagEntityType'
+        example: ContactNote
+      - name: sortBy
+        in: query
+        description: The field to sort items by
+        schema:
+          $ref: '#/components/schemas/FlagSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1Flags
+      x-operation-id-source: derived
+  /v1/nominalCodes:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a list of nominal codes
+      description: Retrieves a paged collection of nominal codes (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/NominalCodeSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return nominal codes where ''id'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadNominalCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NominalCodes
+      x-operation-id-source: derived
+  /v1/nominalCodes/{nominalCodeId}:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a nominal code by its id
+      description: Get a nominal code by its id (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: nominalCodeId
+        in: path
+        description: The unique identifer of the nominal code
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadNominalCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NominalCodesByNominalCodeId
+      x-operation-id-source: derived
+  /v1/vatCodes:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a list of VAT codes
+      description: Retrieves a paged collection of VAT codes (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/VatCodeSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return nominal codes where ''id'' matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadVatCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VatCodes
+      x-operation-id-source: derived
+  /v1/vatCodes/{vatCodeId}:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a VAT code by its id
+      description: Get a VAT code by its id (required scope stock:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vatCodeId
+        in: path
+        description: The unique identifer of the VAT code
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadVatCodeModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VatCodesByVatCodeId
+      x-operation-id-source: derived
+  /v1/vehicleGroups:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a list of vehicle groups
+      description: Retrieves a paged collection of vehicle groups belonging to the authenticated customer (required scope vehicles:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadVehicleGroupModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VehicleGroups
       x-operation-id-source: derived
 components:
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
   schemas:
-    GenericObject:
+    ReadFlagModel:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the flag
+          example: Urgent
+        description:
+          type: string
+          description: The description of the flag
+          example: This flag indicates urgent items
+        color:
+          type: string
+          description: The color associated with the flag
+          example: '#FF0000'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this flag was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Read flag model
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    FlagSortOptions:
+      enum:
+      - name
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort flags<p>Possible values:</p><ul><li><b>name</b>: The name</li><li><b>createdAt</b>: The description</li></ul>'
+      example: name
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ReadVehicleGroupModel:
+      type: object
+      properties:
+        vehicleGroupId:
+          type: integer
+          description: The unique identifier of the vehicle group
+          format: int64
+          example: 5514123
+        name:
+          type: string
+          description: The name of the vehicle group
+          example: South East Fleet
+      additionalProperties: false
+      description: Represents a model that holds information about a vehicle group
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadVehicleGroupModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadVehicleGroupModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadVatCodeModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadVatCodeModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadNominalCodeModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadNominalCodeModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadRatePeriodModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the rate period
+          format: int64
+        rate:
+          type: number
+          description: The VAT rate
+          format: double
+        startsAt:
+          type: string
+          description: The start of the period
+          format: date-time
+      additionalProperties: false
+      description: Read rate period model
+    DepartmentCodeSortOptions:
+      enum:
+      - code
+      - description
+      type: string
+      description: 'Represents the fields that can be used to sort department codes<p>Possible values:</p><ul><li><b>code</b>: The code</li><li><b>description</b>: The description</li></ul>'
+      example: code
+    NominalCodeSortOptions:
+      enum:
+      - code
+      - description
+      type: string
+      description: 'Represents the fields that can be used to sort nominal codes<p>Possible values:</p><ul><li><b>code</b>: The code</li><li><b>description</b>: The description</li></ul>'
+      example: code
+    VatCodeSortOptions:
+      enum:
+      - code
+      - description
+      type: string
+      description: 'Represents the fields that can be used to sort vat codes<p>Possible values:</p><ul><li><b>code</b>: The code</li><li><b>description</b>: The description</li></ul>'
+      example: code
+    ReadDepartmentCodeModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the department code
+          format: int64
+          example: 123456
+        code:
+          type: string
+          description: The department code the identifies departments within the organisation
+          example: C1234
+        description:
+          type: string
+          description: Description of the department code
+          example: Finance
+        createdAt:
+          type: string
+          description: The date and time when the record was created
+          format: date-time
+          example: '2021-07-01T00:00:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model for reading department code information
+    ReadVatCodeModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the VAT code
+          format: int64
+          example: 5514123
+        code:
+          type: string
+          description: The VAT code
+          example: T01
+        rate:
+          type: number
+          description: The VAT tax rate of the current period
+          format: double
+        ratePeriods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadRatePeriodModel'
+          description: The VAT tax rate periods, if applicable
+        isDomesticReverseCharged:
+          type: boolean
+          description: Is domestic reverse-charge applied
+        description:
+          type: string
+          description: Description of the code
+          example: Nominal code for roofing work
+        endsAt:
+          type:
+          - string
+          - 'null'
+          description: The date the VAT code period ends, null if there is no future period
+          format: date-time
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this nominal code was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Read VAT code model
+    PagedResponseReadDepartmentCodeModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadDepartmentCodeModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadFlagModel'
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        totalItemCount:
+          type: integer
+          format: int32
+      additionalProperties: false
+    FlagEntityType:
+      enum:
+      - contactNote
+      - job
+      - defInvoiceItem
+      - contactUser
+      - salesOpportunity
+      - contactNotePriority
+      - assetDefect
+      - quote
+      - proforma
+      - invoice
+      - purchaseOrder
+      - creditNote
+      - deliveryNote
+      - appPayment
+      - salesOrder
+      - jobGroup
+      type: string
+      description: 'Enumeration representing the types of entities that can have flags<p>Possible values:</p><ul><li><b>contactNote</b>: Flag for contact notes</li><li><b>job</b>: Flag for jobs</li><li><b>defInvoiceItem</b>: Flag for default invoice items</li><li><b>contactUser</b>: Flag for contact users</li><li><b>salesOpportunity</b>: Flag for sales opportunities</li><li><b>contactNotePriority</b>: Flag for contact note priorities</li><li><b>assetDefect</b>: Flag for asset defects</li><li><b>quote</b>: Flag for quotes</li><li><b>proforma</b>: Flag for proformas</li><li><b>invoice</b>: Flag for invoices</li><li><b>purchaseOrder</b>: Flag for purchase orders</li><li><b>creditNote</b>: Flag for credit notes</li><li><b>deliveryNote</b>: Flag for delivery notes</li><li><b>appPayment</b>: Flag for app payments</li><li><b>salesOrder</b>: Flag for sales orders</li><li><b>jobGroup</b>: Flag for job groups</li></ul>'
+      example: contactNote
+    ReadNominalCodeModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the nominal code
+          format: int64
+          example: 5514123
+        code:
+          type: string
+          description: The nominal code
+          example: T01
+        description:
+          type: string
+          description: Description of the code
+          example: Nominal code for roofing work
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this nominal code was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Read nominal code model
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

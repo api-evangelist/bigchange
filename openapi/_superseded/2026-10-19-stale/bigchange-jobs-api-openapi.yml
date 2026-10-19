@@ -1,0 +1,205 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX REST Jobs API
+  version: '1.0'
+  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
+  contact:
+    name: BigChange Developer Portal
+    url: https://developers.bigchange.com/docs/rest/api-reference
+servers:
+- url: https://api.bigchange.com
+  description: BigChange DX production API (all products share this host)
+security:
+- bearer: []
+tags:
+- name: Jobs
+paths:
+  /v1/jobs:
+    get:
+      tags:
+      - Jobs
+      summary: Get a list of jobs
+      description: Returns a paged list of jobs. Supports filtering by type, contact, resource, order number, and created-at date range, plus sorting and pagination (pageNumber, pageSize). Modeled from the published spec.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - name: typeId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        schema:
+          type: integer
+      - name: pageSize
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A paged list of jobs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResult'
+      operationId: getV1Jobs
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Jobs
+      summary: Create a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '201':
+          description: The created job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+      operationId: postV1Jobs
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}:
+    get:
+      tags:
+      - Jobs
+      summary: Get a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      responses:
+        '200':
+          description: The requested job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+      operationId: getV1JobsByJobId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Jobs
+      summary: Update a job
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '200':
+          description: The updated job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericObject'
+      operationId: patchV1JobsByJobId
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/schedule:
+    put:
+      tags:
+      - Jobs
+      summary: Schedule or unschedule a job
+      description: Assign a job to a resource and time slot, or unschedule it.
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '204':
+          description: The job schedule was updated.
+      operationId: putV1JobsByJobIdSchedule
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/start:
+    put:
+      tags:
+      - Jobs
+      summary: Set a job to started
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      responses:
+        '204':
+          description: The job was marked started.
+      operationId: putV1JobsByJobIdStart
+      x-operation-id-source: derived
+  /v1/jobs/{jobId}/result:
+    put:
+      tags:
+      - Jobs
+      summary: Set a job's result
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      - $ref: '#/components/parameters/JobId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenericObject'
+      responses:
+        '204':
+          description: The job result was recorded.
+      operationId: putV1JobsByJobIdResult
+      x-operation-id-source: derived
+components:
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
+    JobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    GenericObject:
+      type: object
+      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
+      additionalProperties: true
+    PagedResult:
+      type: object
+      description: Standard paged list envelope (modeled).
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+        items:
+          $ref: '#/components/schemas/GenericArray'
+    GenericArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GenericObject'
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

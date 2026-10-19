@@ -1,14 +1,10 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Persons API
+  title: BigChange DX Persons API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
@@ -19,72 +15,1352 @@ paths:
       tags:
       - Persons
       summary: Get a list of persons
+      description: Retrieve a paged collection of persons (required scope contacts:persons:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/PersonSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: contactId
+        in: query
+        description: 'Only return persons where `contactId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: surname
+        in: query
+        description: Only return persons where `surname` matches or starts with the value provided
+        schema:
+          type: string
+      - name: email
+        in: query
+        description: Only return persons where `email` matches the value provided
+        schema:
+          type: string
+      - name: mobile
+        in: query
+        description: Only return persons where `mobile` matches the value provided
+        schema:
+          type: string
+      - name: landline
+        in: query
+        description: Only return persons where `landline` matches the value provided
+        schema:
+          type: string
+      - name: isOptedOut
+        in: query
+        description: Only return persons where `isOptedOut` matches the value provided
+        schema:
+          type: boolean
+      - name: isMain
+        in: query
+        description: Only return persons where `isMain` matches the value provided
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A paged list of persons.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadPersonModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1Persons
       x-operation-id-source: derived
     post:
       tags:
       - Persons
       summary: Create a person
+      description: Create a new person (required scope contacts:persons:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Create person model
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/CreatePersonModel'
       responses:
         '201':
-          description: The created person.
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/PostResponseGuid'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: postV1Persons
+      x-operation-id-source: derived
+  /v1/persons/{personId}:
+    get:
+      tags:
+      - Persons
+      summary: Get a person
+      description: Retrieve the details of a single person (required scope contacts:persons:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: The unique identifier of the person
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadPersonModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1PersonsByPersonId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Persons
+      summary: Update a person
+      description: Update the details of a single person (required scope contacts:persons:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: Person id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Update person model. At least one optional value must be provided
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1PersonsByPersonId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Persons
+      summary: Delete a person
+      description: Soft deletes a person (required scope contacts:persons:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: Person id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1PersonsByPersonId
+      x-operation-id-source: derived
+  /v1/persons/{personId}/dataConsent:
+    put:
+      tags:
+      - Persons
+      summary: Set a person's data consent
+      description: Captures information about when a person granted/denied consent to have their personal data stored (required scope contacts:persons:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: Person id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Update person consent model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonConsentModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1PersonsByPersonIdDataConsent
+      x-operation-id-source: derived
+  /v1/persons/{personId}/dataConsent/history:
+    get:
+      tags:
+      - Persons
+      summary: Get a person's consent history
+      description: Gets a paged collection of events indicating when a person granted/denied consent to have their personal data stored (required scope contacts:persons:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: The unique identifier of the person
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/PersonConsentSortOption'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadPersonConsentModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1PersonsByPersonIdDataConsentHistory
+      x-operation-id-source: derived
+  /v1/persons/{personId}/flags:
+    get:
+      tags:
+      - Persons
+      summary: Retrieve the flags currently applied to a person
+      description: 'Retrieve all flags currently applied to a person, ordered newest first.
+
+
+        **Person flags differ from other entity flag endpoints** (e.g. Purchase Orders, Sales Opportunities): a person can have multiple flags active simultaneously, there is no single "current" flag, and there is no separate history endpoint — this list is the complete current state.
+
+
+        The `id` values returned are flag type IDs scoped to the `ContactUser` entity type. Use `GET /flags?entityType=ContactUser` (requires the `flags:read` scope) to discover valid flag IDs for this customer. (required scope contacts:persons:read)'
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: The unique identifier of the person
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadFlagModel'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1PersonsByPersonIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Persons
+      summary: Add a flag to a person
+      description: 'Apply a flag to a person.
+
+
+        **Person flags differ from other entity flag endpoints**: adding a flag does not create a history record — it tags the person with the flag type directly. This operation is **idempotent**: if the flag is already applied the request succeeds with 204 No Content and the person''s flags are unchanged.
+
+
+        The `flagId` must be a flag type ID configured for the `ContactUser` entity type. Use `GET /flags?entityType=ContactUser` (requires the `flags:read` scope) to find valid flag IDs for this customer. (required scope contacts:persons:write)'
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: The unique identifier of the person
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: The model containing the flag information to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPersonFlagModel'
+        required: true
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1PersonsByPersonIdFlags
+      x-operation-id-source: derived
+  /v1/persons/{personId}/flags/{flagId}:
+    delete:
+      tags:
+      - Persons
+      summary: Remove a flag from a person
+      description: 'Remove a flag from a person.
+
+
+        **Important**: the `flagId` route parameter is the **flag type ID** — the same ID returned by `GET /flags?entityType=ContactUser` (requires the `flags:read` scope) and by `GET /persons/{personId}/flags`. It is **not** a history record ID, unlike the DELETE endpoint on other entity flag controllers (e.g. Purchase Orders, Sales Opportunities).
+
+
+        Removing a flag is permanent; no history of the removal is retained. (required scope contacts:persons:write)'
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        description: The unique identifier of the person
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: flagId
+        in: path
+        description: The flag type ID to remove (not a history record ID)
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '204':
+          description: No Content
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1PersonsByPersonIdFlagsByFlagId
       x-operation-id-source: derived
 components:
   schemas:
-    PagedResult:
+    ReadFlagModel:
       type: object
-      description: Standard paged list envelope (modeled).
       properties:
+        id:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the flag
+          example: Urgent
+        description:
+          type: string
+          description: The description of the flag
+          example: This flag indicates urgent items
+        color:
+          type: string
+          description: The color associated with the flag
+          example: '#FF0000'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this flag was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Read flag model
+    UpdatePersonModel:
+      type: object
+      properties:
+        title:
+          type:
+          - string
+          - 'null'
+          description: 'The person''s title<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Mr
+          x-optional: Omit to retain current value or provide null to unset
+        forename:
+          type: string
+          description: 'The person''s first name<br/><br/>Optional: Omit to retain current value'
+          example: David
+          x-optional: Omit to retain current value
+        surname:
+          type: string
+          description: 'The person''s second name<br/><br/>Optional: Omit to retain current value'
+          example: Smith
+          x-optional: Omit to retain current value
+        email:
+          type: string
+          description: 'The email address of the person, provide an empty string to unset.<br/><br/>Optional: Omit to retain current value'
+          example: dave.brown@example.com.
+          x-optional: Omit to retain current value
+        mobile:
+          type:
+          - string
+          - 'null'
+          description: 'The mobile telephone number of the person<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: +447812 123112
+          x-optional: Omit to retain current value or provide null to unset
+        landline:
+          type:
+          - string
+          - 'null'
+          description: 'The landline telephone number of the person<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: +441312 112441
+          x-optional: Omit to retain current value or provide null to unset
+        extension:
+          type:
+          - string
+          - 'null'
+          description: 'The landline extension of the person<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: '12'
+          x-optional: Omit to retain current value or provide null to unset
+        position:
+          type:
+          - string
+          - 'null'
+          description: 'The job role that the person holds within the contact<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Manager
+          x-optional: Omit to retain current value or provide null to unset
+        department:
+          type:
+          - string
+          - 'null'
+          description: 'The department that the person belongs to<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Customer service
+          x-optional: Omit to retain current value or provide null to unset
+        isOptedOut:
+          type: boolean
+          description: 'A flag indicating if the contact has opted out of marketing communications<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the person. Omit or use an empty list to retain current values<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Update person model. At least one optional value must be provided
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadPersonConsentModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the consent preference
+          format: int64
+          example: 12345
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this preference was captured
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        status:
+          $ref: '#/components/schemas/PersonConsentType'
+        medium:
+          $ref: '#/components/schemas/PersonConsentMedium'
+        comment:
+          type: string
+          description: Descriptive text about how and/or why the person has made this consent decision
+          example: Happy for their data to be held.
+      additionalProperties: false
+      description: ReadPersonConsent model
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    PagedResponseReadPersonModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadPersonModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
-        items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericObject:
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ProblemDetails:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PostResponseGuid:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier of the newly created record
+          format: uuid
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadPersonModel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the person
+          format: uuid
+          example: '5514123'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this person was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        contactId:
+          type: integer
+          description: The unique identifier of the contact that this person belongs to
+          format: int64
+          example: 12345
+        title:
+          type: string
+          description: The person's title
+          example: Mr
+        forename:
+          type: string
+          description: The person's first name
+          example: David
+        surname:
+          type: string
+          description: The person's second name
+          example: Smith
+        email:
+          type: string
+          description: The email address of the person
+          example: dave.brown@example.com
+        mobile:
+          type: string
+          description: The mobile telephone number of the person
+          example: +447812 123112
+        landline:
+          type: string
+          description: The landline telephone number of the person
+          example: +441312 112441
+        extension:
+          type: string
+          description: The landline extension of the person
+          example: '12'
+        position:
+          type: string
+          description: The job role that the person holds within the contact
+          example: Manager
+        department:
+          type: string
+          description: The department that the person belongs to
+          example: Customer service
+        isOptedOut:
+          type: boolean
+          description: A flag indicating if the contact has opted out of marketing communications
+          example: false
+        isMain:
+          type: boolean
+          description: A flag indicating if this person is the primary person for the contact
+          example: false
+        flagIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: The IDs of flags currently applied to this person
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with persons
+      additionalProperties: false
+      description: Read person model
+    AddPersonFlagModel:
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The ID of the flag to apply to the person
+          format: int32
+          example: 42
+      additionalProperties: false
+      description: Request body for adding a flag to a person
+    PagedResponseReadPersonConsentModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadPersonConsentModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    PersonConsentMedium:
+      enum:
+      - email
+      - click
+      - telephone
+      type: string
+      description: 'The medium that a person has expressed their consent using<p>Possible values:</p><ul><li><b>email</b>: Email</li><li><b>click</b>: Click</li><li><b>telephone</b>: Telephone</li></ul>'
+      example: email
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    CreatePersonModel:
+      required:
+      - contactId
+      - forename
+      - surname
+      type: object
+      properties:
+        contactId:
+          type: integer
+          description: The unique identifier of the contact that this person belongs to
+          format: int64
+          example: 12345
+        title:
+          type:
+          - string
+          - 'null'
+          description: The person's title
+          example: Mr
+        forename:
+          minLength: 1
+          type: string
+          description: The person's first name
+          example: David
+        surname:
+          minLength: 1
+          type: string
+          description: The person's second name
+          example: Smith
+        email:
+          type:
+          - string
+          - 'null'
+          description: The email address of the person
+          example: dave.brown@example.com
+        mobile:
+          type:
+          - string
+          - 'null'
+          description: The mobile telephone number of the person
+          example: +447812 123112
+        landline:
+          type:
+          - string
+          - 'null'
+          description: The landline telephone number of the person
+          example: +441312 112441
+        extension:
+          type:
+          - string
+          - 'null'
+          description: The landline extension of the person
+          example: '12'
+        position:
+          type:
+          - string
+          - 'null'
+          description: The job role that the person holds within the contact
+          example: Manager
+        department:
+          type:
+          - string
+          - 'null'
+          description: The department that the person belongs to
+          example: Customer service
+        isOptedOut:
+          type: boolean
+          description: A flag indicating if the contact has opted out of marketing communications
+          example: false
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields associated with the person
+      additionalProperties: false
+      description: Create the person request model
+    PersonConsentSortOption:
+      enum:
+      - createdAt
+      type: string
+      description: 'Sort options for Person Consent<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by Creation Date</li></ul>'
+      example: createdAt
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    UpdatePersonConsentModel:
+      required:
+      - medium
+      - status
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/PersonConsentType'
+        medium:
+          $ref: '#/components/schemas/PersonConsentMedium'
+        comment:
+          type:
+          - string
+          - 'null'
+          description: Descriptive text about how and/or why the person has made this consent decision
+          example: Happy for their data to be held
+      additionalProperties: false
+      description: Update person consent model
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PersonConsentType:
+      enum:
+      - awaiting
+      - refused
+      - granted
+      type: string
+      description: 'The consent preference indicated by the person<p>Possible values:</p><ul><li><b>awaiting</b>: Awaiting</li><li><b>refused</b>: Refused</li><li><b>granted</b>: Granted</li></ul>'
+      example: awaiting
+    PersonSortOptions:
+      enum:
+      - surname
+      - createdAt
+      type: string
+      description: 'Represents the sort options for a persons<p>Possible values:</p><ul><li><b>surname</b>: Sorts the persons by surname</li><li><b>createdAt</b>: Sorts the persons by creation date</li></ul>'
+      example: surname
+    PagedResponseReadFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadFlagModel'
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        totalItemCount:
+          type: integer
+          format: int32
+      additionalProperties: false
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

@@ -1,0 +1,315 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Custom Fields API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Custom Fields
+paths:
+  /v1/customFields:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get a list of custom field definitions
+      description: Retrieves a paged collection of custom field definitions, optionally filtered by entity type (required scope customfields:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: entityType
+        in: query
+        description: Only return custom field definitions for this entity type. Returns all entity types when omitted
+        schema:
+          type: string
+          example: Job
+        example: Job
+      - name: includeInactive
+        in: query
+        description: Whether to include inactive (soft-deleted) custom field definitions
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedCustomFieldResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1CustomFields
+      x-operation-id-source: derived
+  /v1/customFields/{customFieldId}:
+    get:
+      tags:
+      - Custom Fields
+      summary: Get a custom field definition by its id
+      description: 'Get a custom field definition by its id. Inactive (soft-deleted) definitions are returned with isActive: false rather than a 404. (required scope customfields:read)'
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: customFieldId
+        in: path
+        description: The unique identifier of the custom field definition
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadCustomFieldModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1CustomFieldsByCustomFieldId
+      x-operation-id-source: derived
+components:
+  schemas:
+    CustomFieldEntityType:
+      enum:
+      - contact
+      - note
+      - job
+      - vehicle
+      - user
+      - resource
+      - financialDocument
+      - person
+      - stock
+      - Unknown
+      type: string
+      description: 'The kind of entity a custom field definition is attached to.<p>Possible values:</p><ul><li><b>contact</b>: Contact entity</li><li><b>note</b>: Contact note entity</li><li><b>job</b>: Job entity</li><li><b>vehicle</b>: Vehicle entity</li><li><b>user</b>: User entity</li><li><b>resource</b>: Resource entity</li><li><b>financialDocument</b>: Financial document entity (invoice or invoice line item)</li><li><b>person</b>: Person entity</li><li><b>stock</b>: Stock entity</li><li><b>unknown</b>: Fallback used when the underlying entity type has no corresponding API vocabulary value</li></ul>'
+      example: contact
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadCustomFieldModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the custom field definition
+          format: int64
+          example: 1234
+        name:
+          type: string
+          description: The name of the custom field
+          example: Preferred contact time
+        entityType:
+          $ref: '#/components/schemas/CustomFieldEntityType'
+        fieldType:
+          $ref: '#/components/schemas/CustomFieldFieldType'
+        isRequired:
+          type: boolean
+          description: Whether a value is expected for this custom field. This is informational - the service does not enforce it
+        isActive:
+          type: boolean
+          description: Whether this custom field definition is currently active. Inactive (soft-deleted) definitions<br/>are still returned so consumers can resolve historical values, but should not be offered for new entries
+        displayOrder:
+          type: integer
+          description: The position of this custom field relative to other custom fields on the same entity
+          format: int32
+          example: 1
+        allowedValues:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/AllowedValueModel'
+          description: The acceptable values for this custom field, when its field type is List or MultiList; null otherwise
+      additionalProperties: false
+      description: Read custom field definition model
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    CustomFieldFieldType:
+      enum:
+      - text
+      - number
+      - date
+      - dateTime
+      - boolean
+      - list
+      - multiList
+      - Unknown
+      type: string
+      description: 'The data type of a custom field definition''s value.<p>Possible values:</p><ul><li><b>text</b>: Free text</li><li><b>number</b>: Numeric value (integer or decimal)</li><li><b>date</b>: Date only</li><li><b>dateTime</b>: Date and time</li><li><b>boolean</b>: Boolean value</li><li><b>list</b>: Single selection from a fixed list of values</li><li><b>multiList</b>: Multiple selections from a fixed list of values</li><li><b>unknown</b>: Fallback used when the underlying field type has no corresponding API vocabulary value</li></ul>'
+      example: text
+    PagedCustomFieldResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadCustomFieldModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+        totalCount:
+          type: integer
+          description: The total number of custom field definitions matching the filter, across all pages
+          format: int32
+          example: 230
+      additionalProperties: false
+      description: A paged collection of custom field definitions
+    AllowedValueModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The position of this value within the field's allowed values, starting at 1.<br/>This is not a persisted identifier - it is derived from the order the values are stored in
+          format: int32
+          example: 1
+        value:
+          type: string
+          description: The allowed value
+          example: Red
+      additionalProperties: false
+      description: A single allowed value for a List or MultiList custom field definition
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

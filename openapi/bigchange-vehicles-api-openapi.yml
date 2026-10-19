@@ -1,14 +1,10 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Vehicles API
+  title: BigChange DX Vehicles API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
@@ -19,72 +15,1532 @@ paths:
       tags:
       - Vehicles
       summary: Get a list of vehicles
+      description: Retrieve a paged collection of vehicles (required scope vehicles:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/VehicleSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: registration
+        in: query
+        description: 'Only return vehicles where `registration` matches with the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: reference
+        in: query
+        description: 'Only return vehicles where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: id
+        in: query
+        description: 'Only return resources where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: groupId
+        in: query
+        description: 'Only return resources where `groupId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: includeArchived
+        in: query
+        description: When true also include archived vehicles
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A paged list of fleet vehicles.
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadVehicleModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1Vehicles
       x-operation-id-source: derived
     post:
       tags:
       - Vehicles
       summary: Create a vehicle
+      description: Create a new vehicle (required scope vehicles:write)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
-      requestBody:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
         required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GenericObject'
+              $ref: '#/components/schemas/CreateVehicleModel'
+        required: true
       responses:
         '201':
-          description: The created vehicle.
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericObject'
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: postV1Vehicles
+      x-operation-id-source: derived
+  /v1/vehicles/{vehicleId}:
+    get:
+      tags:
+      - Vehicles
+      summary: Get a vehicle
+      description: Retrieve the details of a single vehicle (required scope vehicles:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        description: The unique identifer of the vehicle
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadVehicleModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VehiclesByVehicleId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Vehicles
+      summary: Update a vehicle
+      description: Update the details of a single vehicle (required scope vehicles:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVehicleModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1VehiclesByVehicleId
+      x-operation-id-source: derived
+  /v1/vehicles/{vehicleId}/archive:
+    put:
+      tags:
+      - Vehicles
+      summary: Archive a vehicle
+      description: Archives a vehicle (required scope vehicles:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1VehiclesByVehicleIdArchive
+      x-operation-id-source: derived
+  /v1/vehicles/{vehicleId}/checks:
+    get:
+      tags:
+      - Vehicles
+      summary: Get a list of vehicle checks
+      description: Retrieve a paged collection of checks for a single vehicle (required scope vehicles:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        description: The unique identifier of the vehicle whose checks are retrieved
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: completedFrom
+        in: query
+        description: Only return checks completed on or after this date
+        schema:
+          type: string
+          format: date-time
+      - name: completedTo
+        in: query
+        description: Only return checks completed on or before this date
+        schema:
+          type: string
+          format: date-time
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadVehicleCheckModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VehiclesByVehicleIdChecks
+      x-operation-id-source: derived
+  /v1/vehicles/{vehicleId}/defects:
+    get:
+      tags:
+      - Vehicles
+      summary: Get defects for a vehicle
+      description: Retrieve a paged collection of defects for a specific vehicle (required scope vehicles:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        description: The unique identifier of the vehicle
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 678
+        example: 678
+      - name: status
+        in: query
+        description: Filter by defect status
+        schema:
+          $ref: '#/components/schemas/DefectStatus'
+      - name: reportedFrom
+        in: query
+        description: Filter defects reported on or after this date (YYYY-MM-DD format)
+        schema:
+          type: string
+          format: date-time
+          example: '2024-01-01T00:00:00.0000000+00:00'
+        example: '2024-01-01T00:00:00.0000000+00:00'
+      - name: reportedTo
+        in: query
+        description: Filter defects reported on or before this date (YYYY-MM-DD format)
+        schema:
+          type: string
+          format: date-time
+          example: '2024-12-31T00:00:00.0000000+00:00'
+        example: '2024-12-31T00:00:00.0000000+00:00'
+      - name: page
+        in: query
+        description: The page number being requested
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+          example: 1
+        example: 1
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          example: 20
+        example: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadVehicleDefectModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1VehiclesByVehicleIdDefects
+      x-operation-id-source: derived
+  /v1/vehicles/{vehicleId}/unarchive:
+    put:
+      tags:
+      - Vehicles
+      summary: Unarchive a vehicle
+      description: Restores an archived vehicle (required scope vehicles:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: vehicleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1VehiclesByVehicleIdUnarchive
       x-operation-id-source: derived
 components:
   schemas:
-    PagedResult:
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
       type: object
-      description: Standard paged list envelope (modeled).
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
       properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    CreateVehicleModel:
+      required:
+      - groupId
+      - registration
+      - vehicleType
+      type: object
+      properties:
+        groupId:
+          type: integer
+          description: The unique identifier of the group that the vehicle belongs to
+          format: int64
+          example: 7927
+        vehicleType:
+          $ref: '#/components/schemas/VehicleType'
+        fixedResourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource who this vehicle is assigned to
+          format: int64
+          example: 110841
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of the vehicle - should usually be unique
+          example: ABC5514123
+        registration:
+          minLength: 1
+          type: string
+          description: The registration number of the vehicle
+          example: BC24 BIG
+        make:
+          type:
+          - string
+          - 'null'
+          description: The manufacturer of the vehicle
+          example: Ford
+        model:
+          type:
+          - string
+          - 'null'
+          description: The model of the vehicle
+          example: Transit
+        registrationYear:
+          type:
+          - integer
+          - 'null'
+          description: The year that the vehicle was first registered as new
+          format: int32
+          example: 2012
+        isSchedulable:
+          type: boolean
+          description: Indicates whether this vehicle can be scheduled jobs
+          example: true
+        idlingFuelConsumptionRate:
+          type:
+          - number
+          - 'null'
+          description: The litre fuel consumption of the vehicle used when idling per minute
+          format: double
+          example: 0.1
+        costPerKm:
+          type:
+          - number
+          - 'null'
+          description: The running cost of the vehicle per kilometre, expressed in `costPerKmCurrencyCode`
+          format: double
+          example: 0.25
+        costPerDay:
+          type:
+          - number
+          - 'null'
+          description: The running cost of the vehicle per day, expressed in `costPerDayCurrencyCode`
+          format: double
+          example: 0.25
+        costPerKmCurrencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        costPerDayCurrencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        odometerUnit:
+          $ref: '#/components/schemas/OdometerUnit'
+        odometer:
+          type:
+          - integer
+          - 'null'
+          description: The latest reading from the vehicles odometer
+          format: int32
+          example: 51023
+        roadSafetyExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicles road safety test expires (eg. UK MOT test)
+          format: date
+          example: '2022-11-29'
+        roadTaxExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicles road tax expires
+          format: date
+          example: '2022-11-29'
+        serviceDueAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicles next service is due
+          format: date
+          example: '2022-11-29'
+        insuranceDueAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicles insurance is due for renewal
+          format: date
+          example: '2022-11-29'
+        co2EmissionsGramsPerKm:
+          type:
+          - integer
+          - 'null'
+          description: The vehicle co2 emission rate as (grams per km). Mutually exclusive with Co2EmissionsKilogramsPerLitre
+          format: int32
+          example: 5
+        co2EmissionsKilogramsPerLitre:
+          type:
+          - number
+          - 'null'
+          description: The vehicle co2 emission rate as (kilograms per litre). Mutually exclusive with Co2EmissionsGramsPerKm
+          format: double
+          example: 5.5
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields associated with the vehicle
+      additionalProperties: false
+      description: Model representing the data needed to create a vehicle
+    VehicleSortOptions:
+      enum:
+      - createdAt
+      - groupName
+      - registration
+      type: string
+      description: 'Represents the sort options for vehicles<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by created at date</li><li><b>groupName</b>: Sort by vehicle group</li><li><b>registration</b>: Sort by registration</li></ul>'
+      example: createdAt
+    VehicleType:
+      enum:
+      - motorcycle
+      - car
+      - trailer
+      - bus
+      - emergency
+      - goodsLess7_5T
+      - goodsMore7_5T
+      - busLess12
+      type: string
+      description: 'Enumeration representing different types of vehicles<p>Possible values:</p><ul><li><b>motorcycle</b>: Motorcycle vehicle type</li><li><b>car</b>: Car vehicle type</li><li><b>trailer</b>: Trailer vehicle type</li><li><b>bus</b>: Bus vehicle type</li><li><b>emergency</b>: Emergency vehicle type</li><li><b>goodsLess7_5T</b>: Goods vehicle type with weight less than 7.5 tons</li><li><b>goodsMore7_5T</b>: Goods vehicle type with weight more than or equal to 7.5 tons</li><li><b>busLess12</b>: Bus vehicle type with less than 12 seats</li></ul>'
+      example: motorcycle
+    PagedResponseReadVehicleCheckModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadVehicleCheckModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
-        items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericObject:
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    PagedResponseReadVehicleDefectModel:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadVehicleDefectModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ReadVehicleDefectModel:
+      type: object
+      properties:
+        defectId:
+          type: integer
+          description: The unique identifier of the defect
+          format: int64
+          example: 12345
+        vehicleId:
+          type: integer
+          description: The unique identifier of the vehicle
+          format: int64
+          example: 678
+        reportedByResourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource who reported the defect
+          format: int64
+          example: 42
+        severity:
+          type: string
+          description: The severity level of the defect
+        category:
+          type: string
+          description: The category of the defect
+          example: Engine
+        description:
+          type: string
+          description: A description of the defect
+          example: Oil leak detected under engine
+        status:
+          $ref: '#/components/schemas/DefectStatus'
+        occurredAt:
+          type: string
+          description: The date and time when the defect occurred
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        createdAt:
+          type: string
+          description: The date and time when the defect record was created
+          format: date-time
+          example: '2024-01-15T11:00:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents a vehicle defect
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    OdometerUnit:
+      enum:
+      - miles
+      - kilometres
+      type: string
+      description: The unit of measure for distance presented by the vehicles odometer<p>Possible values:</p><ul><li><b>miles</b></li><li><b>kilometres</b></li></ul>
+      example: miles
+    DefectStatus:
+      enum:
+      - open
+      - inProgress
+      - closed
+      type: string
+      description: 'Status of a vehicle defect<p>Possible values:</p><ul><li><b>open</b>: Defect is open</li><li><b>inProgress</b>: Defect is in progress</li><li><b>closed</b>: Defect has been closed</li></ul>'
+      example: open
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    CurrencyWrite:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li></ul>'
+      example: EUR
+    ReadVehicleModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the vehicle
+          format: int64
+          example: 5514123
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this vehicle was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        groupId:
+          type: integer
+          description: The unique identifier of the group that the vehicle belongs to
+          format: int64
+          example: 1211
+        vehicleType:
+          $ref: '#/components/schemas/VehicleType'
+        fixedResourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource who this vehicle is assigned to
+          format: int64
+          example: 1211
+        groupName:
+          type: string
+          description: The name of the group that the vehicle belongs to
+          example: Vans
+        reference:
+          type: string
+          description: The internal reference of the vehicle - should usually be unique
+          example: ABC5514123
+        registration:
+          type: string
+          description: The registration number of the vehicle
+          example: BC24 BIG
+        make:
+          type:
+          - string
+          - 'null'
+          description: The manufacturer of the vehicle
+          example: Ford
+        model:
+          type:
+          - string
+          - 'null'
+          description: The model of the vehicle
+          example: Transit
+        registrationYear:
+          type:
+          - integer
+          - 'null'
+          description: The year that the vehicle was first registered as new
+          format: int32
+          example: 2012
+        isSchedulable:
+          type: boolean
+          description: Indicates whether this vehicle can be scheduled jobs
+          example: true
+        idlingFuelConsumptionRate:
+          type:
+          - number
+          - 'null'
+          description: The litre fuel consumption of the vehicle used when idling per minute
+          format: double
+          example: 0.1
+        costPerKm:
+          type:
+          - number
+          - 'null'
+          description: The running cost of the vehicle per kilometre, expressed in `costPerKmCurrencyCode`
+          format: double
+          example: 0.25
+        costPerDay:
+          type:
+          - number
+          - 'null'
+          description: The running cost of the vehicle per day, expressed in `costPerDayCurrencyCode`
+          format: double
+          example: 0.25
+        costPerKmCurrencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+        costPerDayCurrencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+        odometerUnit:
+          $ref: '#/components/schemas/OdometerUnit'
+        odometerEstimate:
+          type:
+          - integer
+          - 'null'
+          description: An estimate of vehicle odometer reading, based on tracked distance
+          format: int32
+          example: 510200
+        odometer:
+          type:
+          - integer
+          - 'null'
+          description: The latest reading from the vehicles odometer
+          format: int32
+          example: 51023
+        odometerReadAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when the odometer reading was last recorded
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        roadSafetyExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicle's road safety test expires (eg. UK MOT test)
+          format: date
+          example: '2022-11-29'
+        roadTaxExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicle's road tax expires
+          format: date
+          example: '2022-11-29'
+        serviceDueAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicle's next service is due
+          format: date
+          example: '2022-11-29'
+        insuranceDueAt:
+          type:
+          - string
+          - 'null'
+          description: The date of when the vehicle's insurance is due for renewal
+          format: date
+          example: '2022-11-29'
+        co2EmissionsGramsPerKm:
+          type:
+          - integer
+          - 'null'
+          description: The vehicle co2 emission rate as (grams per km)
+          format: int32
+          example: 5
+        co2EmissionsKilogramsPerLitre:
+          type:
+          - number
+          - 'null'
+          description: The vehicle co2 emission rate as (kilograms per litre)
+          format: double
+          example: 5.5
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the vehicle
+        isArchived:
+          type: boolean
+          description: Whether the vehicle is archived
+          example: false
+      additionalProperties: false
+      description: Represents a model for reading vehicle
+    ReadVehicleCheckModel:
+      type: object
+      properties:
+        checkId:
+          type: integer
+          description: The unique identifier of the check
+          format: int64
+          example: 5514123
+        vehicleId:
+          type: integer
+          description: The unique identifier of the vehicle that the check was completed for
+          format: int64
+          example: 1211
+        completedByResourceId:
+          type: integer
+          description: The unique identifier of the resource who completed the check
+          format: int64
+          example: 1211
+        completedAt:
+          type: string
+          description: The UTC timestamp of when the check was completed
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this check was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Represents a model for reading a vehicle check
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    CurrencyRead:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      - UNKNOWN
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site with an unknown value to handle unrecognised currencies returned from the database<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li><li><b>UNKNOWN</b>: Unknown currency</li></ul>'
+      example: EUR
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    UpdateVehicleModel:
+      type: object
+      properties:
+        groupId:
+          type: integer
+          description: 'The unique identifier of the group that the vehicle belongs to<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 7927
+          x-optional: Omit to retain current value
+        vehicleType:
+          $ref: '#/components/schemas/VehicleType'
+        fixedResourceId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the resource who this vehicle is assigned to<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 110841
+          x-optional: Omit to retain current value or provide null to unset
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The internal reference of the vehicle - should usually be unique<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: ABC5514123
+          x-optional: Omit to retain current value or provide null to unset
+        registration:
+          type: string
+          description: 'The registration number of the vehicle<br/><br/>Optional: Omit to retain current value'
+          example: BC24 BIG
+          x-optional: Omit to retain current value
+        make:
+          type:
+          - string
+          - 'null'
+          description: 'The manufacturer of the vehicle<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Ford
+          x-optional: Omit to retain current value or provide null to unset
+        model:
+          type:
+          - string
+          - 'null'
+          description: 'The model of the vehicle<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Transit
+          x-optional: Omit to retain current value or provide null to unset
+        registrationYear:
+          type:
+          - integer
+          - 'null'
+          description: 'The year that the vehicle was first registered as new<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int32
+          example: 2012
+          x-optional: Omit to retain current value or provide null to unset
+        isSchedulable:
+          type: boolean
+          description: 'Indicates whether this vehicle can be scheduled jobs<br/><br/>Optional: Omit to retain current value'
+          example: true
+          x-optional: Omit to retain current value
+        idlingFuelConsumptionRate:
+          type:
+          - number
+          - 'null'
+          description: 'The litre fuel consumption of the vehicle used when idling per minute<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 0.1
+          x-optional: Omit to retain current value or provide null to unset
+        costPerKm:
+          type:
+          - number
+          - 'null'
+          description: 'The running cost of the vehicle per kilometre, expressed in `costPerKmCurrencyCode`<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 0.25
+          x-optional: Omit to retain current value or provide null to unset
+        costPerDay:
+          type:
+          - number
+          - 'null'
+          description: 'The running cost of the vehicle per day, expressed in `costPerDayCurrencyCode`<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 0.25
+          x-optional: Omit to retain current value or provide null to unset
+        costPerKmCurrencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        costPerDayCurrencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        odometerUnit:
+          $ref: '#/components/schemas/OdometerUnit'
+        odometer:
+          type: integer
+          description: 'The latest reading from the vehicles odometer. If provided with a value, the new odometer reading will be recorded even if the value hasn''t changed<br/><br/>Optional: Omit to retain current value'
+          format: int32
+          example: 51023
+          x-optional: Omit to retain current value
+        roadSafetyExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date of when the vehicles road safety test expires (eg. UK MOT test)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date
+          example: '2022-11-29'
+          x-optional: Omit to retain current value or provide null to unset
+        roadTaxExpiresAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date of when the vehicles road tax expires<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date
+          example: '2022-11-29'
+          x-optional: Omit to retain current value or provide null to unset
+        serviceDueAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date of when the vehicles next service is due<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date
+          example: '2022-11-29'
+          x-optional: Omit to retain current value or provide null to unset
+        insuranceDueAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date of when the vehicles insurance is due for renewal<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date
+          example: '2022-11-29'
+          x-optional: Omit to retain current value or provide null to unset
+        co2EmissionsGramsPerKm:
+          type:
+          - integer
+          - 'null'
+          description: 'The vehicle co2 emission rate as (grams per km). Mutually exclusive with Co2EmissionsKilogramsPerLitre. Setting this property with a non-null value will nullify the Co2EmissionsKilogramsPerLitre property, if previously set. To retain the current value, omit both Co2EmissionsGramsPerKm and Co2EmissionsKilogramsPerLitre<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int32
+          example: 5
+          x-optional: Omit to retain current value or provide null to unset
+        co2EmissionsKilogramsPerLitre:
+          type:
+          - number
+          - 'null'
+          description: 'The vehicle co2 emission rate as (kilograms per litre). Mutually exclusive with Co2EmissionsGramsPerKm. Setting this property with a non-null value will nullify the Co2EmissionsGramsPerKm property, if previously set. To retain the current value, omit both Co2EmissionsGramsPerKm and Co2EmissionsKilogramsPerLitre<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.5
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the vehicle. Omit or use an empty list to retain current values<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Model representing the data needed to update a vehicle
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadVehicleModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadVehicleModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

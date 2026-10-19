@@ -1,0 +1,1310 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Worksheets API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Worksheets
+paths:
+  /v1/worksheetAnswers:
+    get:
+      tags:
+      - Worksheets
+      summary: Get a list of worksheet answers
+      description: Retrieve a paged collection of worksheet answers. At least one of `entityId`, `worksheetId` or `questionId` must be provided (required scope worksheets:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: questionId
+        in: query
+        description: 'Only return answers where `questionId` matches the value(s) provided.
+
+          At least one of `questionId`, `entityId` or `worksheetId` must be provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: entityType
+        in: query
+        description: Only return answers where `entityType` matches the value provided
+        schema:
+          $ref: '#/components/schemas/WorksheetAnswerEntityType'
+      - name: entityId
+        in: query
+        description: 'Only return answers where `entityId` matches the value(s) provided. To use this filter, `entityType` must also be provided.
+
+          At least one of `entityId`, `worksheetId` or `questionId` must be provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: worksheetId
+        in: query
+        description: 'Only return answers where `worksheetId` matches the value(s) provided.
+
+          At least one of `worksheetId`, `entityId` or `questionId` must be provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadWorksheetAnswerModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1WorksheetAnswers
+      x-operation-id-source: derived
+  /v1/worksheetAnswers/{worksheetAnswerId}:
+    get:
+      tags:
+      - Worksheets
+      summary: Get a worksheet answer
+      description: Retrieve the details of a single worksheet answer (required scope worksheets:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: worksheetAnswerId
+        in: path
+        description: The unique identifier of the worksheet answer
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadWorksheetAnswerModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1WorksheetAnswersByWorksheetAnswerId
+      x-operation-id-source: derived
+  /v1/worksheets:
+    get:
+      tags:
+      - Worksheets
+      summary: Get a list of worksheets
+      description: Retrieve a paged collection of worksheets (required scope worksheets:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: name
+        in: query
+        description: Only return worksheets where `name` matches or starts with the value provided
+        schema:
+          type: string
+      - name: groupId
+        in: query
+        description: 'Only return worksheets that are part of the group with the provided `groupId` (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: type
+        in: query
+        description: Only return worksheets of the selected type
+        schema:
+          $ref: '#/components/schemas/WorksheetType'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadWorksheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1Worksheets
+      x-operation-id-source: derived
+  /v1/worksheets/{worksheetId}:
+    get:
+      tags:
+      - Worksheets
+      summary: Get a worksheet
+      description: Retrieve the details of a single worksheet (required scope worksheets:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: worksheetId
+        in: path
+        description: The unique identifier of the worksheet
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadWorksheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1WorksheetsByWorksheetId
+      x-operation-id-source: derived
+  /v1/worksheets/{worksheetId}/answers:
+    put:
+      tags:
+      - Worksheets
+      summary: Set answers against a worksheet
+      description: Sets one or more answers against a worksheet for a given entity. Supported entity types are `Job` and `ContactNote` (required scope worksheets:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: worksheetId
+        in: path
+        required: true
+        schema:
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetWorksheetAnswersModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1WorksheetsByWorksheetIdAnswers
+      x-operation-id-source: derived
+  /v1/worksheets/{worksheetId}/worksheetQuestions:
+    get:
+      tags:
+      - Worksheets
+      summary: Get a collection of worksheet questions related to a worksheet
+      description: Retrieve the details of worksheet questions for a given worksheet (required scope worksheets:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: worksheetId
+        in: path
+        description: The unique identifier of the worksheet
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadWorksheetQuestionModel'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+      operationId: getV1WorksheetsByWorksheetIdWorksheetQuestions
+      x-operation-id-source: derived
+components:
+  schemas:
+    WorksheetAnswerText:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        stringValue:
+          type:
+          - string
+          - 'null'
+          description: Represents the text answer to a worksheet question
+          example: Text
+      additionalProperties: false
+      description: Model wrapper for the text answer given to a worksheet question
+    WriteWorksheetAnswerBoolean:
+      required:
+      - booleanValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        booleanValue:
+          type: boolean
+          description: Represents the boolean (yes/no) answer to a worksheet question
+          example: true
+      additionalProperties: false
+      description: Model for writing a boolean answer to a worksheet question
+    WriteWorksheetAnswerListMulti:
+      required:
+      - selectedItems
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItems:
+          type: array
+          items:
+            type: string
+          description: Represents selected items from a list multi answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list multi answer to a worksheet question
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    WorksheetQuestionTypeRead:
+      enum:
+      - boolean
+      - numberInteger
+      - numberDecimal
+      - text
+      - listMulti
+      - signature
+      - statement
+      - cost
+      - date
+      - photo
+      - time
+      - listSingle
+      - barcode
+      - appLaunch
+      - listIconSingle
+      - listIconMulti
+      - ocr
+      - file
+      - Unknown
+      type: string
+      description: 'Enumeration representing different types of worksheet questions<p>Possible values:</p><ul><li><b>boolean</b>: Used for Yes/No worksheet Question types</li><li><b>numberInteger</b>: Used for Whole Number worksheet question types which allow the user to provide a whole number without a decimal place</li><li><b>numberDecimal</b>: Used for Decimal worksheet question types. Responses contain a number with a decimal place</li><li><b>text</b>: Used for Text worksheet question types</li><li><b>listMulti</b>: Used for worksheet type of List when the multiple answer setting is set to yes. Responses contain multiple items from a list defined on the worksheet question</li><li><b>signature</b>: Used for Signature worksheet question types. When used, a name and signature box will be presented for the user to complete</li><li><b>statement</b>: Used for statement worksheet question types. This presents a text-based statement which may be presented to the resource or the customer</li><li><b>cost</b>: Used for Cost question types. This allow a response including a description and an amount</li><li><b>date</b>: Used for worksheet questions with a type of Date</li><li><b>photo</b>: Used for photo worksheet question types. It requires the user to upload a photo or multiple photos</li><li><b>time</b>: Used for worksheet questions with the type of Time in the format of HH:MM</li><li><b>listSingle</b>: Used for worksheet type of List when the multiple answer setting is set to no. Responses contain multiple items from a list defined on the worksheet question</li><li><b>barcode</b>: Used for barcode worksheet questions. This stores the text contained within a barcode and may be scanned in via a device</li><li><b>appLaunch</b>: Used for worksheet questions with a type of Launch App. When used, a separate application specified in the worksheet question will be launched</li><li><b>listIconSingle</b>: Used for worksheet question type of Icon where the multiple answer setting is set to no. Responses contain multiple names or icons defined on the worksheet question</li><li><b>listIconMulti</b>: Used for worksheet question type of Icon where the multiple answer setting is set to yes. Responses contain multiple names or icons defined on the worksheet question</li><li><b>ocr</b>: Used for worksheet question with a type of OCR</li><li><b>file</b>: Used for worksheet question type of View File</li><li><b>unknown</b>: Represents an unknown worksheet question type</li></ul>'
+      example: boolean
+    WriteWorksheetAnswerListSingle:
+      required:
+      - selectedItem
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItem:
+          type: string
+          description: Represents selected item from a list single answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list single answer to a worksheet question
+    WorksheetAnswerStatement:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        statement:
+          type:
+          - string
+          - 'null'
+          description: The statement defined in the worksheet question
+          example: What is the capital of France?
+        outcome:
+          type:
+          - string
+          - 'null'
+          description: The outcome of the given statement associated with the question
+          example: Paris
+      additionalProperties: false
+      description: Model wrapper for the statement answer given to a worksheet question
+    WorksheetAnswerInteger:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        integerValue:
+          type:
+          - integer
+          - 'null'
+          description: Represents the integer answer to a worksheet question
+          format: int32
+          example: 44
+      additionalProperties: false
+      description: Model wrapper for the integer answer given to a worksheet question
+    WorksheetAnswerOCR:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        stringValue:
+          type:
+          - string
+          - 'null'
+          description: The OCR value
+          example: KM12 KFT
+      additionalProperties: false
+      description: Model wrapper for the ocr answer given to a worksheet question
+    WriteWorksheetAnswerTime:
+      required:
+      - time
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        time:
+          type: string
+          description: Represents the time answer to a worksheet question
+          format: time
+          example: 01:23
+      additionalProperties: false
+      description: Model for writing a time answer to a worksheet question
+    WorksheetAnswerSignature:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: The signature name defined in the worksheet question
+          example: John Doe
+        image:
+          type:
+          - string
+          - 'null'
+          description: The base64 encoded image of the signature
+          example: iVBORw0KGgoAAAANSUhEUgAAAZAAAABkC...
+      additionalProperties: false
+      description: Model wrapper for the signature answer given to a worksheet question
+    WorksheetAnswerDecimal:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        decimalValue:
+          type:
+          - number
+          - 'null'
+          description: Represents the decimal answer to a worksheet question
+          format: double
+          example: 3.14
+      additionalProperties: false
+      description: Model wrapper for the decimal answer given to a worksheet question
+    WriteWorksheetAnswerListIconSingle:
+      required:
+      - selectedItem
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItem:
+          type: string
+          description: Represents selected item from a list icon single answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list icon single answer to a worksheet question
+    SetWorksheetAnswersModel:
+      required:
+      - entityId
+      - entityType
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/WorksheetAnswerEntityType'
+        entityId:
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          description: The unique identifier of the entity that the answers relate to
+          format: int64
+          example: 5514123
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SetWorksheetAnswerItemModel'
+          description: The answers to set against the worksheet
+      additionalProperties: false
+      description: Model representing the data needed to set answers against a worksheet
+    WorksheetAnswerTime:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        time:
+          type:
+          - string
+          - 'null'
+          description: The time defined in the worksheet answer
+          format: time
+          example: '10:25'
+      additionalProperties: false
+      description: Model wrapper for the time answer given to a worksheet question
+    ReadWorksheetAnswerModel:
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/WorksheetAnswerEntityType'
+        entityId:
+          type: integer
+          description: The unique identifier of the entity
+          format: int64
+          example: 4
+        questionId:
+          type: integer
+          description: The unique identifier of the question
+          format: int64
+          example: 3
+        questionText:
+          type: string
+          description: The text body of the question
+          example: How satisfied were you with the job?
+        resourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource
+          format: int64
+          example: 2
+        worksheetId:
+          type: integer
+          description: The unique identifier of the worksheet
+          format: int64
+          example: 5
+        worksheetName:
+          type:
+          - string
+          - 'null'
+          description: The name of the worksheet
+          example: Example
+        questionType:
+          $ref: '#/components/schemas/WorksheetQuestionTypeRead'
+        worksheetGroupName:
+          type: string
+          description: The name of the worksheet group
+          example: Example
+        isMandatory:
+          type: boolean
+          description: Is the worksheet answer mandatory
+          example: true
+        worksheetQuestionOrder:
+          type: integer
+          description: The order of the question in the worksheet
+          format: int32
+          example: 9
+        note:
+          type: string
+          description: The note attached to the worksheet answer
+          example: Example
+        rawAnswerText:
+          type: string
+          description: Represents the raw, unparsed text of the worksheet answer
+          example: Example
+        answer:
+          oneOf:
+          - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+          - $ref: '#/components/schemas/WorksheetAnswerAppLaunch'
+          - $ref: '#/components/schemas/WorksheetAnswerBarcode'
+          - $ref: '#/components/schemas/WorksheetAnswerBoolean'
+          - $ref: '#/components/schemas/WorksheetAnswerCost'
+          - $ref: '#/components/schemas/WorksheetAnswerDate'
+          - $ref: '#/components/schemas/WorksheetAnswerDecimal'
+          - $ref: '#/components/schemas/WorksheetAnswerFile'
+          - $ref: '#/components/schemas/WorksheetAnswerInteger'
+          - $ref: '#/components/schemas/WorksheetAnswerList'
+          - $ref: '#/components/schemas/WorksheetAnswerOCR'
+          - $ref: '#/components/schemas/WorksheetAnswerPhoto'
+          - $ref: '#/components/schemas/WorksheetAnswerSignature'
+          - $ref: '#/components/schemas/WorksheetAnswerStatement'
+          - $ref: '#/components/schemas/WorksheetAnswerText'
+          - $ref: '#/components/schemas/WorksheetAnswerTime'
+          description: The dynamic answer of the worksheet
+      additionalProperties: false
+      description: Represents a model that holds information about worksheet answers
+    PagedResponseReadWorksheetAnswerModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadWorksheetAnswerModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    WorksheetAnswerFile:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        id:
+          type:
+          - integer
+          - 'null'
+          description: The Id of the file
+          format: int64
+          example: 100
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the file
+          example: Photo
+        date:
+          type:
+          - string
+          - 'null'
+          description: The date the file was uploaded
+          format: date-time
+          example: '2025-01-01T12:20:00.0000000+00:00'
+      additionalProperties: false
+      description: Model wrapper for the file answer given to a worksheet question
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    WorksheetAnswerAppLaunch:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        stringValue:
+          type:
+          - string
+          - 'null'
+          description: The app launch value
+          example: /app.exe
+      additionalProperties: false
+      description: Model wrapper for the app launch answer given to a worksheet question
+    WorksheetAnswerEntityType:
+      enum:
+      - job
+      - contactNote
+      - stockItem
+      - activityLog
+      - activitySign
+      - assetCheck
+      type: string
+      description: 'Enumeration representing different types of worksheet answers<p>Possible values:</p><ul><li><b>job</b>: Answer relating to a job entity</li><li><b>contactNote</b>: Answer relating to a contact note entity</li><li><b>stockItem</b>: Answer relating to a stock item entity</li><li><b>activityLog</b>: Answer relating to an activity log entity</li><li><b>activitySign</b>: Answer relating to an activity sign entity</li><li><b>assetCheck</b>: Answer relating to an asset check entity</li></ul>'
+      example: job
+    WriteWorksheetAnswerDate:
+      required:
+      - date
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        date:
+          type: string
+          description: Represents the date answer to a worksheet question
+          format: date
+          example: '2025-01-31'
+        time:
+          type:
+          - string
+          - 'null'
+          description: Represents the time answer to a worksheet question
+          format: time
+          example: 01:23
+      additionalProperties: false
+      description: Model for writing a date answer to a worksheet question
+    WriteWorksheetAnswerText:
+      required:
+      - stringValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        stringValue:
+          type: string
+          description: Represents the text answer to a worksheet question
+          example: Hello world
+      additionalProperties: false
+      description: Model for writing a text answer to a worksheet question
+    ReadWorksheetQuestionModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the worksheet question
+          format: int64
+          example: 123
+        questionText:
+          type: string
+          description: The title associated with the given question
+          example: Example question title
+        order:
+          type: integer
+          description: The order of the question in the worksheet
+          format: int32
+          example: 9
+        type:
+          $ref: '#/components/schemas/WorksheetQuestionTypeRead'
+        isMandatory:
+          type: boolean
+          description: Indicates whether the answer to the worksheet question is mandatory
+          example: true
+        defaultRawAnswerText:
+          type:
+          - string
+          - 'null'
+          description: Default answer text for a given question
+          example: This is my default answer
+        maxLength:
+          type:
+          - integer
+          - 'null'
+          description: The maximum length allowed for the answer for a question of type Text
+          format: int64
+          example: 255
+        validItems:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: A list of valid items that can be selected or entered as answers for a question of type ListSingle, ListMulti, ListIconSingle, or ListIconMulti
+          example:
+          - Option1
+          - Option2
+          - Option3
+      additionalProperties: false
+      description: Represents a model that holds information about a worksheet question
+    WorksheetAnswerList:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        selectedItems:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Represents the answer to a collection of items worksheet question
+      additionalProperties: false
+      description: Model wrapper for the list answer given to a worksheet question
+    WorksheetAnswerDate:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        date:
+          type:
+          - string
+          - 'null'
+          description: The date defined in the worksheet question in YYYY-MM-DD format
+          format: date
+          example: '2025-01-02'
+        time:
+          type:
+          - string
+          - 'null'
+          description: The time defined in the worksheet question in HH:MM format
+          format: time
+          example: '12:34'
+      additionalProperties: false
+      description: Model wrapper for the date answer given to a worksheet question
+    WorksheetAnswerPhoto:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        attachmentId:
+          type:
+          - integer
+          - 'null'
+          description: Represents the photo answer attachment id to a worksheet question
+          format: int64
+          example: 123456789
+      additionalProperties: false
+      description: Model wrapper for the photo answer given to a worksheet question
+    WorksheetAnswerBarcode:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        stringValue:
+          type:
+          - string
+          - 'null'
+          description: Represents the barcode answer to a worksheet question
+          example: JK-001
+      additionalProperties: false
+      description: Model wrapper for the barcode answer given to a worksheet question
+    ReadWorksheetModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the worksheet
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the worksheet
+          example: Boiler Install
+        modifiedAt:
+          type: string
+          description: The UTC timestamp of when this worksheet was modified
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        groupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the worksheet group
+          format: int32
+          example: 12345
+        isSharedWithContractors:
+          type: boolean
+          description: Indicates whether the worksheet will be shared with contractors
+          example: false
+        type:
+          $ref: '#/components/schemas/WorksheetType'
+        answerHeadingLabel:
+          type: string
+          description: The label associated with the worksheet answer heading
+          example: Please answer here
+        notesHeadingLabel:
+          type: string
+          description: The label associated with the worksheet notes heading
+          example: Please add any notes here
+      additionalProperties: false
+      description: Represents a model that holds information about a worksheet
+    PagedResponseReadWorksheetModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadWorksheetModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    WorksheetAnswerGeneric:
+      type: object
+      additionalProperties: false
+      description: Base model wrapper for the answer given to a worksheet question or an empty answer
+    WorksheetAnswerCost:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          description: Represents the name of the costed item
+          example: Item 1
+        quantity:
+          type:
+          - number
+          - 'null'
+          description: Represents the quantity of the costed item
+          format: double
+          example: 5
+        unitSellingPrice:
+          type:
+          - number
+          - 'null'
+          description: Represents the selling price per unit of the costed item
+          format: double
+          example: 5.99
+        taxPercentage:
+          type:
+          - number
+          - 'null'
+          description: Represents the percentage tax applied to the costed item
+          format: double
+          example: 20
+        grossSellingPrice:
+          type:
+          - number
+          - 'null'
+          description: Represents the gross selling price of the costed item
+          format: double
+          example: 29.95
+      additionalProperties: false
+      description: Model wrapper for the cost type answer given to a worksheet question
+    WriteWorksheetAnswerCost:
+      required:
+      - name
+      - quantity
+      - taxPercentage
+      - unitSellingPrice
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        name:
+          type: string
+          description: Dynamic answer associated to the cost question
+          example: This is my cost
+        quantity:
+          minimum: 0
+          type: number
+          description: Represents the quantity associated to the cost
+          format: double
+          example: 12.5
+        unitSellingPrice:
+          minimum: 0
+          type: number
+          description: The unit selling price associated to the cost
+          format: double
+          example: 10.1
+        taxPercentage:
+          minimum: 0
+          type: number
+          description: The tax percentage associated to the cost
+          format: double
+          example: 20
+      additionalProperties: false
+      description: Model for writing a cost answer to a worksheet question
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    WorksheetAnswerBoolean:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WorksheetAnswerGeneric'
+      properties:
+        booleanValue:
+          type:
+          - boolean
+          - 'null'
+          description: Represents the boolean (yes/no) answer to a worksheet question
+          example: true
+      additionalProperties: false
+      description: Model wrapper for the boolean answer given to a worksheet question
+    WorksheetType:
+      enum:
+      - worksheet
+      - workflow
+      - worksheetActivity
+      - worksheetDefect
+      type: string
+      description: 'Enumeration representing different types of worksheets<p>Possible values:</p><ul><li><b>worksheet</b>: Data collected through the digital questionnaires associated with a job</li><li><b>workflow</b>: Data collected through the digital questionnaires associated with a note</li><li><b>worksheetActivity</b>: Data collected through the digital questionnaires associated with the timesheet acitivities</li><li><b>worksheetDefect</b>: The records of inspections performed on a vehicle using the vehicle check worksheets. Note that legacy ticksheets are not included in this</li></ul>'
+      example: worksheet
+    WriteWorksheetAnswer:
+      type: object
+      additionalProperties: false
+      description: Dynamic model for writing a worksheet answer
+    WriteWorksheetAnswerListIconMulti:
+      required:
+      - selectedItems
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        selectedItems:
+          type: array
+          items:
+            type: string
+          description: Represents selected items from a list icon multi answer to a worksheet question
+      additionalProperties: false
+      description: Model for writing a list icon multi answer to a worksheet question
+    SetWorksheetAnswerItemModel:
+      type: object
+      properties:
+        questionId:
+          type: integer
+          description: The unique identifier of the worksheet question being answered
+          format: int64
+          example: 5514123
+        note:
+          type:
+          - string
+          - 'null'
+          description: The note related to the worksheet answer
+          example: This answer was completed on Tuesday morning
+        answer:
+          oneOf:
+          - $ref: '#/components/schemas/WriteWorksheetAnswerBoolean'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerCost'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerDate'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerDecimal'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerInteger'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListIconMulti'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListIconSingle'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListMulti'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerListSingle'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerText'
+          - $ref: '#/components/schemas/WriteWorksheetAnswerTime'
+          description: The answer to the worksheet question
+      additionalProperties: false
+      description: Model representing a single answer to a worksheet question
+    WriteWorksheetAnswerInteger:
+      required:
+      - integerValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        integerValue:
+          type: integer
+          description: Represents the integer answer to a worksheet question
+          format: int64
+          example: 44
+      additionalProperties: false
+      description: Model for writing a integer answer to a worksheet question
+    WriteWorksheetAnswerDecimal:
+      required:
+      - decimalValue
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/WriteWorksheetAnswer'
+      properties:
+        decimalValue:
+          type: number
+          description: Represents the decimal answer to a worksheet question
+          format: double
+          example: 3.14
+      additionalProperties: false
+      description: Model for writing a decimal answer to a worksheet question
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

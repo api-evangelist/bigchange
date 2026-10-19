@@ -1,0 +1,1804 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Notes API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Notes
+paths:
+  /v1/notes:
+    get:
+      tags:
+      - Notes
+      summary: Get a list of notes
+      description: Retrieves a paged collection of notes (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/NoteSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return notes where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: entityType
+        in: query
+        description: Only return notes where `entityType` matches the value provided
+        schema:
+          $ref: '#/components/schemas/NoteEntityType'
+      - name: entityId
+        in: query
+        description: 'Only return notes where `entityId` matches the value(s) provided. To use this filter, `entityType` must also be provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: typeId
+        in: query
+        description: 'Only return notes where `typeId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: ownedByUserId
+        in: query
+        description: 'Only return notes where `ownedByUserId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: reference
+        in: query
+        description: 'Only return notes where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: status
+        in: query
+        description: 'Only return notes where `status` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteStatus'
+      - name: contactId
+        in: query
+        description: 'Only return notes where `contactId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: dueAtTo
+        in: query
+        description: Only return notes where `dueAt` occurs at or before the UTC timestamp provided
+        schema:
+          type: string
+          format: date-time
+      - name: dueAtFrom
+        in: query
+        description: Only return notes where `dueAt` occurs at or after the UTC timestamp provided
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtFrom
+        in: query
+        description: Only return notes where `createdAt` is the same or newer than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return notes where `createdAt` is the same or older than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadNoteModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1Notes
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Notes
+      summary: Create a note
+      description: Creates a new note associated with a specific entity (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNoteModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1Notes
+      x-operation-id-source: derived
+  /v1/notes/{noteId}:
+    get:
+      tags:
+      - Notes
+      summary: Get a note
+      description: Retrieves the details of a single note (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The unique identifier of the note
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadNoteModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NotesByNoteId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Notes
+      summary: Update a note
+      description: Updates the details of a single note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNoteModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1NotesByNoteId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Notes
+      summary: Delete a note
+      description: Delete a note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The note id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1NotesByNoteId
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/comments:
+    get:
+      tags:
+      - Notes
+      summary: Get a list of note comments
+      description: Retrieves a list of comments for a specific note (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The unique identifier of the note
+        required: true
+        schema:
+          maximum: 2147483647
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/NoteSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadNoteModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NotesByNoteIdComments
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Notes
+      summary: Create a note comment
+      description: Creates a comment for a specific note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNoteCommentModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteCommentModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '429':
+          description: Too Many Requests
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1NotesByNoteIdComments
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/flags:
+    get:
+      tags:
+      - Notes
+      summary: Gets currently active flag for the specified note
+      description: Retrieve the current active flag for a note (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The note identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NotesByNoteIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Notes
+      summary: Create a new flag for a note
+      description: Create a new flag for a note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The note identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The flag to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1NotesByNoteIdFlags
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/flags/{flagId}:
+    delete:
+      tags:
+      - Notes
+      summary: Deletes a flag from the specified note
+      description: Delete a flag from a note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The note id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: flagId
+        in: path
+        description: The flag history id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1NotesByNoteIdFlagsByFlagId
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/flags/history:
+    get:
+      tags:
+      - Notes
+      summary: Gets the flag history for the specified note
+      description: Retrieve the flag history for a note (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The note identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: The page number being requested
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The page size being requested
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NotesByNoteIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/progress:
+    put:
+      tags:
+      - Notes
+      summary: Update a note's progress
+      description: Updates the percentage completion of a note (required scope notes:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The unique identifier of the note
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: The model containing information used to update the note progress
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNoteProgressModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1NotesByNoteIdProgress
+      x-operation-id-source: derived
+  /v1/notes/{noteId}/progress/history:
+    get:
+      tags:
+      - Notes
+      summary: Get the history of progress updates for a note
+      description: Retrieves the history of progress updates made against a note (required scope notes:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: noteId
+        in: path
+        description: The unique identifier of the note
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/NoteProgressSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadNoteProgressModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1NotesByNoteIdProgressHistory
+      x-operation-id-source: derived
+components:
+  schemas:
+    PagedResponseReadNoteProgressModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadNoteProgressModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    NoteProgressSortOptions:
+      enum:
+      - progressedAt
+      type: string
+      description: 'Represents the fields that can be used to sort note progress entries<p>Possible values:</p><ul><li><b>progressedAt</b>: The progress date</li></ul>'
+      example: progressedAt
+    CreateNoteModel:
+      required:
+      - entityId
+      - entityType
+      - subject
+      - typeId
+      type: object
+      properties:
+        entityType:
+          $ref: '#/components/schemas/NoteEntityType'
+        entityId:
+          type: integer
+          description: The unique identifier of the associated entity that owns the note, relative to the `entityType`
+          format: int64
+          example: 5514123
+        typeId:
+          type: integer
+          description: The unique identifier of the note type definition associated to this note
+          format: int64
+          example: 5514123
+        subject:
+          minLength: 1
+          type: string
+          description: The subject of the note
+          example: Call Mr Brown
+        ownedByUserId:
+          type:
+          - integer
+          - 'null'
+          description: The unique id of the user who owns the note. Must have an active licence. If not provided, this will be set to the default user in the note type or the user ID of the API request
+          format: int64
+          example: 67246
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the parent note of this note
+          format: int64
+          example: 5514123
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this note is due for completion
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of the note - should usually be unique.  If not provided, this will be auto-generated
+          example: '5514123'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        completionText:
+          type:
+          - string
+          - 'null'
+          description: The completion text for the note
+          example: Completed
+        description:
+          type:
+          - string
+          - 'null'
+          description: The detailed textual content about the note
+          example: Message left by Mr Brown regarding the recent installation of his CCTC cameras. He can't get one of them working and needs some technical support.
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields associated with the note
+      additionalProperties: false
+      description: Create note model
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    NoteCommentModel:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the associated entity to retrieve the note comment for
+          format: int32
+          example: 5514123
+        noteId:
+          type: integer
+          description: The unique identifier of the associated entity that owns the note,
+          format: int32
+          example: 1514123
+        text:
+          type: string
+          description: Free text description about comment
+          example: Sent out the new part
+        createdAt:
+          type: string
+          description: The dateTime the note comment was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+      additionalProperties: false
+      description: Get note comment request model
+    PagedResponseReadNoteModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadNoteModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    UpdateNoteProgressModel:
+      required:
+      - percentage
+      type: object
+      properties:
+        progressedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this note was progressed. Must be unique to the second. Defaults to UTC now if no value specified. If a note progress more recent than this value already exists, the note fields will not be updated
+          format: date-time
+          example: '2023-09-12T11:24:23.0000000+00:00'
+        percentage:
+          maximum: 100
+          minimum: 0
+          type: integer
+          description: The percentage to progress the note to. Must be between 0 - 100 inclusive. Setting to 100 will not complete the note, this must be done manually via the patch endpoint
+          format: int32
+          example: 50
+        comment:
+          type:
+          - string
+          - 'null'
+          description: Free text description about progress made by this update
+          example: Sent out the new part
+      additionalProperties: false
+      description: Update note progress model
+    NoteEntityType:
+      enum:
+      - contact
+      - job
+      - stockItem
+      - resource
+      - vehicle
+      - salesOpportunity
+      - contract
+      type: string
+      description: 'The type of entity that the note is associated to<p>Possible values:</p><ul><li><b>contact</b>: Associated with a contact entity</li><li><b>job</b>: Associated with a job entity</li><li><b>stockItem</b>: Associated with a stock item entity</li><li><b>resource</b>: Associated with a resource entity</li><li><b>vehicle</b>: Associated with a vehicle entity</li><li><b>salesOpportunity</b>: Associated with a sales opportunity entity</li><li><b>contract</b>: Associated with a contract entity</li></ul>'
+      example: contact
+    UpdateNoteModel:
+      type: object
+      properties:
+        typeId:
+          type: integer
+          description: 'The unique identifier of the note type definition associated to this note<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value
+        subject:
+          type: string
+          description: 'The subject of the note<br/><br/>Optional: Omit to retain current value'
+          example: Call Mr Brown
+          x-optional: Omit to retain current value
+        ownedByUserId:
+          type: integer
+          description: 'The unique id of the user who owns the note. Must have an active licence<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 67246
+          x-optional: Omit to retain current value
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: 'The UTC timestamp of when this note is due for completion<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+          x-optional: Omit to retain current value or provide null to unset
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the parent note of this note<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 5514123
+          x-optional: Omit to retain current value or provide null to unset
+        reference:
+          type: string
+          description: 'The internal reference of the note - should usually be unique<br/><br/>Optional: Omit to retain current value'
+          example: REF420
+          x-optional: Omit to retain current value
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        completionText:
+          type:
+          - string
+          - 'null'
+          description: 'The completion text for the note<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Completed
+          x-optional: Omit to retain current value or provide null to unset
+        description:
+          type: string
+          description: 'The detailed textual content about the note<br/><br/>Optional: Omit to retain current value'
+          example: Message left by Mr Brown regarding the recent installation of his CCTC cameras. He can't get one of them working and needs some technical support.
+          x-optional: Omit to retain current value
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'The collection of custom fields applied to this note<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Update note model
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    PagedResponseReadEntityFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadEntityFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    NoteStatus:
+      enum:
+      - open
+      - completed
+      - cancelled
+      type: string
+      description: 'The status of the note<p>Possible values:</p><ul><li><b>open</b>: Open</li><li><b>completed</b>: Completed</li><li><b>cancelled</b>: Cancelled</li></ul>'
+      example: open
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    NoteSortOptions:
+      enum:
+      - createdAt
+      - dueAt
+      - progressedAt
+      - status
+      - progressPercentage
+      type: string
+      description: 'Represents the fields that can be used to sort notes<p>Possible values:</p><ul><li><b>createdAt</b>: The creation date</li><li><b>dueAt</b>: The due date</li><li><b>progressedAt</b>: The last progress date</li><li><b>status</b>: The status</li><li><b>progressPercentage</b>: The progress percentage</li></ul>'
+      example: createdAt
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    Reaction:
+      enum:
+      - like
+      - heart
+      - applause
+      - dislike
+      type: string
+      description: 'The reaction to a note comment<p>Possible values:</p><ul><li><b>like</b>: Represents a "Like" reaction</li><li><b>heart</b>: Represents a "Heart" reaction</li><li><b>applause</b>: Represents an "Applause" reaction</li><li><b>dislike</b>: Represents a "Dislike" reaction</li></ul>'
+      example: like
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    ReadNoteModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the note
+          format: int64
+          example: 5514123
+        entityType:
+          $ref: '#/components/schemas/NoteEntityType'
+        entityId:
+          type: integer
+          description: The unique identifier of the associated entity that owns the note, relative to the `entityType`
+          format: int64
+          example: 5514123
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated to this note
+          format: int64
+          example: 47644689
+        typeId:
+          type: integer
+          description: The unique identifier of the note type definition associated to this note
+          format: int64
+          example: 5514123
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this note was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        subject:
+          type: string
+          description: The subject of the note
+          example: Call Mr Brown
+        parentId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the parent note of this note
+          format: int64
+          example: 5514123
+        dueAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this note is due for completion
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        progressedAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp of when this note was last progressed
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the note - should usually be unique
+          example: '5514123'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        description:
+          type: string
+          description: The detailed textual content about the note
+          example: Message left by Mr Brown regarding the recent installation of his CCTC cameras. He can't get one of them working and needs some technical support.
+        completionText:
+          type:
+          - string
+          - 'null'
+          description: A textual note that can be added when a note has been completed. Can only be set if the note has a completed status
+          example: Called the customer, he is now happy with the work
+        progressPercentage:
+          type: integer
+          description: The percentage of work done required to complete the note
+          format: int32
+          example: 50
+        createdByUserName:
+          type: string
+          description: The name of the user who owns the note
+          example: Mr. Jones
+        ownedByUserId:
+          type: integer
+          description: The unique id of the user who owns the note
+          format: int64
+          example: 1245
+        ownedByUserName:
+          type: string
+          description: The name of the user who owns the note
+          example: Mr. Smith
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: The collection of custom fields applied to this note
+      additionalProperties: false
+      description: Read note model
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    NoteCommentEntityType:
+      enum:
+      - note
+      - assetDefect
+      type: string
+      description: 'The type of entity that the note comment is associated to<p>Possible values:</p><ul><li><b>note</b>: Associated with a note entity</li><li><b>assetDefect</b>: Associated with an asset defect entity</li></ul>'
+      example: note
+    CreateNoteCommentModel:
+      required:
+      - commentEntityType
+      - entityId
+      - noteComment
+      type: object
+      properties:
+        commentEntityType:
+          $ref: '#/components/schemas/NoteCommentEntityType'
+        entityId:
+          type: integer
+          description: The unique identifier of the associated entity that owns the comment, relative to the `commentEntityType`
+          format: int64
+          example: 5514123
+        noteComment:
+          minLength: 1
+          type: string
+          description: The comment body to save
+          example: Example comment
+        userIds:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: A list of user IDs to mention in the comment
+        isPreviousMentions:
+          type: boolean
+          description: When true, the service reuses mentions from the most recent existing comment for the same entity
+          example: true
+        isMentions:
+          type: boolean
+          description: Enables mention handling for the comment
+          example: true
+        reaction:
+          $ref: '#/components/schemas/Reaction'
+      additionalProperties: false
+      description: Create note comments model
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadEntityFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The owner who applied the flag (user email or ID)
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: {}
+      description: Represents a flag applied to an entity. Used as the response model for all entity flag endpoints.<br/>The entity identifier is serialised under its entity-specific key (e.g. `jobId`,<br/>`jobGroupId`) taken from BigChange.BO.RestApi.Application.EntityFlags.Services.EntityFlagConfig.PrimaryKeyColumn
+    ReadNoteProgressModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the note progress entry
+          format: int64
+          example: 124124
+        progressedAt:
+          type: string
+          description: The UTC timestamp of when this note was progressed
+          format: date-time
+          example: '2023-09-12T11:24:23.0000000+00:00'
+        percentage:
+          type: integer
+          description: The percentage the note was progressed to
+          format: int32
+          example: 50
+        comment:
+          type: string
+          description: Free text description about progress made by this update
+          example: Sent out the new part
+      additionalProperties: false
+      description: Read note progress model
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

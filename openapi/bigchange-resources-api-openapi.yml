@@ -1,14 +1,10 @@
 openapi: 3.2.0
 info:
-  title: BigChange DX REST Resources API
+  title: BigChange DX Resources API
+  description: Developer Experience API
   version: '1.0'
-  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
-  contact:
-    name: BigChange Developer Portal
-    url: https://developers.bigchange.com/docs/rest/api-reference
 servers:
 - url: https://api.bigchange.com
-  description: BigChange DX production API (all products share this host)
 security:
 - bearer: []
 tags:
@@ -19,51 +15,1180 @@ paths:
       tags:
       - Resources
       summary: Get a list of resources
+      description: Retrieve a paged collection of resources (required scope resources:read)
       parameters:
-      - $ref: '#/components/parameters/CustomerId'
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/ResourceSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: name
+        in: query
+        description: Only return resources where `name` matches or starts with the value provided
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: 'Only return resources where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: id
+        in: query
+        description: 'Only return resources where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: groupId
+        in: query
+        description: 'Only return resources where `groupId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: licenseStatus
+        in: query
+        description: Only return resrouces of particular License Status
+        schema:
+          $ref: '#/components/schemas/ResourceLicenseFilter'
+      - name: isArchived
+        in: query
+        description: Only return resources where `archived` matches the value provided
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
       responses:
         '200':
-          description: A paged list of resources (the mobile workforce).
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagedResult'
+                $ref: '#/components/schemas/PagedResponseReadResourceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
       operationId: getV1Resources
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Resources
+      summary: Create a resource
+      description: Create a new resource (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResourceModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1Resources
+      x-operation-id-source: derived
+  /v1/resources/{resourceId}:
+    get:
+      tags:
+      - Resources
+      summary: Get a resource
+      description: Retrieve the details of a single resource (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The unique identifer of the resource
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadResourceModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ResourcesByResourceId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Resources
+      summary: Update a resource
+      description: Update the details of a single resource (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResourceModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1ResourcesByResourceId
+      x-operation-id-source: derived
+  /v1/resources/{resourceId}/archive:
+    put:
+      tags:
+      - Resources
+      summary: Archive a resource
+      description: Archives a resource (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1ResourcesByResourceIdArchive
+      x-operation-id-source: derived
+  /v1/resources/{resourceId}/skills:
+    get:
+      tags:
+      - Resources
+      summary: Get skills assigned to a resource
+      description: Retrieve all skills assigned to a resource (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The unique identifier of the resource
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: skillId
+        in: query
+        description: Filter by skill identifier
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: includeExpired
+        in: query
+        description: Include expired skills
+        schema:
+          type: boolean
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadResourceSkillModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ResourcesByResourceIdSkills
+      x-operation-id-source: derived
+  /v1/resources/{resourceId}/unarchive:
+    put:
+      tags:
+      - Resources
+      summary: Unarchive a resource
+      description: Restores an archived resource (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1ResourcesByResourceIdUnarchive
       x-operation-id-source: derived
 components:
   schemas:
-    PagedResult:
+    PagedResponseReadResourceModel:
       type: object
-      description: Standard paged list envelope (modeled).
       properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadResourceModel'
+          description: The items returned for the requested page
         pageNumber:
           type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
         pageSize:
           type: integer
-        totalCount:
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
           type: integer
-        items:
-          $ref: '#/components/schemas/GenericArray'
-    GenericObject:
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
       type: object
-      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
-      additionalProperties: true
-    GenericArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/GenericObject'
-  parameters:
-    CustomerId:
-      name: Customer-Id
-      in: header
-      required: true
-      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
-      schema:
-        type: integer
-        format: int64
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    UpdateResourceModel:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: 'The internal reference of the resource - should usually be unique<br/><br/>Optional: Omit to retain current value'
+          example: XYZ12345
+          x-optional: Omit to retain current value
+        name:
+          type: string
+          description: 'The full name of the resource<br/><br/>Optional: Omit to retain current value'
+          example: David Smith
+          x-optional: Omit to retain current value
+        groupId:
+          type: integer
+          description: 'The unique identifier of the resource''s group<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 441122
+          x-optional: Omit to retain current value
+        email:
+          type: string
+          description: 'The email address of the resource<br/><br/>Optional: Omit to retain current value'
+          example: david.smith@example.com
+          x-optional: Omit to retain current value
+        mobile:
+          type: string
+          description: 'The mobile telephone number of the resource<br/><br/>Optional: Omit to retain current value'
+          example: +447812 123112
+          x-optional: Omit to retain current value
+        timeZoneId:
+          type: string
+          description: 'The id of the timezone that the resource operates in<br/><br/>Optional: Omit to retain current value'
+          example: GMT Standard Time
+          x-optional: Omit to retain current value
+        maxTravelDistance:
+          type:
+          - integer
+          - 'null'
+          description: 'The maximum number of kilometres the resource will travel from start location (as crow flies)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int32
+          example: 5
+          x-optional: Omit to retain current value or provide null to unset
+        fuelCard:
+          type: string
+          description: 'The fuel card number associated to the resource<br/><br/>Optional: Omit to retain current value'
+          example: 01234567891234
+          x-optional: Omit to retain current value
+        businessKey:
+          type: string
+          description: 'The number associated to the resources business key<br/><br/>Optional: Omit to retain current value'
+          example: '1231231'
+          x-optional: Omit to retain current value
+        privateKey:
+          type: string
+          description: 'The number associated to the resources private key<br/><br/>Optional: Omit to retain current value'
+          example: '414221'
+          x-optional: Omit to retain current value
+        tachoCard:
+          type: string
+          description: 'The tachograph driver card number associated to the resource<br/><br/>Optional: Omit to retain current value'
+          example: DRI0RDW0000000100
+          x-optional: Omit to retain current value
+        isTracked:
+          type: boolean
+          description: 'Indicates whether tracking data should be collected for this resource<br/><br/>Optional: Omit to retain current value'
+          example: true
+          x-optional: Omit to retain current value
+        isTrackedOutOfHours:
+          type: boolean
+          description: 'Indicates whether out of working hour tracking data is private<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        workingHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/WriteWorkingHourModel'
+          description: 'The resources working hours / shifts, expressed relative to `timeZoneId`. If this field is supplied it will overwrite any existing working hours in the resource<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the resource. Omit or use an empty list to retain current values<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Update resource model. At least one optional value must be provided
+    ReadWorkingHourModel:
+      type: object
+      properties:
+        dayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+        start:
+          type: string
+          description: The UTC 24H format time of day that the resource starts their shift (hh:mm)
+          format: time
+          example: 09:00
+        stop:
+          type: string
+          description: The UTC 24H format time of day that the resource stops their shift (hh:mm)
+          format: time
+          example: '17:00'
+        startAtContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact (location) that the resource starts this shift from
+          format: int64
+          example: 1241551
+        startAtLocation:
+          $ref: '#/components/schemas/Location'
+      additionalProperties: false
+      description: Represents a read model for a resources working hours in a day
+    CreateResourceModel:
+      required:
+      - groupId
+      - name
+      type: object
+      properties:
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of the resource - should usually be unique
+          example: XYZ12345
+        name:
+          minLength: 1
+          type: string
+          description: The full name of the resource
+          example: David Smith
+        groupId:
+          type: integer
+          description: The unique identifier of the resource's group
+          format: int64
+          example: 441122
+        mobile:
+          type:
+          - string
+          - 'null'
+          description: The mobile telephone number of the resource
+          example: +447812 123112
+        maxTravelDistance:
+          type:
+          - integer
+          - 'null'
+          description: The maximum number of kilometres the resource will travel from start location (as crow flies)
+          format: int32
+          example: 5
+        fuelCard:
+          type:
+          - string
+          - 'null'
+          description: The fuel card number associated to the resource
+          example: 01234567891234
+        businessKey:
+          type:
+          - string
+          - 'null'
+          description: The number associated to the resources business key
+          example: '1231231'
+        privateKey:
+          type:
+          - string
+          - 'null'
+          description: The number associated to the resources private key
+          example: '414221'
+        tachoCard:
+          type:
+          - string
+          - 'null'
+          description: The tachograph driver card number associated to the resource
+          example: DRI0RDW0000000100
+        isTracked:
+          type: boolean
+          description: Indicates whether tracking data should be collected for this resource
+          example: true
+        isTrackedOutOfHours:
+          type: boolean
+          description: Indicates whether out of working hour tracking data is private
+          example: false
+        workingHours:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/WriteWorkingHourModel'
+          description: The resources working hours / shifts, expressed relative to `timeZoneId`
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields associated with the resource
+      additionalProperties: false
+      description: Create the resource request model
+    ReadResourceSkillModel:
+      type: object
+      properties:
+        resourceId:
+          type: integer
+          description: The unique identifier of the resource
+          format: int64
+          example: 5514123
+        skillId:
+          type: integer
+          description: The unique identifier of the skill
+          format: int64
+          example: 7890
+        skillName:
+          type: string
+          description: The name of the skill
+          example: Gas Safe Registered
+        expiresAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time when the skill expires, if applicable
+          format: date-time
+          example: '2025-12-31T00:00:00.0000000+00:00'
+      additionalProperties: false
+      description: Represents a skill assigned to a resource
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    ResourceLicenseFilter:
+      enum:
+      - notActiveForJobWatch
+      - activeForJobWatch
+      - subcontractor
+      - onlyVisibleForSchedule
+      - all
+      type: string
+      description: <p>Possible values:</p><ul><li><b>notActiveForJobWatch</b></li><li><b>activeForJobWatch</b></li><li><b>subcontractor</b></li><li><b>onlyVisibleForSchedule</b></li><li><b>all</b></li></ul>
+      example: notActiveForJobWatch
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    DayOfWeek:
+      enum:
+      - sunday
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      type: string
+      description: <p>Possible values:</p><ul><li><b>sunday</b></li><li><b>monday</b></li><li><b>tuesday</b></li><li><b>wednesday</b></li><li><b>thursday</b></li><li><b>friday</b></li><li><b>saturday</b></li></ul>
+      example: sunday
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    ResourceSortOptions:
+      enum:
+      - name
+      - createdAt
+      type: string
+      description: 'Represents the sort options for resources<p>Possible values:</p><ul><li><b>name</b>: Sort by name</li><li><b>createdAt</b>: Sort by created at date</li></ul>'
+      example: name
+    WriteWorkingHourModel:
+      required:
+      - dayOfWeek
+      - start
+      - stop
+      type: object
+      properties:
+        dayOfWeek:
+          $ref: '#/components/schemas/DayOfWeek'
+        start:
+          type: string
+          description: The 24H format time of day that the resource starts their shift (hh:mm)
+          format: time
+          example: 09:00
+        stop:
+          type: string
+          description: The 24H format time of day that the resource stops their shift (hh:mm)
+          format: time
+          example: '17:00'
+        startAtContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact (location) that the resource starts this shift from
+          format: int64
+          example: 1241551
+      additionalProperties: false
+      description: Model representing the data needed to create a working hour for a resource
+    ReadResourceModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the resource
+          format: int64
+          example: 5514123
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this resource was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type: string
+          description: The internal reference of the resource - should usually be unique
+          example: XYZ12345
+        name:
+          type: string
+          description: The full name of the resource
+          example: David Smith
+        groupId:
+          type: integer
+          description: The unique identifier of the resource's group
+          format: int64
+          example: 441122
+        groupName:
+          type: string
+          description: The name of the resource's group
+          example: Plumbers
+        mobile:
+          type:
+          - string
+          - 'null'
+          description: The mobile telephone number of the resource
+          example: +447812 123112
+        timeZoneId:
+          type: string
+          description: The id of the timezone that the resource operates in
+          example: GMT Standard Time
+        maxTravelDistance:
+          type:
+          - integer
+          - 'null'
+          description: The maximum number of kilometres the resource will travel from start location (as crow flies)
+          format: int32
+          example: 5
+        fuelCard:
+          type:
+          - string
+          - 'null'
+          description: The fuel card number associated to the resource
+          example: 01234567891234
+        businessKey:
+          type:
+          - string
+          - 'null'
+          description: The number associated to the resources business key
+          example: '1231231'
+        privateKey:
+          type:
+          - string
+          - 'null'
+          description: The number associated to the resources private key
+          example: '414221'
+        tachoCard:
+          type:
+          - string
+          - 'null'
+          description: The tachograph driver card number associated to the resource
+          example: DRI0RDW0000000100
+        isTracked:
+          type: boolean
+          description: Indicates whether tracking data should be collected for this resource
+          example: true
+        isTrackedOutOfHours:
+          type: boolean
+          description: Indicates whether out of working hour tracking data is private
+          example: false
+        workingHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadWorkingHourModel'
+          description: The resources working hours / shifts, expressed relative to `timeZoneId`
+        isArchived:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the resource is archived
+          example: false
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the resource
+      additionalProperties: false
+      description: Represents a model for reading a resource
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadResourceSkillModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadResourceSkillModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
   securitySchemes:
     bearer:
       type: http
+      description: Enter the access token only.
       scheme: bearer
       bearerFormat: JWT
-      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'

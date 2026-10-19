@@ -1,0 +1,556 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Timesheets API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Timesheets
+paths:
+  /v1/resources/{resourceId}/timesheets:
+    get:
+      tags:
+      - Timesheets
+      summary: Gets a list of timesheets that belong to the specified resource
+      description: Retrieve a paged list of timesheets for a resource (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The unique identifier of the resource whose timesheets are being retrieved
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: startAtDate
+        in: query
+        description: Only return timesheets where `startedAt` is on or after this date
+        schema:
+          type: string
+          format: date-time
+      - name: endAtDate
+        in: query
+        description: Only return timesheets where `endedAt` is on or before this date
+        schema:
+          type: string
+          format: date-time
+      - name: status
+        in: query
+        description: Only return timesheets where `status` matches the value provided
+        schema:
+          $ref: '#/components/schemas/TimesheetStatus'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadTimesheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ResourcesByResourceIdTimesheets
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Timesheets
+      summary: Create a timesheet activity for a resource
+      description: Create a new timesheet activity for a resource. For StartWork events, a subsequent EndWork will set this record's end date. For EndWork events, the startedAt timestamp is applied as the end date of the most recent preceding StartWork record with no end date. (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The ID of the resource
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The timesheet activity to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTimesheetActivityModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1ResourcesByResourceIdTimesheets
+      x-operation-id-source: derived
+  /v1/resources/{resourceId}/timesheets/{timesheetId}:
+    get:
+      tags:
+      - Timesheets
+      summary: Get a resource timesheet
+      description: Retrieve the details of a single timesheet for a resource (required scope resources:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The unique identifier of the resource associated with the timesheet
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: timesheetId
+        in: path
+        description: The unique identifier of the timesheet
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadTimesheetModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1ResourcesByResourceIdTimesheetsByTimesheetId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Timesheets
+      summary: Update a resource timesheet
+      description: Update the details of a single resource timesheet (required scope resources:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: resourceId
+        in: path
+        description: The resource id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: timesheetId
+        in: path
+        description: The timesheet id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Model used to update timesheet. At least one optional value must be provided
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTimesheetModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1ResourcesByResourceIdTimesheetsByTimesheetId
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreateTimesheetActivityModel:
+      type: object
+      properties:
+        eventType:
+          $ref: '#/components/schemas/TimesheetEventType'
+        startedAt:
+          $ref: '#/components/schemas/WriteDateTime'
+        endedAt:
+          $ref: '#/components/schemas/WriteDateTime'
+      additionalProperties: false
+      description: Represents the data required to create a new timesheet activity for a resource
+    TimesheetStatus:
+      enum:
+      - unsigned
+      - signed
+      - queried
+      - rejected
+      - approved
+      - paid
+      type: string
+      description: 'The status of a resource timesheet.<p>Possible values:</p><ul><li><b>unsigned</b>: The timesheet has not yet been signed by the resource.</li><li><b>signed</b>: The timesheet has been signed by the resource.</li><li><b>queried</b>: The timesheet has been queried and requires review.</li><li><b>rejected</b>: The timesheet has been rejected.</li><li><b>approved</b>: The timesheet has been approved.</li><li><b>paid</b>: The timesheet has been paid.</li></ul>'
+      example: unsigned
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    ReadTimesheetModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier associated with the timesheet
+          format: int64
+          example: 12345
+        startedAt:
+          type: string
+          description: The date and time the resource clocked in
+          format: date-time
+        endedAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time the resource clocked out. Null if the resource has not yet clocked out
+          format: date-time
+        status:
+          $ref: '#/components/schemas/TimesheetStatus'
+        totalHours:
+          type: number
+          description: The total number of hours worked. Zero if the resource has not yet clocked out
+          format: double
+          example: 7.5
+        createdAt:
+          type: string
+          description: ''
+          format: date-time
+        updatedAt:
+          type: string
+          description: The date and time the timesheet was last updated
+          format: date-time
+      additionalProperties: false
+      description: Model for reading a timesheet
+    UpdateTimesheetModel:
+      type: object
+      properties:
+        startedAt:
+          type: string
+          description: 'The updated clock-in timestamp<br/><br/>Optional: Omit to retain current value'
+          format: date-time
+          example: '2024-06-01T08:00:00.0000000+00:00'
+          x-optional: Omit to retain current value
+        endedAt:
+          type:
+          - string
+          - 'null'
+          description: 'The updated clock-out timestamp<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '2024-06-01T16:30:00.0000000+00:00'
+          x-optional: Omit to retain current value or provide null to unset
+        status:
+          $ref: '#/components/schemas/TimesheetStatus'
+      additionalProperties: false
+      description: Model used to update a resource timesheet. At least one optional field must be provided
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    WriteDateTime:
+      type: string
+      additionalProperties: false
+      description: Represents a DateTime value from a write endpoint that accepts a raw string,<br/>deferring parsing so that invalid values can be reported via FluentValidation<br/>rather than a model-binding error
+      format: date-time
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    TimesheetEventType:
+      enum:
+      - startWork
+      - endWork
+      type: string
+      description: 'The type of timesheet event being recorded<p>Possible values:</p><ul><li><b>startWork</b>: Start of a work period. When a subsequent EndWork event is recorded, its</li><li><b>endWork</b>: End of a work period. When recorded, the</li></ul>'
+      example: startWork
+    PagedResponseReadTimesheetModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadTimesheetModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

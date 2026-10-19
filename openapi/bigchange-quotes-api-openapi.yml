@@ -1,0 +1,2090 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Quotes API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Quotes
+paths:
+  /v1/finance/quotes:
+    get:
+      tags:
+      - Quotes
+      summary: Get a list of quotes
+      description: Retrieve a paged collection of quotes. At least one filter (quoteId, jobId, jobGroupId, contactId, reference, or createdAtFrom/createdAtTo) is required. (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/QuoteSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return invoices where `id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: jobId
+        in: query
+        description: 'Only return invoices where `jobId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: jobGroupId
+        in: query
+        description: 'Only return invoices where `jobGroupId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: contactId
+        in: query
+        description: 'Only return invoices where `contactId` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: reference
+        in: query
+        description: 'Only return invoices where `reference` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: string
+      - name: createdAtFrom
+        in: query
+        description: Only return invoices created at or after this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return invoices created at or before this date (inclusive)
+        schema:
+          type: string
+          format: date-time
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadQuoteModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotes
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Quotes
+      summary: Create a quote
+      description: Create a new quote (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to create the quote
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/CreateQuoteModel'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuoteModel'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateQuoteModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceQuotes
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}:
+    get:
+      tags:
+      - Quotes
+      summary: Get a quote
+      description: Retrieve the details of a single quote (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The unique identifier of the quote
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadQuoteModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotesByQuoteId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Quotes
+      summary: Update a quote
+      description: Update a quote (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The id of the quote to update
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the quote
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuoteModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceQuotesByQuoteId
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/accepted:
+    put:
+      tags:
+      - Quotes
+      summary: Mark a quote as accepted
+      description: Mark a quote as accepted (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceQuotesByQuoteIdAccepted
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/flags:
+    get:
+      tags:
+      - Quotes
+      summary: Gets the currently active flag for the specified quote
+      description: Retrieve the current active flag for a quote (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotesByQuoteIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Quotes
+      summary: Create a new flag for a quote
+      description: Create a new flag for a quote (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model containing flag information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceQuotesByQuoteIdFlags
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/flags/{flagId}:
+    delete:
+      tags:
+      - Quotes
+      summary: Deletes a flag from the specified quote
+      description: Delete a flag from a quote (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: flagId
+        in: path
+        description: The flag history id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceQuotesByQuoteIdFlagsByFlagId
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/flags/history:
+    get:
+      tags:
+      - Quotes
+      summary: Gets the flag history for the specified quote
+      description: Retrieve the flag history for a quote (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: The page number being requested
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The page size being requested
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotesByQuoteIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/lineItems:
+    get:
+      tags:
+      - Quotes
+      summary: Gets a list of quote line items that belong to the specified quote
+      description: Retrieve a paged list of line items for a quote (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The unique identifier of the quote associated with the line items
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadQuoteLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotesByQuoteIdLineItems
+      x-operation-id-source: derived
+    post:
+      tags:
+      - Quotes
+      summary: Create a quote line item
+      description: Create a new quote line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to create the line item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuoteLineItemModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1FinanceQuotesByQuoteIdLineItems
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/lineItems/{lineItemId}:
+    get:
+      tags:
+      - Quotes
+      summary: Get a quote line item
+      description: Retrieve the details of a single quote line item (required scope finance:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The unique identifier of the quote associated with the quote line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The unique identifier of the quote line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadQuoteLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1FinanceQuotesByQuoteIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - Quotes
+      summary: Update a quote line item
+      description: Update the details of a single quote line item (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the line item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuoteLineItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1FinanceQuotesByQuoteIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Quotes
+      summary: Delete a quote line item
+      description: Delete a line item from a quote (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        description: The quote id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1FinanceQuotesByQuoteIdLineItemsByLineItemId
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/rejected:
+    put:
+      tags:
+      - Quotes
+      summary: Mark a quote as rejected
+      description: Mark a quote as rejected (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceQuotesByQuoteIdRejected
+      x-operation-id-source: derived
+  /v1/finance/quotes/{quoteId}/sent:
+    put:
+      tags:
+      - Quotes
+      summary: Mark a quote as sent
+      description: Mark a quote as sent (required scope finance:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: quoteId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuoteSentModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1FinanceQuotesByQuoteIdSent
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    CustomFieldType:
+      enum:
+      - boolean
+      - integer
+      - decimal
+      - text
+      - list
+      - statement
+      - date
+      - note
+      - time
+      - systemList
+      type: string
+      description: 'The type of the custom field. New field types may be added in the future, so integrations should be resilient to this<p>Possible values:</p><ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+      example: boolean
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    CreateQuoteModel:
+      type: object
+      properties:
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job associated with this quote, if applicable
+          format: int64
+          example: 12345
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with this quote, if applicable
+          format: int64
+          example: 54321
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this quote. Will reference the job or job group contact if not provided
+          format: int64
+          example: 1234
+        createdAt:
+          type:
+          - string
+          - 'null'
+          description: The dateTime the quote was created. If null, will default to the current dateTime
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The reference of the quote. If null, will default to an auto-generated reference
+          example: quoteNote101
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyWrite'
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the delivery site contact associated with this quote, if applicable
+          format: int64
+          example: 56789
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the department associated with this quote, if applicable
+          format: int64
+          example: 23456
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the nominal code associated with this quote, if applicable
+          format: int64
+        clientNotes:
+          type:
+          - string
+          - 'null'
+          description: Notes on the quote
+          example: Please pay within 30 days
+        internalNotes:
+          type:
+          - string
+          - 'null'
+          description: Internal notes not visible to the client
+          example: Follow up in two weeks
+        daysValidFor:
+          type:
+          - integer
+          - 'null'
+          description: The number of days the quote is valid for
+          format: int32
+          example: 7
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the sales opportunity associated with this quote, if applicable
+          format: int32
+          example: 12345
+        customFields:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: Custom fields to set on the quote. If a custom field is omitted, its value will be set to the default value for that field
+      additionalProperties: false
+      description: Represents a model that holds information about creating a quote
+    CustomFieldSystemListType:
+      enum:
+      - resource
+      - vehicle
+      - webUser
+      type: string
+      description: The type of entity used for custom field value of type system list<p>Possible values:</p><ul><li><b>resource</b></li><li><b>vehicle</b></li><li><b>webUser</b></li></ul>
+      example: resource
+    PagedResponseReadEntityFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadEntityFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PagedResponseReadQuoteLineItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadQuoteLineItemModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadQuoteModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadQuoteModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadQuoteLineItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier associated with the quote line item
+          format: int64
+          example: 12345
+        quoteId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the quote associated with the quote line item
+          format: int64
+          example: 54321
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with the quote line item
+          format: int64
+        createdAt:
+          type: string
+          description: The date and time when the quote line item was created
+          format: date-time
+        quantity:
+          type: number
+          description: The quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the quote line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: VAT / Tax identifier associated with the line item
+          format: int64
+          example: 1001
+        taxPercentage:
+          type: number
+          description: Tax percentage applied to the line item (GET only, never null). Defaults to 0 when no tax is applied
+          format: double
+          example: 20
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost of the item (cannot be negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price of the item (cannot be negative)
+          format: double
+          example: 10.99
+        taxAmount:
+          type:
+          - number
+          - 'null'
+          description: Tax amount for the line item (GET only)
+          format: double
+          example: 2.2
+        grossAmount:
+          type:
+          - number
+          - 'null'
+          description: Gross amount of the line item (GET only)
+          format: double
+          example: 13.19
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Model for reading a quote line item
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    CurrencyWrite:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li></ul>'
+      example: EUR
+    UpdateQuoteModel:
+      type: object
+      properties:
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the delivery site contact associated with this quote, if applicable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 56789
+          x-optional: Omit to retain current value or provide null to unset
+        clientNotes:
+          type:
+          - string
+          - 'null'
+          description: 'Notes on the quote. Length must not exceed 3000 characters when provided.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Please pay within 30 days
+          x-optional: Omit to retain current value or provide null to unset
+        internalNotes:
+          type:
+          - string
+          - 'null'
+          description: 'Internal notes not visible to the client. Length must not exceed 3000 characters when provided.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: Follow up in two weeks
+          x-optional: Omit to retain current value or provide null to unset
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the nominal code associated with this quote, if applicable.<br/>Validation: When provided and not null must be a positive integer within 32-bit bounds and must exist.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 45678
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the department code associated with this quote, if applicable.<br/>Validation: When provided and not null must be a positive integer within 32-bit bounds and must exist.<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 23456
+          x-optional: Omit to retain current value or provide null to unset
+        daysValidFor:
+          type:
+          - integer
+          - 'null'
+          description: 'The number of days the quote is valid for<br/><br/>Validation:<br/>- Must be positive<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int16
+          example: 15
+          x-optional: Omit to retain current value or provide null to unset
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldWriteModel'
+          description: 'Custom fields associated with the quote.<br/>Omit or use an empty list to retain current values.<br/>            <br/>Validation:<br/>- Cannot be null when provided.<br/>- Each custom field must satisfy its definition rules for the quote type.<br/><br/>Optional: Omit to retain current value'
+          x-optional: Omit to retain current value
+      additionalProperties: false
+      description: Represents a model that holds information about updating a quote
+    CreateQuoteLineItemModel:
+      required:
+      - quantity
+      type: object
+      properties:
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contact associated with this quote line item
+          format: int64
+          example: 54321
+        quantity:
+          type: number
+          description: The quantity of the quote line item
+          format: double
+          example: 1
+        description:
+          type: string
+          description: Description of the quote line item
+          example: Replacement filter cartridge
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Tax identifier (must exist and not be deleted for customer). Nullable
+          format: int64
+          example: 1001
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost (nullable, non-negative)
+          format: double
+          example: 5.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price (non-negative)
+          format: double
+          example: 10.99
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Nominal code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 50001
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Department code identifier (must exist and not be deleted for customer)
+          format: int64
+          example: 20002
+      additionalProperties: false
+      description: Represents a model that holds information about creating a quote line item
+    CustomFieldReadModel:
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The current value set for the custom field
+          example: Purple
+        definition:
+          $ref: '#/components/schemas/CustomFieldEmbeddedDefinitionModel'
+        systemListValueMetadata:
+          $ref: '#/components/schemas/SystemListValueMetadataModel'
+      additionalProperties: false
+      description: Represents a model for a custom field
+    CustomFieldEmbeddedDefinitionModel:
+      type: object
+      properties:
+        caption:
+          type: string
+          description: The caption of a custom field
+          example: Favourite colour
+        type:
+          $ref: '#/components/schemas/CustomFieldType'
+        listOptions:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: Shows the possible values for a list type custom field. Value will be null if type is not list
+          example:
+          - Red
+          - Blue
+          - Green
+          - Purple
+        isRequired:
+          type: boolean
+          description: Indicates if the field is required in the UI. This is NOT enforced in the API
+          example: true
+        isEditable:
+          type: boolean
+          description: Indicates if the field is editable
+          example: true
+        default:
+          type:
+          - string
+          - 'null'
+          description: The default value of a custom field. Formatted in accordance with the rules of the field type
+          example: '10'
+      additionalProperties: false
+      description: Represents the definition of a custom field
+    QuoteSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort quotes.<p>Possible values:</p><ul><li><b>createdAt</b>: The date and time when the quote was created</li></ul>'
+      example: createdAt
+    SystemListValueMetadataModel:
+      type: object
+      properties:
+        label:
+          type:
+          - string
+          - 'null'
+          description: A descriptive label for the specific resource, vehicle or web user that this system list value relates to
+          example: John Doe
+        entityType:
+          $ref: '#/components/schemas/CustomFieldSystemListType'
+      additionalProperties: false
+      description: Represents details of custom field value of type system list
+    ReadQuoteModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the quote
+          format: int64
+          example: 12345
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job associated with this quote, if applicable
+          format: int64
+          example: 54321
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with this quote, if applicable
+          format: int64
+          example: 67890
+        contactId:
+          type: integer
+          description: The unique identifier of the contact associated with this quote
+          format: int64
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract associated with this quote, if applicable.<br/>Shown even if the contract has been soft deleted
+          format: int64
+          example: 101112
+        createdAt:
+          type: string
+          description: The dateTime the quote was created
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        reference:
+          type: string
+          description: The reference of the quote
+          example: quoteNote101
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyRead'
+        deliverySiteContactId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the delivery site contact associated with this quote, if applicable
+          format: int64
+          example: 56789
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the nominal code associated with this quote, if applicable
+          format: int64
+          example: 45678
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the department associated with this quote, if applicable
+          format: int64
+          example: 23456
+        clientNotes:
+          type: string
+          description: Notes on the quote
+          example: Please pay within 30 days
+        internalNotes:
+          type: string
+          description: Internal notes not visible to the client
+          example: Follow up in two weeks
+        sentAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the quote was sent, if applicable
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        acceptedAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the quote was accepted, if applicable
+          format: date-time
+          example: '2024-01-20T11:00:00.0000000+00:00'
+        rejectedAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the quote was rejected, if applicable
+          format: date-time
+          example: '2024-01-20T11:00:00.0000000+00:00'
+        cancelledAt:
+          type:
+          - string
+          - 'null'
+          description: The date and time when the quote was cancelled, if applicable
+          format: date-time
+          example: '2024-02-20T14:45:00.0000000+00:00'
+        cost:
+          type:
+          - number
+          - 'null'
+          description: The cost of the quote
+          format: double
+          example: 850.5
+        totalExclTax:
+          type: number
+          description: The total amount excluding tax
+          format: double
+          example: 1000
+        totalInclTax:
+          type: number
+          description: The total amount including tax
+          format: double
+          example: 1200
+        totalPaid:
+          type: number
+          description: The total amount paid
+          format: double
+          example: 1200
+        daysValidFor:
+          type:
+          - integer
+          - 'null'
+          description: The number of days the quote is valid for
+          format: int32
+          example: 10
+        salesOpportunityId:
+          type:
+          - integer
+          - 'null'
+          description: The ID of the sales opportunity associated with this quote, if applicable
+          format: int32
+          example: 12345
+        customFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldReadModel'
+          description: Custom fields associated with the quote
+      additionalProperties: false
+    CurrencyRead:
+      enum:
+      - EUR
+      - AUD
+      - GBP
+      - BGN
+      - CAD
+      - CZK
+      - DKK
+      - HUF
+      - ILS
+      - LVL
+      - LTL
+      - MXN
+      - NZD
+      - NOK
+      - PLN
+      - RON
+      - RUB
+      - ZAR
+      - SEK
+      - CHF
+      - AED
+      - USD
+      - UNKNOWN
+      type: string
+      description: 'CurrencyCode definitions enum, matches currencies available in the BigChange Client Site with an unknown value to handle unrecognised currencies returned from the database<p>Possible values:</p><ul><li><b>EUR</b>: Euro</li><li><b>AUD</b>: Australian Dollar</li><li><b>GBP</b>: Pound Sterling</li><li><b>BGN</b>: Bulgarian Lev</li><li><b>CAD</b>: Canadian Dollar</li><li><b>CZK</b>: Czech Koruna</li><li><b>DKK</b>: Danish Krone</li><li><b>HUF</b>: Forint</li><li><b>ILS</b>: New Israeli Sheqel</li><li><b>LVL</b>: Latvian Lats - replaced by Euro</li><li><b>LTL</b>: Lithuanian Litas - replaced by Euro</li><li><b>MXN</b>: Mexican Peso</li><li><b>NZD</b>: New Zealand Dollar</li><li><b>NOK</b>: Norwegian Krone</li><li><b>PLN</b>: Zloty</li><li><b>RON</b>: Romanian Leu</li><li><b>RUB</b>: Russian Ruble</li><li><b>ZAR</b>: Rand</li><li><b>SEK</b>: Swedish Krona</li><li><b>CHF</b>: Swiss Franc</li><li><b>AED</b>: UAE Dirham</li><li><b>USD</b>: US Dollar</li><li><b>UNKNOWN</b>: Unknown currency</li></ul>'
+      example: EUR
+    UpdateQuoteSentModel:
+      type: object
+      properties:
+        sentAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC date and time when the quote was sent, if omitted the current date and time will be used
+          format: date-time
+      additionalProperties: false
+      description: Represents a model that holds information about marking a quote as sent
+    CustomFieldWriteModel:
+      required:
+      - definitionId
+      type: object
+      properties:
+        definitionId:
+          type: integer
+          description: The unique identifier of the associated custom field definition
+          format: int64
+          example: 5514123
+        value:
+          type:
+          - string
+          - 'null'
+          description: The value of this custom field. If set to null, any existing value will be unset
+          example: High net worth
+      additionalProperties: false
+      description: 'Represents a model for writing to a custom field.<br/>If a custom field is omitted from a request its current value will be retained.<br/>The value must be set according to the custom field''s type as shown in the examples below:<ul><li><b>boolean</b>: Indicates a boolean field <i>(Example: "false")</i></li><li><b>integer</b>: Indicates an integer numeric field <i>(Example: "1001")</i></li><li><b>decimal</b>: Indicates a floating point numeric field <i>(Example: "1.42")</i></li><li><b>text</b>: Indicates an editable text field <i>(Example: "Purple")</i></li><li><b>list</b>: Indicates a field with a single value from a predefined list of options <i>(Example: "Purple")</i></li><li><b>statement</b>: Indicates a text field that cannot be edited. The value is always equal to the default value <i>(Example: "By signing this you agree to the following...")</i></li><li><b>date</b>: Indicates a date field, which will be represented as an RFC3339 formatted date string. The default value is not supported for this type and will always be null <i>(Example: "2024-01-31")</i></li><li><b>note</b>: Indicates a multiline, editable text field. Lines are seperated with a line feed character <i>(Example: "This is a note.")</i></li><li><b>time</b>: Indicates a time field, formatted as HH:mm. The default value is not supported for this type and will always be null <i>(Example: "10:30")</i></li><li><b>systemList</b>: Indicates the ID of a related resource, vehicle or web user <i>(Example: "228007")</i></li></ul>'
+    UpdateQuoteLineItemModel:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 'The quantity of the quote line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 2.5
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'Description of the quote line item<br/><br/>Optional: Omit to retain current value'
+          example: Replacement filter cartridge
+          x-optional: Omit to retain current value
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'Tax identifier (must exist and not be deleted for customer). Nullable<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 1001
+          x-optional: Omit to retain current value or provide null to unset
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: 'Unit cost (nullable, non-negative)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 5.5
+          x-optional: Omit to retain current value or provide null to unset
+        unitSellingPrice:
+          type: number
+          description: 'Unit selling price (non-negative)<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 10.99
+          x-optional: Omit to retain current value
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Nominal code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 50001
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Department code identifier (must exist and not be deleted for customer)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 20002
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: represents a model for updating a quote line item
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadEntityFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The owner who applied the flag (user email or ID)
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: {}
+      description: Represents a flag applied to an entity. Used as the response model for all entity flag endpoints.<br/>The entity identifier is serialised under its entity-specific key (e.g. `jobId`,<br/>`jobGroupId`) taken from BigChange.BO.RestApi.Application.EntityFlags.Services.EntityFlagConfig.PrimaryKeyColumn
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

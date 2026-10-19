@@ -1,0 +1,2438 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Job Groups API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: JobGroups
+paths:
+  /v1/jobGroups:
+    get:
+      tags:
+      - JobGroups
+      summary: Get a list of job groups
+      description: Retrieve a paged collection of job groups (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobGroupSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: id
+        in: query
+        description: 'Only return job groups where `Id` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobGroupModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroups
+      x-operation-id-source: derived
+    post:
+      tags:
+      - JobGroups
+      summary: Create a job group
+      description: Create a new job group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobGroupModel'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobGroups
+      x-operation-id-source: derived
+  /v1/jobGroups/{groupId}/jobFlags:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets currently active flags for all jobs in the specified group
+      description: Retrieve the current active job flag for each job in the group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: groupId
+        in: path
+        description: The unique identifier of the job group
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested. (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByGroupIdJobFlags
+      x-operation-id-source: derived
+  /v1/jobGroups/{groupId}/jobFlags/history:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets the flag history across all jobs in the specified group
+      description: Retrieve the job flag history across all jobs in the group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: groupId
+        in: path
+        description: The unique identifier of the job group
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested. (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseJobFlagsForJobModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByGroupIdJobFlagsHistory
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}:
+    get:
+      tags:
+      - JobGroups
+      summary: Get a job group
+      description: Retrieve the details of a single job group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The unique identifier of the job group
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobGroupModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - JobGroups
+      summary: Patch a job group
+      description: Patch a job group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobGroupModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1JobGroupsByJobGroupId
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/complete:
+    put:
+      tags:
+      - JobGroups
+      summary: Marks the job group results as complete
+      description: Sets the status of a job group to complete only when all jobs within the group are complete and none have a recurrence (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobGroupsByJobGroupIdComplete
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/completeFinancially:
+    put:
+      tags:
+      - JobGroups
+      summary: Marks the job group results as financially complete
+      description: Sets the status of the job group to financially complete when the current job group status is complete (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1JobGroupsByJobGroupIdCompleteFinancially
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/flags:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets the currently active flag for the specified job group
+      description: Retrieve the current active flag for a job group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupIdFlags
+      x-operation-id-source: derived
+    post:
+      tags:
+      - JobGroups
+      summary: Create a new flag for a job group
+      description: Create a new flag for a job group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model containing flag information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntityFlagModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobGroupsByJobGroupIdFlags
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/flags/{flagId}:
+    delete:
+      tags:
+      - JobGroups
+      summary: Deletes a flag from the specified job group
+      description: Delete a flag from a job group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: flagId
+        in: path
+        description: The flag history id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobGroupsByJobGroupIdFlagsByFlagId
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/flags/history:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets the flag history for the specified job group
+      description: Retrieve the flag history for a job group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: pageNumber
+        in: query
+        description: The page number being requested
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: The page size being requested
+        schema:
+          type: integer
+          format: int32
+          default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadEntityFlagModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupIdFlagsHistory
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/lineItems:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets a list of job group line items that belong to the specified job group
+      description: Retrieve a paged list of line items for a job group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The unique identifier of the job group associated with the line item
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobGroupLineItemSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobGroupLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupIdLineItems
+      x-operation-id-source: derived
+    post:
+      tags:
+      - JobGroups
+      summary: Create a job group line item
+      description: Create a new job group line item (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobGroupLineItemModel'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponseInt64'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: postV1JobGroupsByJobGroupIdLineItems
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/lineItems/{lineItemId}:
+    get:
+      tags:
+      - JobGroups
+      summary: Get a job group line item
+      description: Retrieve the details of a single line item (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The unique identifier of the job group associated with the line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The unique identifier of the line item
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadJobGroupLineItemModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    patch:
+      tags:
+      - JobGroups
+      summary: Update a job group line item
+      description: Update the details of a single job group line item (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The model used to update the line item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobGroupLineItemModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: patchV1JobGroupsByJobGroupIdLineItemsByLineItemId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - JobGroups
+      summary: Delete a job group line item
+      description: Delete a line item from a job group (required scope jobs:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The job group id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: lineItemId
+        in: path
+        description: The line item id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1JobGroupsByJobGroupIdLineItemsByLineItemId
+      x-operation-id-source: derived
+  /v1/jobGroups/{jobGroupId}/status/history:
+    get:
+      tags:
+      - JobGroups
+      summary: Gets the status history of a job group
+      description: Retrieve the status history of a single job group (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: jobGroupId
+        in: path
+        description: The unique identifier of the job group
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/JobGroupStatusSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobGroupModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsByJobGroupIdStatusHistory
+      x-operation-id-source: derived
+  /v1/jobGroups/categories:
+    get:
+      tags:
+      - JobGroups
+      summary: Get a list of job group categories
+      description: Retrieve a paged collection of job categories applicable to job groups (required scope jobs:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: name
+        in: query
+        description: Filter to job categories whose name contains this value. Case-insensitive, partial match
+        schema:
+          type: string
+          example: Maintenance
+        example: Maintenance
+      - name: isActive
+        in: query
+        description: Filter to active or inactive job categories only. Omit to return both
+        schema:
+          type: boolean
+          example: true
+        example: true
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+          example: 1
+        example: 1
+      - name: pageSize
+        in: query
+        description: 'The page size being requested. Default is 100, maximum is 1000 (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+          example: 100
+        example: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadJobCategoryModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1JobGroupsCategories
+      x-operation-id-source: derived
+components:
+  schemas:
+    CreateEntityFlagModel:
+      required:
+      - flagId
+      type: object
+      properties:
+        flagId:
+          type: integer
+          description: The unique identifier of the flag to apply
+          format: int32
+          example: 12345
+        owner:
+          type: string
+          description: User email or ID who owns the flag
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: false
+      description: Request model for creating a flag on any supported entity type
+    ReadJobFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        jobId:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 654321
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The name of the owner who applied the flag
+          example: John Doe
+        comments:
+          type: string
+          description: Additional comments about the flag
+          example: Urgent issue requires immediate attention
+      additionalProperties: false
+      description: Represents a model that holds information about a job flag
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    JobGroupStatusSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort job groups<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by created at date</li></ul>'
+      example: createdAt
+    JobGroupLineItemSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'JobGroupLineItemSortOptions enum<p>Possible values:</p><ul><li><b>createdAt</b>: JobGroupLineItemSortOptions CreatedAt</li></ul>'
+      example: createdAt
+    JobGroupSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'Represents the fields that can be used to sort job groups<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by created at date</li></ul>'
+      example: createdAt
+    PagedResponseJobFlagsForJobModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobFlagsForJobModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    CreateJobGroupLineItemModel:
+      required:
+      - quantity
+      type: object
+      properties:
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: Contact id that the costs are charged to
+          format: int64
+          example: 6547
+        quantity:
+          type: number
+          description: Quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the line item
+          example: Copper pipe - 1m
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Tax identifier (must exist and not be deleted for customer). Nullable
+          format: int64
+          example: 1
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Unit cost (nullable, non-negative)
+          format: double
+          example: 2.5
+        unitSellingPrice:
+          type: number
+          description: Unit selling price (non-negative)
+          format: double
+          example: 5.99
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Id of the associated nominal code
+          format: int64
+          example: 45
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Id of the associated department code
+          format: int64
+          example: 59
+      additionalProperties: false
+      description: Create job group line item request model
+    PagedResponseReadEntityFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadEntityFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    CreateJobGroupModel:
+      required:
+      - plannedEndOption
+      - plannedStartOption
+      type: object
+      properties:
+        reference:
+          type:
+          - string
+          - 'null'
+          description: The internal reference of a job group - should usually be unique. If not provided and auto-referencing is setup, auto-reference value will be used
+          example: ABC/12345
+        contactId:
+          type: integer
+          description: The unique identifier of the contact the job group is for
+          format: int64
+          example: 12345678
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type:
+          - string
+          - 'null'
+          description: The title of the job group
+          example: My Group Job
+        isShownOnDevice:
+          type: boolean
+          description: Indicates whether the job group is shown on the device. If true, it will be shown
+          example: false
+        areJobsLinked:
+          type: boolean
+          description: Indicates whether the jobs in the group are linked
+          example: true
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated with the job group
+          example: ORD123456
+        plannedStartOption:
+          $ref: '#/components/schemas/JobGroupPlannedStartOptions'
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job group should be started. Should be set if the BigChange.BO.RestApi.Application.JobGroups.Models.CreateJobGroupModel.PlannedStartOption is BigChange.BO.RestApi.Application.JobGroups.Enumerations.JobGroupPlannedStartOptions.OnSetDate
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        plannedEndOption:
+          $ref: '#/components/schemas/JobGroupPlannedEndOptions'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job group should be ended. Should be set if the BigChange.BO.RestApi.Application.JobGroups.Models.CreateJobGroupModel.PlannedEndOption is BigChange.BO.RestApi.Application.JobGroups.Enumerations.JobGroupPlannedEndOptions.OnSetDate
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job group is assigned to
+          format: int64
+          example: 123456
+        linkedJobsResourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource who will be actioning the job group.  Should return an error if the BigChange.BO.RestApi.Application.JobGroups.Models.CreateJobGroupModel.AreJobsLinked is `false`
+          format: int64
+          example: 1234567
+        linkedJobsStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job group is started. Should return an error if the BigChange.BO.RestApi.Application.JobGroups.Models.CreateJobGroupModel.AreJobsLinked is `false`
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        linkedJobsVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle associated with the job group. Should return an error if the BigChange.BO.RestApi.Application.JobGroups.Models.CreateJobGroupModel.AreJobsLinked is `false`
+          format: int64
+          example: 123456
+        ownerId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the user who owns the job group
+          format: int64
+          example: 12345
+      additionalProperties: false
+      description: Create job group request model
+    ReadJobGroupModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job group
+          format: int64
+          example: 123456789
+        reference:
+          type: string
+          description: The internal reference of a job group - should usually be unique
+          example: ABC/12345
+        contactId:
+          type: integer
+          description: The unique identifier of the contact the job group is for
+          format: int64
+          example: 12345678
+        contactName:
+          type:
+          - string
+          - 'null'
+          description: The name of the contact the job group is for
+          example: John Doe
+        contactAddress:
+          type:
+          - string
+          - 'null'
+          description: The postal address of the contact the job group is for
+          example: 3150 Century Way, Leeds LS15 6HU
+        contactLocation:
+          $ref: '#/components/schemas/Location'
+        personId:
+          type:
+          - string
+          - 'null'
+          description: The unique uuid identifier of the person who will serve as primary point of contact for the job
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        personName:
+          type:
+          - string
+          - 'null'
+          description: The name of the person who will serve as primary point of contact for the job
+          example: Peter Brown
+        title:
+          type: string
+          description: The title of the job group
+          example: My Group Job
+        isShownOnDevice:
+          type: boolean
+          description: Indicates whether the job group is shown on the device
+          example: false
+        areJobsLinked:
+          type: boolean
+          description: Indicates whether the jobs in the group are linked
+          example: true
+        createdAt:
+          type: string
+          description: The UTC timestamp for when the job group was created
+          format: date-time
+          example: '2025-01-24T12:00:00.0000000+00:00'
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: The order number associated with the job group
+          example: ORD123456
+        plannedStartOption:
+          $ref: '#/components/schemas/JobGroupPlannedStartOptions'
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC Timestamp for when the job group is planned to start. Only set if the BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.PlannedStartOption is BigChange.BO.RestApi.Application.JobGroups.Enumerations.JobGroupPlannedStartOptions.OnSetDate
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        plannedEndOption:
+          $ref: '#/components/schemas/JobGroupPlannedEndOptions'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job group should be ended. Only set if the BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.PlannedEndOption is BigChange.BO.RestApi.Application.JobGroups.Enumerations.JobGroupPlannedEndOptions.OnSetDate
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        status:
+          $ref: '#/components/schemas/JobGroupStatus'
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the category that the job group is assigned to
+          format: int32
+          example: 123456
+        categoryName:
+          type:
+          - string
+          - 'null'
+          description: The name of the category that the job group is assigned to
+          example: Global Solutions Ltd
+        contractId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the contract that the job group is associated with
+          format: int64
+          example: 123456
+        linkedJobsResourceName:
+          type:
+          - string
+          - 'null'
+          description: The name of the resource associated with the job group. Should only be set when BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.AreJobsLinked is `true`
+          example: John Doe
+        linkedJobsResourceId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the resource who will be actioning the job group. Should only be set when BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.AreJobsLinked is `true`
+          format: int64
+          example: 1234567
+        linkedJobsVehicleRegistration:
+          type:
+          - string
+          - 'null'
+          description: The registration number of the vehicle associated with the job group. Should only be set when BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.AreJobsLinked is `true`
+          example: AB12 CDE
+        linkedJobsVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the vehicle associated with the job group. Should only be set when BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.AreJobsLinked is `true`
+          format: int64
+          example: 123456
+        linkedJobsStartAt:
+          type:
+          - string
+          - 'null'
+          description: The UTC timestamp for when the job group is started. Should only be set when BigChange.BO.RestApi.Application.JobGroups.Models.ReadJobGroupModel.AreJobsLinked is `true`
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+        ownerId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the user who owns the job group
+          format: int64
+          example: 12345
+      additionalProperties: false
+      description: Represents a model for reading job groups
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    PostResponseInt64:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identifier of the newly created record
+          format: int64
+      additionalProperties: false
+      description: Represents a response for a POST request, containing the ID of the newly created record
+    UpdateJobGroupModel:
+      type: object
+      properties:
+        reference:
+          type:
+          - string
+          - 'null'
+          description: 'The internal reference of a job group - should usually be unique. If not provided and auto-referencing is setup, auto-reference value will be used<br/><br/>Max length: 40 characters<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: ABC/12345
+          x-optional: Omit to retain current value or provide null to unset
+        contactId:
+          type: integer
+          description: 'The unique identifier of the contact the job group is for<br/><br/>Must be a positive integer within the range of a 32-bit signed int<br/><br/>Must reference an existing contact<br/><br/>Optional: Omit to retain current value'
+          format: int64
+          example: 12345678
+          x-optional: Omit to retain current value
+        personId:
+          type:
+          - string
+          - 'null'
+          description: 'The unique uuid identifier of the person who will serve as primary point of contact for the job<br/><br/>If provided, must belong to the specified contact (or existing job group''s contact if ContactId not provided)<br/><br/>If not provided, the existing job group''s person will be validated against the provided contact (if ContactId is given)<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          x-optional: Omit to retain current value or provide null to unset
+        title:
+          type:
+          - string
+          - 'null'
+          description: 'The title of the job group<br/><br/>Max length: 50 characters<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: My Group Job
+          x-optional: Omit to retain current value or provide null to unset
+        isShownOnDevice:
+          type: boolean
+          description: 'Indicates whether the job group is shown on the device. If true, it will be shown<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        orderNumber:
+          type:
+          - string
+          - 'null'
+          description: 'The order number associated with the job group<br/><br/>Max length: 40 characters<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          example: ORD123456
+          x-optional: Omit to retain current value or provide null to unset
+        plannedStartOption:
+          $ref: '#/components/schemas/JobGroupPlannedStartOptions'
+        plannedStartAt:
+          type:
+          - string
+          - 'null'
+          description: 'The UTC timestamp for when the job group should be started. Should be set if the PlannedStartOption is JobGroupPlannedStartOptions.OnSetDate<br/><br/>If PlannedStartOption is DateOfFirstJob, this must be null<br/><br/>If PlannedStartOption is not provided, its requirement or nullability depends on the existing job group''s start option<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+          x-optional: Omit to retain current value or provide null to unset
+        plannedEndOption:
+          $ref: '#/components/schemas/JobGroupPlannedEndOptions'
+        plannedEndAt:
+          type:
+          - string
+          - 'null'
+          description: 'The UTC timestamp for when the job group should be ended. Should be set if the PlannedEndOption is JobGroupPlannedEndOptions.OnSetDate<br/><br/>If PlannedEndOption is DateOfLastJob, this must be null<br/><br/>If PlannedEndOption is not provided, its requirement or nullability depends on the existing job group''s end option<br/><br/>If both PlannedStartAt and PlannedEndAt are OnSetDate, PlannedEndAt must be after PlannedStartAt<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '2025-01-01T09:00:00.0000000+00:00'
+          x-optional: Omit to retain current value or provide null to unset
+        categoryId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the category that the job group is assigned to<br/><br/>Must be a positive integer within the range of a 32-bit signed int and reference an existing category<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 123456
+          x-optional: Omit to retain current value or provide null to unset
+        areJobsLinked:
+          type: boolean
+          description: 'Determines whether the jobs are linked<br/><br/>Cannot be set to true after a group job has been created<br/><br/>Optional: Omit to retain current value'
+          example: false
+          x-optional: Omit to retain current value
+        linkedJobsVehicleId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the vehicle used for each job if linked<br/><br/>Cannot be set if AreJobsLinked is false<br/><br/>Cannot be set if the job group status is not scheduled or unscheduled<br/>Must be provided if ResourceId is provided<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 123456
+          x-optional: Omit to retain current value or provide null to unset
+        linkedJobsResourceId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the resource used for each job if linked<br/><br/>Cannot be set if AreJobsLinked is false<br/><br/>Cannot be set if the job group status is not scheduled or unscheduled<br/>Must be provided if VehicleId is provided<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 123456
+          x-optional: Omit to retain current value or provide null to unset
+        linkedJobsStartAt:
+          type:
+          - string
+          - 'null'
+          description: 'The date and time the first job will be scheduled for if linked<br/><br/>Cannot be set if AreJobsLinked is false<br/><br/>Cannot be set if the job group status is not scheduled or unscheduled<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: date-time
+          example: '123456'
+          x-optional: Omit to retain current value or provide null to unset
+        ownerId:
+          type:
+          - integer
+          - 'null'
+          description: 'The unique identifier of the user who owns the job group<br/><br/>Setting to null removes the owner<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 12345
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Update job group request model. At least one optional value must be provided
+    PagedResponseReadJobGroupModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobGroupModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    PagedResponseReadJobCategoryModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobCategoryModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    ReadJobCategoryModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the job category
+          format: int64
+          example: 12345
+        name:
+          type: string
+          description: The name of the job category
+          example: Reactive Maintenance
+        isActive:
+          type: boolean
+          description: Whether the job category is currently active
+          example: true
+        visibility:
+          type: array
+          items:
+            type: string
+          description: The entities the job category is visible for. Contains "Job", "Group", or both
+          example:
+          - Job
+          - Group
+      additionalProperties: false
+      description: Represents a job category
+    JobGroupStatus:
+      enum:
+      - unscheduled
+      - partScheduled
+      - scheduled
+      - inProgress
+      - completed
+      - financiallyCompleted
+      type: string
+      description: 'Represents the status of a job group<p>Possible values:</p><ul><li><b>unscheduled</b>: Job group is unscheduled</li><li><b>partScheduled</b>: Part of the job group is scheduled</li><li><b>scheduled</b>: Job group is scheduled</li><li><b>inProgress</b>: Job group is in progress</li><li><b>completed</b>: Job group is completed</li><li><b>financiallyCompleted</b>: Job group is financially completed</li></ul>'
+      example: unscheduled
+    PagedResponseReadJobFlagModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobFlagModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    LineItemType:
+      enum:
+      - freeText
+      - predefined
+      - stockItem
+      - worksheet
+      - drivingPlanned
+      - drivingActual
+      - workPlanned
+      - workActual
+      - expense
+      - invoice
+      - stock
+      - ratingTable
+      type: string
+      description: 'Represents the type of a purchase order line item<p>Possible values:</p><ul><li><b>freeText</b>: A free text line item</li><li><b>predefined</b>: A predefined invoicing item</li><li><b>stockItem</b>: A stock item line item</li><li><b>worksheet</b>: A worksheet line item</li><li><b>drivingPlanned</b>: A driving planned line item</li><li><b>drivingActual</b>: A driving actual line item</li><li><b>workPlanned</b>: A work planned line item</li><li><b>workActual</b>: A work actual line item</li><li><b>expense</b>: An expense line item</li><li><b>invoice</b>: An invoice line item</li><li><b>stock</b>: A stock line item</li><li><b>ratingTable</b>: A rating table line item</li></ul>'
+      example: freeText
+    JobGroupPlannedStartOptions:
+      enum:
+      - onSetDate
+      - dateOfFirstJob
+      type: string
+      description: 'Represents the options for setting the planned start date of a job group<p>Possible values:</p><ul><li><b>onSetDate</b>: On a specific date</li><li><b>dateOfFirstJob</b>: The date of the first job in the job group</li></ul>'
+      example: onSetDate
+    JobGroupPlannedEndOptions:
+      enum:
+      - onSetDate
+      - dateOfLastJob
+      type: string
+      description: 'Represents the options for setting the planned end date of a job group<p>Possible values:</p><ul><li><b>onSetDate</b>: On a specific date</li><li><b>dateOfLastJob</b>: The date of the last job in the job group</li></ul>'
+      example: onSetDate
+    PagedResponseReadJobGroupLineItemModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobGroupLineItemModel'
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    UpdateJobGroupLineItemModel:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: 'Quantity of the line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 5
+          x-optional: Omit to retain current value
+        description:
+          type: string
+          description: 'Description of the line item<br/><br/>Optional: Omit to retain current value'
+          example: Copper pipe - 1m
+          x-optional: Omit to retain current value
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: 'Id of the vat/tax rate applied to this item<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 854
+          x-optional: Omit to retain current value or provide null to unset
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: 'Cost of the line item<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: double
+          example: 2.5
+          x-optional: Omit to retain current value or provide null to unset
+        unitSellingPrice:
+          type: number
+          description: 'Price of each individual unit associated to the line item<br/><br/>Optional: Omit to retain current value'
+          format: double
+          example: 5.99
+          x-optional: Omit to retain current value
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Id of the associated nominal code<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 45
+          x-optional: Omit to retain current value or provide null to unset
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: 'Id of the associated department code<br/><br/>Optional: Omit to retain current value or provide null to unset'
+          format: int64
+          example: 22
+          x-optional: Omit to retain current value or provide null to unset
+      additionalProperties: false
+      description: Update job group line item request model. At least one optional value must be provided
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadJobGroupLineItemModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the line item
+          format: int64
+          example: 52488
+        jobId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job the line item is associated with
+          format: int64
+          example: 52488
+        jobGroupId:
+          type:
+          - integer
+          - 'null'
+          description: The unique identifier of the job group associated with the job group line item
+          format: int64
+        contactId:
+          type:
+          - integer
+          - 'null'
+          description: Contact id that the costs are charged to
+          format: int64
+          example: 6547
+        createdAt:
+          type: string
+          description: Creation date of the invoice item that this line belongs to
+          format: date-time
+          example: '2022-11-29T16:50:16.0000000+00:00'
+        lineItemType:
+          $ref: '#/components/schemas/LineItemType'
+        quantity:
+          type: number
+          description: Quantity of the line item
+          format: double
+          example: 5
+        description:
+          type: string
+          description: Description of the line item
+          example: Copper pipe - 1m
+        taxId:
+          type:
+          - integer
+          - 'null'
+          description: Id of the vat/tax rate applied to this item
+          format: int64
+          example: 55
+        taxPercentage:
+          type: number
+          description: Percentage of tax applied to this item
+          format: double
+          example: 20
+        unitCost:
+          type:
+          - number
+          - 'null'
+          description: Cost of the line item
+          format: double
+          example: 2.5
+        unitSellingPrice:
+          type: number
+          description: Price of each individual unit associated to the line item
+          format: double
+          example: 5.99
+        taxAmount:
+          type:
+          - number
+          - 'null'
+          description: Tax amount associated to the line item (GET only)
+          format: double
+          example: 5
+        grossAmount:
+          type:
+          - number
+          - 'null'
+          description: Net price associated to the line item
+          format: double
+          example: 25
+        nominalCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Id of the associated nominal code
+          format: int64
+          example: 49
+        departmentCodeId:
+          type:
+          - integer
+          - 'null'
+          description: Id of the associated department code
+          format: int64
+          example: 22
+      additionalProperties: false
+      description: Model for reading a job group line item
+    JobFlagsForJobModel:
+      type: object
+      properties:
+        jobId:
+          type: integer
+          description: The unique identifier of the job
+          format: int64
+          example: 654321
+        flags:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadJobFlagModel'
+          description: The flags associated with this job
+      additionalProperties: false
+      description: Represents a collection of job flags grouped by job
+    Location:
+      required:
+      - latitude
+      - longitude
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude of the center of the location
+          format: double
+          example: 51.31349
+        longitude:
+          type: number
+          description: Longitude of the center of the location
+          format: double
+          example: -0.7464233
+      additionalProperties: false
+      description: Represents a geographical location
+    ReadEntityFlagModel:
+      type: object
+      properties:
+        historyId:
+          type: integer
+          description: The unique identifier of the flag history entry
+          format: int64
+          example: 123456
+        flagId:
+          type: integer
+          description: The unique identifier of the flag
+          format: int64
+          example: 789
+        flagName:
+          type: string
+          description: The name of the flag
+          example: High Priority
+        appliedAt:
+          type: string
+          description: The UTC timestamp of when this flag was applied
+          format: date-time
+          example: '2024-01-15T10:30:00.0000000+00:00'
+        ownerName:
+          type: string
+          description: The owner who applied the flag (user email or ID)
+          example: john.doe@example.com
+        comments:
+          type:
+          - string
+          - 'null'
+          description: Additional context for the flag
+          example: Requires special attention
+      additionalProperties: {}
+      description: Represents a flag applied to an entity. Used as the response model for all entity flag endpoints.<br/>The entity identifier is serialised under its entity-specific key (e.g. `jobId`,<br/>`jobGroupId`) taken from BigChange.BO.RestApi.Application.EntityFlags.Services.EntityFlagConfig.PrimaryKeyColumn
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

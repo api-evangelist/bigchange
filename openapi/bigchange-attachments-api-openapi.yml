@@ -1,0 +1,596 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX Attachments API
+  description: Developer Experience API
+  version: '1.0'
+servers:
+- url: https://api.bigchange.com
+security:
+- bearer: []
+tags:
+- name: Attachments
+paths:
+  /v1/attachments:
+    get:
+      tags:
+      - Attachments
+      summary: Get a list of attachments
+      description: Retrieves a paged collection of attachments, optionally filtered to those belonging to the specified contact (required scope attachments:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: contactId
+        in: query
+        description: Only return attachments associated with the contact matching the value provided. When omitted, attachments across all contacts are returned
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+      - name: entityType
+        in: query
+        description: 'Only return attachments where `entityType` matches the value(s) provided (Max items: 50)'
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentEntityType'
+      - name: fileName
+        in: query
+        description: Only return attachments where the file name contains the value provided. Do not include the file extension, as it is not matched against
+        schema:
+          type: string
+      - name: createdAtFrom
+        in: query
+        description: Only return attachments where `createdAt` is the same or newer than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: createdAtTo
+        in: query
+        description: Only return attachments where `createdAt` is the same or older than this UTC value
+        schema:
+          type: string
+          format: date-time
+      - name: isResourceVisible
+        in: query
+        description: Only return attachments where `isResourceVisible` matches the value provided
+        schema:
+          type: boolean
+      - name: sortBy
+        in: query
+        description: The field to sort items in the page by
+        schema:
+          $ref: '#/components/schemas/AttachmentSortOptions'
+      - name: direction
+        in: query
+        description: The direction to apply the sort
+        schema:
+          $ref: '#/components/schemas/SortDirection'
+      - name: pageNumber
+        in: query
+        description: 'The page number being requested (minimum: 1, maximum: 2147483)'
+        schema:
+          maximum: 2147483
+          minimum: 1
+          type: integer
+          format: int32
+      - name: pageSize
+        in: query
+        description: 'The page size being requested (minimum: 1, maximum: 1000)'
+        schema:
+          maximum: 1000
+          minimum: 1
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResponseReadAttachmentListModel'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1Attachments
+      x-operation-id-source: derived
+  /v1/attachments/{attachmentId}:
+    get:
+      tags:
+      - Attachments
+      summary: Get an attachment
+      description: Retrieves a single attachment, including its download URL (required scope attachments:read)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentId
+        in: path
+        description: The unique identifier of the attachment
+        required: true
+        schema:
+          maximum: 9223372036854776000
+          minimum: 1
+          type: integer
+          format: int64
+          example: 123456
+        example: 123456
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ReadAttachmentModel'
+                - $ref: '#/components/schemas/ReadAttachmentModelWithFolderId'
+                description: Represents an attachment, including its download URL
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: getV1AttachmentsByAttachmentId
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Attachments
+      summary: Update an attachment's metadata
+      description: Updates the metadata of a single attachment (required scope attachments:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentId
+        in: path
+        description: Attachment id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: The updated attachment metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAttachmentModel'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: putV1AttachmentsByAttachmentId
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Attachments
+      summary: Delete an attachment
+      description: Deletes a single attachment (required scope attachments:write)
+      parameters:
+      - name: Customer-Id
+        in: header
+        description: The customer identifier
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentId
+        in: path
+        description: Attachment id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: attachmentUid
+        in: query
+        description: Attachment UID
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '500':
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ProblemDetails'
+                - $ref: '#/components/schemas/HttpValidationProblemDetails'
+      operationId: deleteV1AttachmentsByAttachmentId
+      x-operation-id-source: derived
+components:
+  schemas:
+    AttachmentSortOptions:
+      enum:
+      - createdAt
+      type: string
+      description: 'The field to sort attachments by<p>Possible values:</p><ul><li><b>createdAt</b>: Sort by the date the attachment was created</li></ul>'
+      example: createdAt
+    PagedResponseReadAttachmentListModel:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/ReadAttachmentListModel'
+            - $ref: '#/components/schemas/ReadAttachmentModel'
+            - $ref: '#/components/schemas/ReadAttachmentModelWithFolderId'
+            description: Represents an attachment
+          description: The items returned for the requested page
+        pageNumber:
+          type: integer
+          description: The page number of the response where 1 is the first page
+          format: int32
+          example: 2
+        pageSize:
+          type: integer
+          description: The number of items requested for the current page
+          format: int32
+          example: 100
+        pageItemCount:
+          type: integer
+          description: The number of items returned in the current page
+          format: int32
+          readOnly: true
+          example: 55
+      additionalProperties: false
+      description: A paged collection of items
+    SortDirection:
+      enum:
+      - ascending
+      - descending
+      type: string
+      description: 'Represents the direction in which sorting should be applied<p>Possible values:</p><ul><li><b>ascending</b>: Indicates ascending sorting order</li><li><b>descending</b>: Indicates descending sorting order</li></ul>'
+      example: ascending
+    AttachmentEntityType:
+      enum:
+      - job
+      - worksheetAnswer
+      - contactNote
+      - invoice
+      - contact
+      - jobGroup
+      - salesOpportunity
+      - invoiceAttachment
+      type: string
+      description: 'The type of entity an attachment is associated with<p>Possible values:</p><ul><li><b>job</b>: Associated with a job entity</li><li><b>worksheetAnswer</b>: Associated with a worksheet answer entity</li><li><b>contactNote</b>: Associated with a contact note entity</li><li><b>invoice</b>: Associated with an invoice entity</li><li><b>contact</b>: Associated with a contact entity</li><li><b>jobGroup</b>: Associated with a job group entity</li><li><b>salesOpportunity</b>: Associated with a sales opportunity entity</li><li><b>invoiceAttachment</b>: Associated with an invoice attachment entity</li></ul>'
+      example: job
+    HttpValidationProblemDetails:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ProblemDetails'
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      additionalProperties: {}
+    UpdateAttachmentModel:
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: The file name to assign to the attachment<br/>            <br/>Validation:<br/>- Required<br/>- Maximum length of 250 characters
+          example: invoice.pdf
+        isVisibleToResource:
+          type: boolean
+          description: Whether the attachment should be visible to the resource
+          example: true
+      additionalProperties: false
+      description: Represents a model containing information for updating an attachment's metadata
+    ValidationProblemDetails:
+      type: object
+      properties:
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadAttachmentListModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the attachment
+          format: int64
+          example: 123456
+        fileName:
+          type: string
+          description: The file name of the attachment
+          example: invoice.pdf
+        fileDescription:
+          type:
+          - string
+          - 'null'
+          description: The description of the attachment
+          example: Signed contract
+        fileType:
+          type: string
+          description: The MIME type of the attachment file
+          example: application/pdf
+        fileExtension:
+          type: string
+          description: The file extension of the attachment
+          example: pdf
+        isNew:
+          type: boolean
+          description: Whether the attachment has not yet been viewed
+          example: true
+        isImage:
+          type: boolean
+          description: Whether the attachment file is an image
+          example: true
+        createdAt:
+          type: string
+          description: The UTC timestamp of when this attachment was created
+          format: date-time
+          example: '2024-01-15T09:30:00.0000000+00:00'
+        entityType:
+          $ref: '#/components/schemas/AttachmentEntityType'
+        isResourceVisible:
+          type: boolean
+          description: Whether the attachment is visible to a resource (mobile field engineer)
+          example: true
+      additionalProperties: false
+      description: Represents an attachment
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type:
+          - string
+          - 'null'
+          description: A URI reference [RFC3986] that identifies the problem type
+          example: https://example.com/probs/out-of-credit
+        title:
+          type:
+          - string
+          - 'null'
+          description: A short, human-readable summary of the problem type
+          example: You do not have enough credit
+        status:
+          type:
+          - integer
+          - 'null'
+          description: The HTTP status code([RFC7231], Section 6) generated by the origin server for this occurrence of the problem
+          format: int32
+          example: 403
+        detail:
+          type:
+          - string
+          - 'null'
+          description: A human-readable explanation specific to this occurrence of the problem
+          example: Your current balance is 30, but that costs 50
+        instance:
+          type:
+          - string
+          - 'null'
+          description: A URI reference that identifies the specific occurrence of the problem
+          example: /account/12345/msgs/abc
+      additionalProperties: {}
+    ReadAttachmentModel:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ReadAttachmentListModel'
+      properties:
+        url:
+          type: string
+          description: The URL from which the attachment file can be downloaded
+        thumbnailUrl:
+          type: string
+          description: The URL from which the attachment's thumbnail can be downloaded, populated only when the attachment is an image
+      additionalProperties: false
+      description: Represents an attachment, including its download URL
+    ReadAttachmentModelWithFolderId:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/ReadAttachmentModel'
+      properties:
+        folderId:
+          type:
+          - integer
+          - 'null'
+          format: int64
+      additionalProperties: false
+      description: Represents an attachment
+  securitySchemes:
+    bearer:
+      type: http
+      description: Enter the access token only.
+      scheme: bearer
+      bearerFormat: JWT

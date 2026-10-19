@@ -1,0 +1,57 @@
+openapi: 3.2.0
+info:
+  title: BigChange DX REST Reference Data API
+  version: '1.0'
+  description: OpenAPI description of the BigChange DX REST API (the modern REST interface to the BigChange / JobWatch field service and job management platform).
+  contact:
+    name: BigChange Developer Portal
+    url: https://developers.bigchange.com/docs/rest/api-reference
+servers:
+- url: https://api.bigchange.com
+  description: BigChange DX production API (all products share this host)
+security:
+- bearer: []
+tags:
+- name: Reference Data
+paths:
+  /v1/jobTypes:
+    get:
+      tags:
+      - Reference Data
+      summary: Get a list of job types
+      parameters:
+      - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: A list of job types.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericArray'
+      operationId: getV1JobTypes
+      x-operation-id-source: derived
+components:
+  parameters:
+    CustomerId:
+      name: Customer-Id
+      in: header
+      required: true
+      description: The customer (BigChange account) identifier. Required on every operation in the published spec.
+      schema:
+        type: integer
+        format: int64
+  schemas:
+    GenericObject:
+      type: object
+      description: Placeholder object. See BigChange's published swagger.json for the full, authoritative field-level schema of this resource.
+      additionalProperties: true
+    GenericArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/GenericObject'
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Bearer JWT access token. Obtain an access token from BigChange''s authentication proxy using an API key issued in the developer portal (Account > Manage API Keys / Integrations), then send it as `Authorization: Bearer <access_token>`. Confirmed from the published BigChange swagger security scheme ("Enter the access token only").'
