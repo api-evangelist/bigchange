@@ -1,4 +1,4 @@
-# BigChange (bigchange)
+# BigChange
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,152 +64,143 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-BigChange is an all-in-one field service and job management platform - marketed as
-**JobWatch** - that combines CRM, job scheduling, live vehicle/resource tracking, a
-mobile workforce app, job finance (quotes, invoices, purchase orders), and business
-intelligence into one system for trades and field-service organisations.
+BigChange is an all-in-one field service and job management platform (CRM, job scheduling, live tracking, a mobile workforce app, job finance, and business intelligence) known as JobWatch. Its modern REST API - the BigChange DX API at https://api.bigchange.com - lets developers manage jobs, contacts and persons, quotes, invoices and purchase orders, stock, resources, users and vehicles, worksheets, and assets, plus subscribe to webhooks. Requests are authenticated with a Bearer JWT access token (obtained through BigChange's authentication proxy from a developer-portal API key) and scoped with a required Customer-Id header.
 
-## Access model (read this first)
+**Areas:** Field Service · Job Management · Scheduling · Workforce Management · Fleet · CRM · Software-as-a-Service
 
-BigChange exposes a **real, documented, modern REST API** (the "BigChange DX" API).
-The catalog entry is grounded in BigChange's own **published OpenAPI/Swagger
-documents**, which are publicly reachable without a login:
+## BigChange on APIs.io
 
-- BigChange DX (core): `https://api.bigchange.com/swagger/v1/swagger.json` (108 paths)
-- Asset Management: `https://api.bigchange.com/swagger/asset-management/v1/swagger.json` (34 paths)
-- Webhooks: `https://api.bigchange.com/swagger/webhooks/v1/swagger.json` (4 paths)
+Everything profiled for BigChange is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/bigchange/](https://apis.io/providers/bigchange/)** — or go straight to one of the APIs or properties below.
 
-What is **confirmed** from those specs:
+### APIs (11)
 
-- **Base URL:** `https://api.bigchange.com`
-- **Authentication:** HTTP **Bearer JWT** access token (global `bearer` security
-  scheme), plus a **required `Customer-Id` header** (int64) on every operation.
-- **Real paths and methods** for jobs, contacts, persons, finance (invoices,
-  quotes, purchase orders, sales opportunities), stock, resources, users, vehicles,
-  notes, worksheets, reference data, assets, and webhooks.
+- [BigChange Assets API](https://apis.io/apis/bigchange/bigchange-assets-api/) — The Assets API from BigChange — 1 operation(s) for assets.
+- [BigChange Contacts API](https://apis.io/apis/bigchange/bigchange-contacts-api/) — The Contacts API from BigChange — 2 operation(s) for contacts.
+- [BigChange Finance API](https://apis.io/apis/bigchange/bigchange-finance-api/) — The Finance API from BigChange — 3 operation(s) for finance.
+- [BigChange Jobs API](https://apis.io/apis/bigchange/bigchange-jobs-api/) — The Jobs API from BigChange — 5 operation(s) for jobs.
+- [BigChange Persons API](https://apis.io/apis/bigchange/bigchange-persons-api/) — The Persons API from BigChange — 1 operation(s) for persons.
+- [BigChange Reference Data API](https://apis.io/apis/bigchange/bigchange-reference-data-api/) — The Reference Data API from BigChange — 1 operation(s) for reference data.
+- [BigChange Resources API](https://apis.io/apis/bigchange/bigchange-resources-api/) — The Resources API from BigChange — 1 operation(s) for resources.
+- [BigChange Stock API](https://apis.io/apis/bigchange/bigchange-stock-api/) — The Stock API from BigChange — 1 operation(s) for stock.
+- [BigChange Users API](https://apis.io/apis/bigchange/bigchange-users-api/) — The Users API from BigChange — 1 operation(s) for users.
+- [BigChange Vehicles API](https://apis.io/apis/bigchange/bigchange-vehicles-api/) — The Vehicles API from BigChange — 1 operation(s) for vehicles.
+- [BigChange Webhooks API](https://apis.io/apis/bigchange/bigchange-webhooks-api/) — The Webhooks API from BigChange — 2 operation(s) for webhooks.
 
-What is **login-walled / modeled**:
+### Published properties
 
-- The human-readable reference site (`developers.bigchange.com`) is a JavaScript
-  single-page app and the endpoint prose pages did not render for scraping; the
-  exact **token-exchange endpoint and grant flow** ("authentication proxy" -
-  `developers.bigchange.com/docs/rest/auth-proxy/get-an-access-token`) is described
-  from the portal navigation and is **modeled**, not copied verbatim. API keys are
-  issued in the developer portal under **Account > Manage API Keys / Integrations**.
-- Request/response **body schemas** in the bundled OpenAPI are summarized as generic
-  objects; the upstream `swagger.json` documents carry the full field-level models.
-- **Pricing** is modeled from BigChange marketing pages (a free "Essentials" API
-  tier plus per-user / per-vehicle SaaS subscription); exact figures are not
-  reconciled.
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-A separate **legacy JobWatch web-services API** also exists (host
-`webservice.bigchange.com`, authenticated with an API key plus account
-username/password). This entry focuses on the modern REST API; the legacy web
-service is noted for completeness only.
+#### Agentic access (1)
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/bigchange/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/bigchange/refs/heads/main/apis.yml)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-## Tags
+- [Bigchange Agentic Access](https://apis.io/agentic-access/bigchange/bigchange-agentic-access/)
 
-- Field Service Management
-- Job Management
-- Scheduling
-- Workforce Management
-- Fleet
-- CRM
-- SaaS
+#### Collections (12)
 
-## Timestamps
+Postman and Open Collection request collections.
 
-- **Created:** 2026-07-12
-- **Modified:** 2026-07-12
+- [BigChange DX REST API](https://apis.io/collections/bigchange/open-bigchange/)
+- [BigChange DX REST Assets API](https://apis.io/collections/bigchange/open-bigchange-assets-api/)
+- [BigChange DX REST Assets Contacts API](https://apis.io/collections/bigchange/open-bigchange-contacts-api/)
+- [BigChange DX REST Assets Finance API](https://apis.io/collections/bigchange/open-bigchange-finance-api/)
+- [BigChange DX REST Assets Jobs API](https://apis.io/collections/bigchange/open-bigchange-jobs-api/)
+- [BigChange DX REST Assets Persons API](https://apis.io/collections/bigchange/open-bigchange-persons-api/)
+- [BigChange DX REST Assets Reference Data API](https://apis.io/collections/bigchange/open-bigchange-reference-data-api/)
+- [BigChange DX REST Assets Resources API](https://apis.io/collections/bigchange/open-bigchange-resources-api/)
+- [BigChange DX REST Assets Stock API](https://apis.io/collections/bigchange/open-bigchange-stock-api/)
+- [BigChange DX REST Assets Users API](https://apis.io/collections/bigchange/open-bigchange-users-api/)
+- [BigChange DX REST Assets Vehicles API](https://apis.io/collections/bigchange/open-bigchange-vehicles-api/)
+- [BigChange DX REST Assets Webhooks API](https://apis.io/collections/bigchange/open-bigchange-webhooks-api/)
 
-## APIs
+#### Governance rules (1)
 
-### BigChange Jobs API
+Spectral rulesets for the provider's contracts.
 
-Create, retrieve, update, schedule, start, cancel, and report on jobs and job
-groups, including line items, job stock, worksheets, constraints, flags, and status
-history.
+- [BigChange — openapi linting rules](https://apis.io/rules/bigchange/bigchange-openapi-linting-spectral-rules/)
 
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Jobs](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/jobs)
+#### Security (2)
 
-### BigChange Contacts and Persons API
+Authentication, trust centre, and vulnerability disclosure.
 
-Manage customer contacts and contact groups (put on/off stop, set site access
-hours) and persons with data-consent history - the CRM core of JobWatch.
+- [Bigchange Authentication](https://apis.io/security/bigchange/bigchange-authentication/)
+- [Bigchange Domain Security](https://apis.io/security/bigchange/bigchange-domain-security/)
 
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Contacts](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/contacts)
+#### Plans and pricing (1)
 
-### BigChange Finance API
+Published plans, tiers and prices.
 
-Manage invoices, quotes, purchase orders, and sales opportunities and their line
-items under `/v1/finance`.
+- [Bigchange Plans Pricing](https://apis.io/plans/bigchange/bigchange-plans-pricing/)
 
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Invoices](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/invoices)
+#### Rate limits (1)
 
-### BigChange Stock and Inventory API
+Published request limits.
 
-Manage stock items, stock details and suppliers, and read stock movement records.
+- [Bigchange Rate Limits](https://apis.io/rate-limits/bigchange/bigchange-rate-limits/)
 
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Stock](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/stock)
+#### FinOps (1)
 
-### BigChange Resources, Users and Vehicles API
+What the API costs to run, by operation.
 
-Manage resources and resource groups, back-office users, and fleet vehicles that
-jobs are scheduled against.
+- [Bigchange Finops](https://apis.io/finops/bigchange/bigchange-finops/)
 
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Resources](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/resources)
+## Where to find this API
 
-### BigChange Notes and Worksheets API
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-Create and manage notes and note types with progress history, and read worksheets,
-worksheet groups, and worksheet questions.
-
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Notes](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/notes)
-
-### BigChange Reference Data API
-
-Read-only lookups: VAT codes, nominal codes, department codes, product categories,
-job types, note types, and sales-opportunity stages and probabilities.
-
-- **Base URL:** `https://api.bigchange.com`
-- **API Reference:** [Reference Data](https://developers.bigchange.com/docs/category/rest/api-reference/v-2-0-0/reference-data)
-
-### BigChange Asset Management API
-
-Manage customer assets, categories, attributes, images, and service schedules, plus
-service agreements and activities, under `/asset-management/v1`.
-
-- **Base URL:** `https://api.bigchange.com`
-- **OpenAPI:** [asset-management swagger.json](https://api.bigchange.com/swagger/asset-management/v1/swagger.json)
-
-### BigChange Webhooks API
-
-List webhook subscriptions and inspect, retry, or clear failed deliveries under
-`/webhooks/v1`. Webhooks are outbound HTTP callbacks (not a WebSocket transport).
-
-- **Base URL:** `https://api.bigchange.com`
-- **OpenAPI:** [webhooks swagger.json](https://api.bigchange.com/swagger/webhooks/v1/swagger.json)
-
-## Common Properties
-
-- [Domain Security](security/bigchange-domain-security.yml)
-- [Authentication](authentication/bigchange-authentication.yml)
-- [LinkedIn](https://www.linkedin.com/company/bigchange)
 - [Website](https://www.bigchange.com)
 - [Documentation](https://developers.bigchange.com/docs/rest/api-reference)
-- [Plans](plans/bigchange-plans-pricing.yml)
-- [Rate Limits](rate-limits/bigchange-rate-limits.yml)
-- [Fin Ops](finops/bigchange-finops.yml)
+- [Blog](https://www.bigchange.com/blog/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 26.6** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 40.1 |
+| Contract governance | 45.5 |
+| Operational transparency | 7.9 |
+| Developer ergonomics | 15.5 |
+| Access clarity | 7.9 |
+
+**Agent readiness 17.9** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 11.8** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/bigchange/](https://apis.io/providers/bigchange/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for BigChange: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/bigchange/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
